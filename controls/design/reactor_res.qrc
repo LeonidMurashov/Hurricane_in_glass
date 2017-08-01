@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="img">
+    <file>img/bg_grey.jpg</file>
+  </qresource>
+</RCC>
