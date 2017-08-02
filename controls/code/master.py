@@ -8,7 +8,6 @@
 
 from threading import Timer
 from PyQt5 import QtCore, QtGui, QtWidgets
-
 import arduino as a
 
 def get_sensor_data():
@@ -22,7 +21,6 @@ def get_sensor_data():
         t.start()
     else:
         sys.exit(exit)
-
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -378,6 +376,31 @@ class Ui_MainWindow(object):
         self.label_6.setObjectName("label_6")
         self.verticalLayout_8.addWidget(self.label_6)
         self.horizontalLayout_2.addWidget(self.widget_4)
+        self.reactorTemp = QtWidgets.QWidget(self.menu2)
+        self.reactorTemp.setStyleSheet("border: 2px solid white;")
+        self.reactorTemp.setObjectName("reactorTemp")
+        self.verticalLayout_9 = QtWidgets.QVBoxLayout(self.reactorTemp)
+        self.verticalLayout_9.setObjectName("verticalLayout_9")
+        self.reactorLcd = QtWidgets.QLCDNumber(self.reactorTemp)
+        font = QtGui.QFont()
+        font.setFamily("Gadugi")
+        self.reactorLcd.setFont(font)
+        self.reactorLcd.setAutoFillBackground(False)
+        self.reactorLcd.setStyleSheet("color: rgb(255, 255, 255);")
+        self.reactorLcd.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.reactorLcd.setObjectName("reactorLcd")
+        self.verticalLayout_9.addWidget(self.reactorLcd)
+        self.label_7 = QtWidgets.QLabel(self.reactorTemp)
+        font = QtGui.QFont()
+        font.setFamily("Gadugi")
+        font.setPointSize(24)
+        self.label_7.setFont(font)
+        self.label_7.setAutoFillBackground(False)
+        self.label_7.setStyleSheet("color: rgb(255, 255, 255); border: 0;")
+        self.label_7.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.label_7.setObjectName("label_7")
+        self.verticalLayout_9.addWidget(self.label_7)
+        self.horizontalLayout_2.addWidget(self.reactorTemp)
         self.verticalLayout.addWidget(self.menu2)
         MainWindow.setCentralWidget(self.centralwidget)
 
@@ -387,7 +410,7 @@ class Ui_MainWindow(object):
             widget.setWindowFlags(QtCore.Qt.FramelessWindowHint)
             widget.setAttribute(QtCore.Qt.WA_TranslucentBackground)
 
-        for i in range(1, 7):
+        for i in range(1, 8):
             eval("set_transclucent(self.label_{})".format(i))
 
         # Button actions
@@ -414,6 +437,7 @@ class Ui_MainWindow(object):
         self.playersOff.setText(_translate("MainWindow", "Выключить пульт игроков"))
         self.endGame.setText(_translate("MainWindow", "Завершить игру"))
         self.label_6.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">Энергия</p></body></html>"))
+        self.label_7.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">Реактор, <span style=\" vertical-align:super;\">0</span>С</p></body></html>"))
 
 import reactor_res_rc
 
@@ -427,4 +451,3 @@ if __name__ == "__main__":
     MainWindow.show()
     get_sensor_data()
     exit = app.exec_()
-
