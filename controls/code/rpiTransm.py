@@ -12,7 +12,7 @@ def getMsg():
     msg = s.recv(128)
     msg = msg.decode('utf-8')
     if msg.startswith("t: "):
-        getMsg()
+        return getMsg()
     else:
         return msg[3:]
 

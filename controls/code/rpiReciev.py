@@ -12,7 +12,8 @@ def msgResponce(msg):
     print(msg)
     ser.write(bytes(msg))
     responce = ser.readline()
-    s.sendto(bytes('r: '+msg, 'utf-8'), ('255.255.255.255', 11719))
+    #responce = "1"
+    s.sendto(bytes('r: '+responce, 'utf-8'), ('255.255.255.255', 11719))
 
 
 def getMsg():
