@@ -8,12 +8,12 @@
 
 from threading import Timer
 from PyQt5 import QtCore, QtGui, QtWidgets
-import arduino as a
+import rpiTransm as rpi
 
 def get_sensor_data():
     num = ui.sensorSelector.value()
-    val = a.getSensor(num)
-    energy = a.getEnergy()
+    val = rpi.getSensor(num)
+    energy = rpi.getEnergy()
     ui.energyLcd.display(energy)
     ui.sensorLcd.display(val)
     t = Timer(2, get_sensor_data)
@@ -415,8 +415,8 @@ class Ui_MainWindow(object):
 
         # Button actions
 
-        self.turnOn.clicked.connect(a.turnOn)
-        self.modelOff.clicked.connect(a.turnOff)
+        self.turnOn.clicked.connect(rpi.turnOn)
+        self.modelOff.clicked.connect(rpi.turnOff)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
