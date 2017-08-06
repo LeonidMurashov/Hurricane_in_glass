@@ -11,27 +11,27 @@ def sendMsg(msg):
 def getMsg():
     msg = s.recv(128)
     msg = msg.decode('utf-8')
-    if msg.startswith("t: "):
+    if not msg.startswith("r: "):
         return getMsg()
     else:
         return msg[3:]
 
 def turnOn():
-    sendMsg('set ModelOn=1')
+    sendMsg('set On=1')
     print("Модель включена!")
 
 def turnOff():
-    sendMsg('set ModelOn=0')
+    sendMsg('set On=0')
     print("Модель выключена!")
 
 def getSensor(num):
-    sendMsg('get temp{}'.format(num))
+    sendMsg('get S{}'.format(num))
     temp = getMsg()
     print("Температура {} : {}".format(num, temp))
     return temp
 
 def getEnergy():
-    sendMsg('get enrg')
+    sendMsg('get E')
     enrg = getMsg()
     print("Энергия: {}".format(enrg))
     return enrg

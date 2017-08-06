@@ -11,8 +11,11 @@ ser = serial.Serial('/dev/ttyACM0',9600)
 def msgResponce(msg):
     print(msg)
     ser.write(bytes(msg))
-    responce = ser.readline()
-    #responce = "1"
+    if msg == "ping":
+        responce = "pong"
+    else:
+        responce = ser.readline()
+        #responce = "1"
     s.sendto(bytes('r: '+responce, 'utf-8'), ('255.255.255.255', 11719))
 
 
