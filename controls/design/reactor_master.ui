@@ -425,6 +425,9 @@ background-color: rgba(255, 255, 255, 0);</string>
         <italic>false</italic>
        </font>
       </property>
+      <property name="styleSheet">
+       <string notr="true">border: 2px solid white;</string>
+      </property>
       <layout class="QVBoxLayout" name="verticalLayout_27">
        <item>
         <widget class="QWidget" name="w" native="true">
@@ -432,6 +435,9 @@ background-color: rgba(255, 255, 255, 0);</string>
           <font>
            <italic>false</italic>
           </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">border: 0;</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_28">
           <item>
@@ -459,11 +465,14 @@ background-color: rgba(255, 255, 255, 0);</string>
            <italic>false</italic>
           </font>
          </property>
+         <property name="styleSheet">
+          <string notr="true">border: 0;</string>
+         </property>
          <layout class="QVBoxLayout" name="verticalLayout_6">
           <item>
            <widget class="QLCDNumber" name="lcdNumber">
             <property name="styleSheet">
-             <string notr="true">color: rgb(255, 255, 255);</string>
+             <string notr="true">border: 2px solid white;</string>
             </property>
            </widget>
           </item>
@@ -477,9 +486,16 @@ background-color: rgba(255, 255, 255, 0);</string>
            <italic>false</italic>
           </font>
          </property>
+         <property name="styleSheet">
+          <string notr="true">border: 0;</string>
+         </property>
          <layout class="QVBoxLayout" name="verticalLayout_20">
           <item>
-           <widget class="QLCDNumber" name="lcdNumber_10"/>
+           <widget class="QLCDNumber" name="lcdNumber_10">
+            <property name="styleSheet">
+             <string notr="true">border: 2px solid white;</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -491,9 +507,16 @@ background-color: rgba(255, 255, 255, 0);</string>
            <italic>false</italic>
           </font>
          </property>
+         <property name="styleSheet">
+          <string notr="true">border: 0;</string>
+         </property>
          <layout class="QVBoxLayout" name="verticalLayout_19">
           <item>
-           <widget class="QLCDNumber" name="lcdNumber_9"/>
+           <widget class="QLCDNumber" name="lcdNumber_9">
+            <property name="styleSheet">
+             <string notr="true">border: 2px solid white;</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -505,9 +528,16 @@ background-color: rgba(255, 255, 255, 0);</string>
            <italic>false</italic>
           </font>
          </property>
+         <property name="styleSheet">
+          <string notr="true">border: 0;</string>
+         </property>
          <layout class="QVBoxLayout" name="verticalLayout_12">
           <item>
-           <widget class="QLCDNumber" name="lcdNumber_2"/>
+           <widget class="QLCDNumber" name="lcdNumber_2">
+            <property name="styleSheet">
+             <string notr="true">border: 2px solid white;</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -519,9 +549,16 @@ background-color: rgba(255, 255, 255, 0);</string>
            <italic>false</italic>
           </font>
          </property>
+         <property name="styleSheet">
+          <string notr="true">border: 0;</string>
+         </property>
          <layout class="QVBoxLayout" name="verticalLayout_13">
           <item>
-           <widget class="QLCDNumber" name="lcdNumber_3"/>
+           <widget class="QLCDNumber" name="lcdNumber_3">
+            <property name="styleSheet">
+             <string notr="true">border: 2px solid white;</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -533,9 +570,16 @@ background-color: rgba(255, 255, 255, 0);</string>
            <italic>false</italic>
           </font>
          </property>
+         <property name="styleSheet">
+          <string notr="true">border: 0;</string>
+         </property>
          <layout class="QVBoxLayout" name="verticalLayout_18">
           <item>
-           <widget class="QLCDNumber" name="lcdNumber_8"/>
+           <widget class="QLCDNumber" name="lcdNumber_8">
+            <property name="styleSheet">
+             <string notr="true">border: 2px solid white;</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -547,9 +591,16 @@ background-color: rgba(255, 255, 255, 0);</string>
            <italic>false</italic>
           </font>
          </property>
+         <property name="styleSheet">
+          <string notr="true">border: 0;</string>
+         </property>
          <layout class="QVBoxLayout" name="verticalLayout_17">
           <item>
-           <widget class="QLCDNumber" name="lcdNumber_7"/>
+           <widget class="QLCDNumber" name="lcdNumber_7">
+            <property name="styleSheet">
+             <string notr="true">border: 2px solid white;</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -561,9 +612,16 @@ background-color: rgba(255, 255, 255, 0);</string>
            <italic>false</italic>
           </font>
          </property>
+         <property name="styleSheet">
+          <string notr="true">border: 0;</string>
+         </property>
          <layout class="QVBoxLayout" name="verticalLayout_16">
           <item>
-           <widget class="QLCDNumber" name="lcdNumber_6"/>
+           <widget class="QLCDNumber" name="lcdNumber_6">
+            <property name="styleSheet">
+             <string notr="true">border: 2px solid white;</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -575,9 +633,16 @@ background-color: rgba(255, 255, 255, 0);</string>
            <italic>false</italic>
           </font>
          </property>
+         <property name="styleSheet">
+          <string notr="true">border: 0;</string>
+         </property>
          <layout class="QVBoxLayout" name="verticalLayout_15">
           <item>
-           <widget class="QLCDNumber" name="lcdNumber_5"/>
+           <widget class="QLCDNumber" name="lcdNumber_5">
+            <property name="styleSheet">
+             <string notr="true">border: 2px solid white;</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -589,9 +654,16 @@ background-color: rgba(255, 255, 255, 0);</string>
            <italic>false</italic>
           </font>
          </property>
+         <property name="styleSheet">
+          <string notr="true">border: 0;</string>
+         </property>
          <layout class="QVBoxLayout" name="verticalLayout_14">
           <item>
-           <widget class="QLCDNumber" name="lcdNumber_4"/>
+           <widget class="QLCDNumber" name="lcdNumber_4">
+            <property name="styleSheet">
+             <string notr="true">border: 2px solid white;</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -603,9 +675,16 @@ background-color: rgba(255, 255, 255, 0);</string>
            <italic>false</italic>
           </font>
          </property>
+         <property name="styleSheet">
+          <string notr="true">border: 0;</string>
+         </property>
          <layout class="QVBoxLayout" name="verticalLayout_23">
           <item>
-           <widget class="QLCDNumber" name="lcdNumber_13"/>
+           <widget class="QLCDNumber" name="lcdNumber_13">
+            <property name="styleSheet">
+             <string notr="true">border: 2px solid white;</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -617,9 +696,16 @@ background-color: rgba(255, 255, 255, 0);</string>
            <italic>false</italic>
           </font>
          </property>
+         <property name="styleSheet">
+          <string notr="true">border: 0;</string>
+         </property>
          <layout class="QVBoxLayout" name="verticalLayout_22">
           <item>
-           <widget class="QLCDNumber" name="lcdNumber_12"/>
+           <widget class="QLCDNumber" name="lcdNumber_12">
+            <property name="styleSheet">
+             <string notr="true">border: 2px solid white;</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -631,9 +717,16 @@ background-color: rgba(255, 255, 255, 0);</string>
            <italic>false</italic>
           </font>
          </property>
+         <property name="styleSheet">
+          <string notr="true">border: 0;</string>
+         </property>
          <layout class="QVBoxLayout" name="verticalLayout_21">
           <item>
-           <widget class="QLCDNumber" name="lcdNumber_11"/>
+           <widget class="QLCDNumber" name="lcdNumber_11">
+            <property name="styleSheet">
+             <string notr="true">border: 2px solid white;</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -645,9 +738,16 @@ background-color: rgba(255, 255, 255, 0);</string>
            <italic>false</italic>
           </font>
          </property>
+         <property name="styleSheet">
+          <string notr="true">border: 0;</string>
+         </property>
          <layout class="QVBoxLayout" name="verticalLayout_24">
           <item>
-           <widget class="QLCDNumber" name="lcdNumber_14"/>
+           <widget class="QLCDNumber" name="lcdNumber_14">
+            <property name="styleSheet">
+             <string notr="true">border: 2px solid white;</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -659,9 +759,16 @@ background-color: rgba(255, 255, 255, 0);</string>
            <italic>false</italic>
           </font>
          </property>
+         <property name="styleSheet">
+          <string notr="true">border: 0;</string>
+         </property>
          <layout class="QVBoxLayout" name="verticalLayout_26">
           <item>
-           <widget class="QLCDNumber" name="lcdNumber_16"/>
+           <widget class="QLCDNumber" name="lcdNumber_16">
+            <property name="styleSheet">
+             <string notr="true">border: 2px solid white;</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -673,9 +780,16 @@ background-color: rgba(255, 255, 255, 0);</string>
            <italic>false</italic>
           </font>
          </property>
+         <property name="styleSheet">
+          <string notr="true">border: 0;</string>
+         </property>
          <layout class="QVBoxLayout" name="verticalLayout_25">
           <item>
-           <widget class="QLCDNumber" name="lcdNumber_15"/>
+           <widget class="QLCDNumber" name="lcdNumber_15">
+            <property name="styleSheet">
+             <string notr="true">border: 2px solid white;</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
