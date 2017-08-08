@@ -9,12 +9,11 @@ def sendMsg(msg):
     s.sendto(bytes('t: '+msg, 'utf-8'),('255.255.255.255', 11719))
 
 def getMsg():
-    msg = s.recv(128)
-    msg = msg.decode('utf-8')
-    if not msg.startswith("r: "):
-        return getMsg()
-    else:
-        return msg[3:]
+    msg = ""
+    while not msg.startswith("r: "):
+        msg = s.recv(128)
+        msg = msg.decode('utf-8')
+    return msg[3:]
 
 def turnOn():
     sendMsg('set On=1')

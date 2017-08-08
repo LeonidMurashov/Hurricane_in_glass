@@ -16,7 +16,7 @@ def getData():
     for num in range(1, 17):
         val = rpi.getSensor(num)
         eval("ui.t{}.display(val)".format(num))
-    t = Timer(2, getData)
+    t = Timer(20, getData)
     if exit == 1:
         t.start()
     else:
