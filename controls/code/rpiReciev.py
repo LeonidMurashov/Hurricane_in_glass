@@ -11,13 +11,16 @@ s.bind(('0.0.0.0', 11719))
 
 def msgResponce(msg):
     print(msg)
-    #ser.write(bytes(msg))
     if msg == "ping":
         responce = "pong"
+    elif msg.startswith("get S"):
+        responce = str(random.randint(1, 100))
+    elif msg == "get E":
+        responce = str(random.randint(1000, 3000))
     else:
-        #responce = ser.readline()
-        responce = str(random.randint(1, 65536))
-    s.sendto(bytes('r: '+responce, 'utf-8'), ('255.255.255.255', 11719))
+        responce = None
+    if responce is not None:
+        s.sendto(bytes('r: '+responce, 'utf-8'), ('255.255.255.255', 11719))
 
 
 def getMsg():
