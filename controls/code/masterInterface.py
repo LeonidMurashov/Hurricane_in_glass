@@ -7,18 +7,21 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from threading import Timer
+from threading import Thread
+import time
 import rpiTransm as rpi
 
 def getData():
-    energy = rpi.getEnergy()
+    energy = transm.getEnergy()
     ui.energyLcd.display(energy)
+    time.sleep(0.3)
     for num in range(1, 17):
-        val = rpi.getSensor(num)
+        val = transm.getSensor(num)
         eval("ui.t{}.display(val)".format(num))
-    t = Timer(20, getData)
+        time.sleep(0.3)
     if exit == 1:
-        t.start()
+        time.sleep(0.3)
+        getData()
     else:
         sys.exit(exit)
 
@@ -662,8 +665,8 @@ class Ui_MainWindow(object):
         for i in range(1, 9):
             eval("translucent(self.label_{})".format(i))
 
-        self.turnOn.clicked.connect(rpi.turnOn)
-        self.modelOff.clicked.connect(rpi.turnOff)
+        self.turnOn.clicked.connect(transm.turnOn)
+        self.modelOff.clicked.connect(transm.turnOff)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -689,13 +692,20 @@ class Ui_MainWindow(object):
 
 import reactor_res_rc
 
+def runApp():
+    global exit
+    exit = app.exec_()
+
 if __name__ == "__main__":
     import sys
+    transm = rpi.Transmitter()
     exit = 1
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
-    getData()
-    exit = app.exec_()
+
+    dataThread = Thread(target=getData, args=())
+    dataThread.start()
+    runApp()
