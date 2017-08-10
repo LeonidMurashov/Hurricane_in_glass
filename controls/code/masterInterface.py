@@ -22,6 +22,7 @@ def getData():
     if exit == 1:
         getData()
     else:
+        print("Exiting")
         sys.exit(exit)
 
 class Ui_MainWindow(object):
