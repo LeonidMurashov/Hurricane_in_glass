@@ -3,6 +3,8 @@ import serial
 import random
 import time
 
+DUMMY = '-1'
+
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
@@ -18,13 +20,13 @@ def msgResponce(msg):
     if msg == "ping":
         responce = "pong"
     else:
-        responce1 = ser1.readline()
-        responce2 = ser2.readline()
-        responce = responce1 if str(responce2)[2:-5] == '-1' else responce2 
+        responce1 = str(ser1.readline())[2:-5]
+        responce2 = str(ser2.readline())[2:-5]
+        responce = responce1 if responce2 == DUMMY else responce2 
         print(responce1, responce2)
         #responce = str(random.randint(1, 65536))
-        print("clear responce:", str(responce)[2:-5])
-    s.sendto(bytes('r: '+str(responce)[2:-5], 'utf-8'), ('255.255.255.255', 11719))
+        print("clear responce:", responce)
+    s.sendto(bytes('r: '+ responce, 'utf-8'), ('255.255.255.255', 11719))
 
  
 def getMsg():
