@@ -2,6 +2,7 @@ import socket
 from threading import Thread
 import random
 import time
+from msgid import getMsgID
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -13,32 +14,75 @@ class Transmitter():
         pass
 
     def sendMsg(self, msg):
-        s.sendto(bytes('t: '+msg, 'utf-8'),('255.255.255.255', 11719))
+        msgID = getMsgID()
+        request = "t {}: {}".format(msgID, msg)
+        s.sendto(bytes(request, 'utf-8'),('255.255.255.255', 11719))
+        return msgID
 
-    def getMsg(self):
+    def getMsg(self, msgID):
         msg = s.recv(128)
         msg = msg.decode('utf-8')
-        if msg.startswith("t: "):
+        search = "t {}: ".format(msgID)
+        if msg.startswith(search):
             return self.getMsg()
         else:
-            return msg[3:]
+            return msg[6:]
 
     def turnOn(self):
-        self.sendMsg('set On=1')
+        mid = self.sendMsg('turn 1')
+        code = self.getMsg(mid)
         print("Модель включена!")
+        return code
 
     def turnOff(self):
-        self.sendMsg('set On=0')
+        mid = self.sendMsg('turn 0')
+        code = self.getMsg(mid)
         print("Модель выключена!")
+        return code
 
     def getSensor(self, num):
-        self.sendMsg('get S{}'.format(num))
-        temp = self.getMsg()
-        print("Температура {} : {}".format(num, temp))
+        mid = self.sendMsg('T {}'.format(num))
+        temp = self.getMsg(mid)
+        print("Температура {} : {} C".format(num, temp))
         return temp
 
     def getEnergy(self):
-        self.sendMsg('get E')
-        enrg = self.getMsg()
+        mid = self.sendMsg('E')
+        enrg = self.getMsg(mid)
         print("Энергия: {}".format(enrg))
         return enrg
+
+    def getFlow(self, num):
+        mid = self.sendMsg("F {}".format(num))
+        flow = self.getMsg(mid)
+        print("Поток {}: {} л/с".format(num, flow))
+        return flow
+
+    def setPipe(self, num, val):
+        mid = self.sendMsg("P set {} {}".format(num, val))
+        code = self.getMsg(mid)
+        print("SET Насос {} {}%".format(num, val*100))
+        return code
+
+    def getPipe(self, num):
+        mid = self.sendMsg("P get {}".format(num))
+        val = self.getMsg(mid)
+        print("GET Насос {} {}%".format(num, val))
+        return val
+
+    def setHeater(self, num, val):
+        mid = self.sendMsg("H set {} {}".format(num, val))
+        code = self.getMsg(mid)
+        print("SET Нагреватель {} {}%".format(num, val*100))
+        return code
+
+    def getHeater(self, num):
+        mid = self.sendMsg("H get {}".format(num))
+        val = self.getMsg(mid)
+        print("GET Нагреватель {} {}%".format(num, val))
+        return val
+
+    def setLED(self, red, green, blue):
+        mid = self.sendMsg("L {} {} {}".format(red, green, blue))
+        code = self.getMsg(mid)
+        return code
