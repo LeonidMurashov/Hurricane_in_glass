@@ -2,7 +2,7 @@ int incomingByte = 0;   // переменная для хранения полу
 String pong = "";
 
 void setup() {
-    Serial.begin(9600); // устанавливаем последовательное соединение
+    Serial.begin(115200); // устанавливаем последовательное соединение
 } 
  
 void loop() {
@@ -11,7 +11,7 @@ void loop() {
         while(Serial.available() > 0)
         {
           pong +=  char(Serial.read());
-          delay(70);
+          delayMicroseconds(100);
         }
         Serial.println(pong);
         pong = "";
