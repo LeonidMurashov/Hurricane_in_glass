@@ -30,7 +30,7 @@ void flow ()
         l_hour = (flow_frequency * 60.0 / 7.5);   
         flow_frequency = 0;                   
         Serial.print(l_hour, DEC);              
-        Serial.println(" L/hour"); 
+        Serial.println(" L/hour");  
         }
      }
 
