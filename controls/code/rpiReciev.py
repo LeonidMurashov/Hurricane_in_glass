@@ -10,6 +10,7 @@ s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 s.bind(('0.0.0.0', 11719))
 
+#TODO: solve problem!!
 ser1 = serial.Serial('/dev/ttyUSB0',9600)
 ser2 = serial.Serial('/dev/ttyUSB1',9600)
 
