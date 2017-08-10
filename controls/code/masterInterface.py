@@ -20,7 +20,6 @@ def getData():
         eval("ui.t{}.display(val)".format(num))
         time.sleep(0.3)
     if exit == 1:
-        time.sleep(0.3)
         getData()
     else:
         sys.exit(exit)

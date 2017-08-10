@@ -1,6 +1,7 @@
 import socket
 from threading import Thread
 import random
+import time
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -15,11 +16,12 @@ class Transmitter():
         s.sendto(bytes('t: '+msg, 'utf-8'),('255.255.255.255', 11719))
 
     def getMsg(self):
-        msg = ""
-        while not msg.startswith("r: "):
-            msg = s.recv(128)
-            msg = msg.decode('utf-8')
-        return msg[3:]
+        msg = s.recv(128)
+        msg = msg.decode('utf-8')
+        if msg.startswith("t: "):
+            return self.getMsg()
+        else:
+            return msg[3:]
 
     def turnOn(self):
         self.sendMsg('set On=1')
