@@ -4,16 +4,30 @@ import random
 import time
 
 DUMMY = '-1'
+BOD = 9600
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 s.bind(('0.0.0.0', 11719))
 
-#TODO: solve problem!!
-ser1 = serial.Serial('/dev/ttyUSB0',9600)
-ser2 = serial.Serial('/dev/ttyUSB1',9600)
 
+for i in range(4):
+    try:
+        ser1 = serial.Serial('/dev/ttyUSB'+str(i), BOD) 
+        break
+    except:
+        continue
+for i in range(i+1,4):
+    try:
+        ser2 = serial.Serial('/dev/ttyUSB'+str(i),BOD)
+        break
+    except:
+        continue
+if not(ser1 or ser2):
+    raise "Cannot connect USB's"
+
+     
 def msgResponce(msg):
     print(msg)
     ser1.write(bytearray(msg,'utf-8'))
@@ -26,7 +40,6 @@ def msgResponce(msg):
         responce = responce1 if responce2 == DUMMY else responce2 
         print(responce1, responce2)
         #responce = str(random.randint(1, 65536))
-        print("clear responce:", responce)
     s.sendto(bytes('r: '+ responce, 'utf-8'), ('255.255.255.255', 11719))
 
  
