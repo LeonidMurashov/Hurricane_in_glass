@@ -50,7 +50,7 @@ void setup()
 
 void loop() 
 {
-	delay(150);
+	delay(5);
 	TVEL_1.Update();
 	TVEL_2.Update();
 }
