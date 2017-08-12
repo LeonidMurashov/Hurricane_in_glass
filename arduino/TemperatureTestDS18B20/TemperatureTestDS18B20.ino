@@ -115,6 +115,13 @@ void loop(void)
     	Serial.write(' ');
     	Serial.print(addr[i], HEX);
   	}
+    Serial.println();
+    Serial.print("ROM =");
+    for( i = 0; i < 8; i++)
+    {
+      Serial.write(' ');
+      Serial.print(addr[i]);
+    }
 
   	// Проверка целостности данных
   	if (OneWire::crc8(addr, 7) != addr[7])	// Если crc ключ не совпадает, выводим сообщение об ошибке
