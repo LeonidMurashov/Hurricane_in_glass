@@ -1,10 +1,10 @@
+void Readln(char * msg);
 // Класс нагрузка -- стандартный класс приборов, управляемых ШИМом
 class Load
 {
 	int pin; // Номер ШИМ-пина для ТВЭЛа
 	int power; // Мощность ТВЭЛа (0..255)
 	char msg[65]; // Сообщение приходящее от Rasbery для установки мощности
-	int len; // Длина этого сообщения
 
 	public:
 	// Конструктор
@@ -15,8 +15,14 @@ class Load
 		this->power = 0; // Ради безопасности при инициализации оставляем нагрузку выключенной
 		analogWrite(pin, power); // Запускаем режим ШИМ
 		msg[0] = '\0'; // Зануляем строку, чтобы убрать мусор
-		len = 0;
 	}
+
+    // Функция устанавливающая мощность [0, 1000]
+    void setPower(int power)
+    {
+        this->power = power; // Устанавливаем мощность        
+        analogWrite(pin, power); // Вырабатываем мощность на ШИМе
+    }
 
 	// Функция обновления режима работы по Serial-запросу
 	void Update(void)
@@ -24,24 +30,19 @@ class Load
 		// Если есть доступные данные считываем их и только тогда изменяем режим работы
 		if (Serial.available() > 0) 
 		{
-            int i;
-			delay(5);
-			len = Serial.available();
-        	for (i = 0; i < len; i++)
-        	{
-        		msg[i] = Serial.read(); // Считываем строку
-        		if (msg[i] == ' ' || msg[i] == '\n' || msg[i] == '\r')
-        		  break;
-        	}
-            msg[i] = '\0';
-        	power = atoi(msg);
-        	Serial.println(power);
-        	// Вырабатываем мощность на ШИМе
-			analogWrite(pin, power);
-			Serial.println("Power changed!");
+            Readln(msg); // Считываем слово
+        	setPower(map(atoi(msg), 0, 1000, 0, 255)); // Устанавливаем мощность в требуемом диапозоне
 		}
 		
 	}
+
+    // Функция возвращающая текущее значение мощности нагрузки
+    int Power(void)
+    {
+        return power;
+    }
+
+    
 };
 
 Load TVEL_1(9);		// Объект класса нагрузки на 9 пину
@@ -57,4 +58,19 @@ void loop()
 {
 	TVEL_1.Update(); 
 	TVEL_2.Update();
+}
+
+void Readln(char * msg)
+{
+    int i;
+    int len;
+    delay(5);
+    len = Serial.available();
+    for (i = 0; i < len; i++)
+    {
+        msg[i] = Serial.read(); // Считываем строку
+        if (msg[i] == ' ' || msg[i] == '\n' || msg[i] == '\r')
+            break;
+    }
+    msg[i] = '\0';
 }

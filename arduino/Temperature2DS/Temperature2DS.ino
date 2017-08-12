@@ -112,7 +112,7 @@ struct ROM DS18B20[16] =
 
 boolean Equality(byte * ROM, byte * addr);
 
-OneWire  ds(10);  // Создаём объект OneWire на 10-ом пине (нужен резистор в 4.7кОм)
+OneWire  ds(2);  // Создаём объект OneWire на 10-ом пине (нужен резистор в 4.7кОм)
 byte i; // Это счётчик, byte используем для экономии памяти
 byte present = 0; // Флаг, показывающий отвечает нам устройство или нет
 byte addr[8]; // Текущий адрес устройства
@@ -156,24 +156,7 @@ void setup(void)
 }
 
 void loop(void) 
-{ /*
-  	
-  	// Если нашли устройство, печатаем его номер
-  	Serial.print("ROM =");
-  	for( i = 0; i < 8; i++)
-  	{
-    	Serial.write(' ');
-    	Serial.print(addr[i], HEX);
-  	}
-
-  	// Проверка целостности данных
-  	if (OneWire::crc8(addr, 7) != addr[7])	// Если crc ключ не совпадает, выводим сообщение об ошибке
-  	{
-    	Serial.println("CRC is not valid!");
-    	return;
-  	}
-  	Serial.println();
- 
+{ 
   	// Перейдём к считыванию информации с датчиков
   	ds.reset();	// Для начала сбросим наше устройство (вернёт 1, если подключено) 
   	ds.select(addr);	// Выберем наше устройство (сейчас оно у нас одно)
@@ -203,7 +186,7 @@ void loop(void)
   	celsius = (float)raw / 16.0;
   	Serial.print("  Temperature = ");
   	Serial.print(celsius);
-  	Serial.print(" Celsius, ");*/
+  	Serial.print(" Celsius, ");
 }
 
 boolean Equality(byte * ROM, byte * addr)
