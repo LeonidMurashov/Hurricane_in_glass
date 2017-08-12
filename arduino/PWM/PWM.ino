@@ -22,22 +22,18 @@ class Load
 	void Update(void)
 	{
 		// Если есть доступные данные считываем их и только тогда изменяем режим работы
-		if ((len = Serial.available()) > 0) 
+		if (Serial.available() > 0) 
 		{
+            int i;
 			delay(5);
-			Serial.println(len);
 			len = Serial.available();
-			Serial.println("Updated leln = ");
-			Serial.print(len);
-        	for (int i = 0; i < len; i++)
+        	for (i = 0; i < len; i++)
         	{
         		msg[i] = Serial.read(); // Считываем строку
         		if (msg[i] == ' ' || msg[i] == '\n' || msg[i] == '\r')
-        		{
-        			msg[i] = '\0';
-        			break;
-        		}
+        		  break;
         	}
+            msg[i] = '\0';
         	power = atoi(msg);
         	Serial.println(power);
         	// Вырабатываем мощность на ШИМе
