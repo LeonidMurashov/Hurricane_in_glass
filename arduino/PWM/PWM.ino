@@ -39,7 +39,7 @@ class Load
     // Функция возвращающая текущее значение мощности нагрузки
     int Power(void)
     {
-        return power;
+        return map(power, 0, 255, 0, 1000);
     }
 
     
