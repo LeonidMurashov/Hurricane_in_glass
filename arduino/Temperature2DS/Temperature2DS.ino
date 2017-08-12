@@ -82,35 +82,81 @@
 
 #include <OneWire.h>
 
+// Заведём структуру, которая будет в себе иметь номер датчика (ROM) и флаг о том, что он активен
+struct ROM
+{
+    byte addr[8];
+    boolean f;
+};
+
+// Мы знаем номер датчика и его серийный номер, поэтому заводим соответсвующий массив 
+struct ROM DS18B20[16] = 
+{
+    40, 255, 144, 37, 164, 22, 4, 65, 0,
+    40, 255, 32, 150, 164, 22, 4, 23, 0,
+    40, 255, 66, 71, 164, 22, 4, 11, 0,
+    40, 255, 161, 155, 164, 22, 5, 210, 0,
+    40, 255, 187, 13, 164, 22, 5, 251, 0,
+    40, 255, 118, 161, 164, 22, 5, 142, 0,
+    40, 255, 151, 72, 164, 22, 4, 29, 0,
+    40, 255, 21, 11, 164, 22, 5, 99, 0,
+    40, 255, 91, 156, 164, 22, 5, 79, 0,
+    40, 255, 114, 96, 164, 22, 4, 121, 0,
+    40, 255, 74, 86, 164, 22, 4, 130, 0,
+    40, 255, 17, 78, 164, 22, 4, 67, 0,
+    40, 255, 43, 131, 164, 22, 4, 222, 0,
+    40, 255, 7, 148, 164, 22, 4, 185, 0,
+    40, 255, 178, 12, 164, 22, 5, 135, 0,
+    40, 255, 118, 224, 148, 22, 4, 97, 0
+};
+
+boolean Equality(byte * ROM, byte * addr);
+
 OneWire  ds(10);  // Создаём объект OneWire на 10-ом пине (нужен резистор в 4.7кОм)
+byte i; // Это счётчик, byte используем для экономии памяти
+byte present = 0; // Флаг, показывающий отвечает нам устройство или нет
+byte addr[8]; // Текущий адрес устройства
+byte data[12]; // Массив данных
+float celsius; // Переменная, в которую мы будем класть значение температуры с датчика
 
 void setup(void) 
 {
-	Serial.begin(9600);	// Начинаем последовательный вывод информации
+    Serial.begin(9600);	// Начинаем последовательный вывод информации
+    delay(2000);
+    // Проверяем какие устройства доступны из заданных
+    while (ds.search(addr))
+    {
+        for (i = 0; i < 16; i++)
+        {
+            if (Equality(DS18B20[i].addr, addr)) // Если сигнал есть
+            {
+                DS18B20[i].f = true;
+                break;
+            }
+        }
+    }
+
+    for (i = 0; i < 16; i++)
+    {
+        if (DS18B20[i].f)
+        {
+            Serial.print("Sensor number ");
+            Serial.print(i + 1);
+            Serial.println(" is online!");
+        }
+        else
+        {
+            Serial.print("Sensor number ");
+            Serial.print(i + 1);
+            Serial.println(" is offline!");
+        }
+        
+    }
+
 }
 
 void loop(void) 
-{
-	byte i;	// Это счётчик, byte используем для экономии памяти
-	byte present = 0;
-  	byte type_s;
-  	byte data[12];
-  	byte addr[16][8];
-  	float celsius;
-  	
-  	// Ищем доступные устройства
-  	for (i = 0; i < 16; i++)
-  	{
-  		if (!ds.search(addr))	// Если их нет, выводим сообщение об этом
-  		{
-    		Serial.println("No more addresses.");
-    		Serial.println();
-    		ds.reset_search();
-    		
-    		break;	// Снова возвращаемся в цикл
-  		}
-  	}
-  	
+{ /*
   	
   	// Если нашли устройство, печатаем его номер
   	Serial.print("ROM =");
@@ -137,7 +183,7 @@ void loop(void)
   	// Теперь наши данные температуры лежат в памяти самого датчика
   	// Далее мы должны использовать .depower(), чтобы считывать данные дальше, но .reset() позаботится об этом
   
-  	present = ds.reset();	// Флаг, показывающий отвечает нам устройство или нет
+  	present = ds.reset();	
   	ds.select(addr);	// Снова выбираем этот датчик
   	ds.write(0xBE);         // Читаем его память (Scratchpad)
 
@@ -157,6 +203,17 @@ void loop(void)
   	celsius = (float)raw / 16.0;
   	Serial.print("  Temperature = ");
   	Serial.print(celsius);
-  	Serial.print(" Celsius, ");
+  	Serial.print(" Celsius, ");*/
+}
+
+boolean Equality(byte * ROM, byte * addr)
+{
+    for (byte i = 0; i < 8; i++)
+    {
+        if (ROM[i] != addr[i])
+            return false;
+    }
+
+    return true;
 }
 
