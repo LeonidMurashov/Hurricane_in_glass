@@ -45,8 +45,7 @@ class Load
     
 };
 
-Load TVEL_1(9);		// Объект класса нагрузки на 9 пину
-Load TVEL_2(10);	// Объект класса нагрузки на 10 пину
+Load TVEL[2] = {9, 10};		// Объект класса нагрузки на 9 и на 10пину
 
 void setup()
 {
@@ -56,8 +55,8 @@ void setup()
 // В цикле будем постоянно спрашивать, а не нужно ли нам поменять подаваемую мощность
 void loop() 
 {
-	TVEL_1.Update(); 
-	TVEL_2.Update();
+	TVEL[0].Update(); 
+	TVEL[1].Update();
 }
 
 void Readln(char * msg)
