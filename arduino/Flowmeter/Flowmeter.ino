@@ -1,37 +1,29 @@
-volatile int  flow_frequency;
-unsigned int  l_hour;
-unsigned char flowmeter = 2;
-// Пин к которому подключен сенсор.
-unsigned long currentTime;
-unsigned long cloopTime;
 
-// Only 2, 3 pin on Arduino Nano
+volatile uint16_t varCount  = 0; // Определяем переменную для подсчёта количества импульсов поступивших от датчика
+uint32_t varTime   = 0; // Определяем переменную для хранения времени последнего расчёта
+int8_t  varResult = 0; // Определяем переменную для хранения рассчитанной скорости потока воды
 
-void flow ()
+// Определяем функцию, которая будет приращать значение счётчика импульсов
+void funCountInt()
 {
-  flow_frequency++;
-}
-  
-  void setup()
-  {
-    pinMode(flowmeter, INPUT);
-    Serial.begin(9600);
-    attachInterrupt(digitalPinToInterrupt(3), flow, RISING);
-    sei();  
-    currentTime = millis();
-    cloopTime = currentTime;
-  } 
-    
-  void loop ()
-  {  
-    currentTime = millis();  
-    if(currentTime >= (cloopTime + 1000)) 
-    {    
-      cloopTime = currentTime;  
-      l_hour = (flow_frequency * 60.0 / 7.5);   
-      flow_frequency = 0;                   
-      Serial.print(l_hour, DEC);              
-      Serial.println(" L/hour");  
-    }
-  }
+	varCount++;
+}                                
 
+void setup()
+{
+    Serial.begin(9600); // Инициируем передачу данных в монитор последовательного порта
+    pinMode(2, INPUT); // Конфигурируем вывод к которому подключён датчик, как вход
+    attachInterrupt(0, funCountInt, RISING); // Назначаем функцию funCountInt как обработчик прерываний intSensor при каждом выполнении условия RISING - переход от 0 к 1
+}
+
+void loop()
+{
+	// Если c момента последнего расчёта прошла 1 секунда, или произошло переполнение millis то ...
+    if((varTime+1000)<millis() || varTime>millis())
+    {           
+        varResult = varCount/7.5; // Рассчитываем скорость потока воды: Q = F/7,5 л/мин
+        varCount = 0; // Сбрасываем счётчик
+        varTime=millis(); // Сохраняем время расчёта
+    }                                                          // (количество импульсов от датчика varCount равно частоте в Гц, так как расчёт происходит 1 раз в секунду)
+    Serial.println((String) "CKOPOCTb = "+varResult+" L/MIN"); // Выводим скорость потока воды, показания которой будут меняться 1 раз в секунду
+}
