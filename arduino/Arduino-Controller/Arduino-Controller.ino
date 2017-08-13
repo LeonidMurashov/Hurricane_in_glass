@@ -99,7 +99,7 @@ class Load
     void setPower(int power)
     {
         this->power = power; // Устанавливаем мощность        
-        analogWrite(pin, power); // Вырабатываем мощность на ШИМе
+        analogWrite(pin, map(power, 0, 1000, 0, 255)); // Вырабатываем мощность на ШИМе
     }
 
 	// Функция обновления режима работы по Serial-запросу
@@ -109,18 +109,15 @@ class Load
 		if (Serial.available() > 0) 
 		{
             Readln(msg); // Считываем слово
-        	setPower(map(atoi(msg), 0, 1000, 0, 255)); // Устанавливаем мощность в требуемом диапозоне
+        	setPower(atoi(msg)); // Устанавливаем мощность в требуемом диапозоне
 		}
-		
 	}
 
     // Функция возвращающая текущее значение мощности нагрузки
     int Power(void)
     {
-        return map(power, 0, 255, 0, 1000);
+        return power;
     }
-
-    
 };
 
 Load TVEL[2] = {9, 10};		// Объект класса нагрузки на 9 и на 10пину
@@ -134,7 +131,7 @@ void setup()
 	Serial.begin(115200);	// Начинаем последовательный вывод информации
     prev_time_1 = millis();
     prev_time_2 = millis();
-    delay(5000);
+    delay(1000);
     Serial.println("We are ready!");
 }
 
@@ -175,17 +172,15 @@ void loop()
         else if (msg[0] == 'P') // P set/get # M - установить/получить мощность M на насосе #
         {
         	Readln(msg); // Читаем следующее слово
-        	if (msg[0] = 's') // set
+        	if (msg[0] == 's') // set
         	{
         		Readln(msg); // Читаем следующее слово
         		int i = atoi(msg); // i - номер насоса
         		i--;
-        		Readln(msg); // Читаем следующее слово
-        		int power = atoi(msg); // M - мощность
         		if (i == 5)
-        			Pump.setPower(power);
+        			Pump.Update();
         	}
-        	else if (msg[0] = 'g') // get
+        	else if (msg[0] == 'g') // get
         	{
         		Readln(msg); // Читаем следующее слово
         		int i = atoi(msg); // i - номер насоса
@@ -197,16 +192,14 @@ void loop()
         else if (msg[0] == 'H') // H set/get # M/ - установить/получить мощность M на кипятильнике #
         {
         	Readln(msg); // Читаем следующее слово
-        	if (msg[0] = 's') // set
+        	if (msg[0] == 's') // set
         	{
         		Readln(msg); // Читаем следующее слово
         		int i = atoi(msg); // i - номер нагревателя
         		i--;
-        		Readln(msg); // Читаем следующее слово
-        		int power = atoi(msg); // M - мощность
-        		TVEL[i].setPower(power); // Устанавливаем мощность
+        		TVEL[i].Update(); // Устанавливаем мощность
         	}
-        	else if (msg[0] = 'g') // get
+        	else if (msg[0] == 'g') // get
         	{
         		Readln(msg); // Читаем следующее слово
         		int i = atoi(msg); // i - номер нагревателя
@@ -223,15 +216,13 @@ void loop()
         {
         	Readln(msg); // Считываем номер датчика
         	int i = atoi(msg); // i - номер датчика
-        	Serial.println(DS[i - 1].Temperature()); // Печаетаем соответсвующую температуру
+        	i--;
+        	Serial.println(DS[i].Temperature()); // Печаетаем соответсвующую температуру
         }
 	}
-//	else
-//		Serial.println("Nothing yet!");
 
 	if (millis() - prev_time_1 > 1000) // Если мы не обновляли температуру больше секунды
     {
- //   	Serial.println("This time to update");
         for (int i = 0; i < 16; i++)
             DS[i].Convert(); // Отправляем запрос на конвертацию
         prev_time_1 = millis(); // Обнулили последнее время запроса на конвертацию
@@ -240,12 +231,10 @@ void loop()
 
     if ((millis() - prev_time_1 > 750) || (millis() - prev_time_2 > 1000))
     {
- //   	Serial.println("This time to get temperature!");
     	for (int i = 0; i < 16; i++)
             DS[i].getTemperature();
         prev_time_2 = millis();
     }
-//    delay(1000);
 }
 
 void Readln(char * msg)
