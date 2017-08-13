@@ -69,7 +69,7 @@ void loop()
         		i--;
         	/*	if (i == 5)
         			Serial.println(Pump.Power(power));*/
-        		Serial.println(Pump[i].Power(power));
+        		Serial.println(Pump[i].Power());
         	}
         }
         else if (msg[0] == 'H') // H set/get # M/ - установить/получить мощность M на кипятильнике #
@@ -89,7 +89,7 @@ void loop()
         		Readln(msg); // Читаем следующее слово
         		int i = atoi(msg); // i - номер нагревателя
         		i--;
-        		Serial.println(TVEL[i].Power(power)); // Печатаем мощность
+        		Serial.println(TVEL[i].Power()); // Печатаем мощность
         	}
         }
         else if (msg[0] == 'E')
@@ -97,9 +97,6 @@ void loop()
         	// Обязательно нужна формула!!!
         	Serial.println(666);
         }
-        else if (msg[0] == 'T')
-
-
 	}
 
 }
