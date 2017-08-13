@@ -2,6 +2,8 @@
 void Readln(char * msg);
 OneWire  ds(2); // Создаём объект OneWire на 2-ом пине (нужен резистор в 4.7кОм)
 
+void shutdown(void);
+
 // Заведём класс для датчик температуры
 class TermoSensor
 {
@@ -48,6 +50,8 @@ public:
         int16_t raw = (data[1] << 8) | data[0];
 
         celsius = (float)raw / 16.0;
+        if (celsius > 100)
+        	shutdown();
     }
 
     float Temperature(void)
@@ -131,8 +135,6 @@ void setup()
 	Serial.begin(115200);	// Начинаем последовательный вывод информации
     prev_time_1 = millis();
     prev_time_2 = millis();
-    delay(1000);
-    Serial.println("We are ready!");
 }
 
 void loop()
@@ -161,13 +163,15 @@ void loop()
         		TVEL[1].setPower(0);
         		Pump.setPower(0);
         	}
-        	else	// Включаем макет
+        	else if (msg[0] == '1')	// Включаем макет
         	{
         		// Реактор оставляем выключенным для безопасности
         		TVEL[0].setPower(0);
         		TVEL[1].setPower(0);
         		Pump.setPower(500);
         	}
+        	else
+        		Serial.println("-1");
         }
         else if (msg[0] == 'P') // P set/get # M - установить/получить мощность M на насосе #
         {
@@ -184,6 +188,8 @@ void loop()
         		if (atoi(msg) == 6) // Шестая помпа
         			Serial.println(Pump.Power());
         	}
+        	else
+        		Serial.println("-1");
         }
         else if (msg[0] == 'H') // H set/get # M/ - установить/получить мощность M на кипятильнике #
         {
@@ -198,6 +204,8 @@ void loop()
         		Readln(msg); // Читаем следующее слово
         		Serial.println(TVEL[atoi(msg) - 1].Power()); // Печатаем мощность
         	}
+        	else
+        		Serial.println("-1");
         }
         else if (msg[0] == 'E') // Запрашивается енергия
         {
@@ -209,6 +217,8 @@ void loop()
         	Readln(msg); // Считываем номер датчика
         	Serial.println(DS[atoi(msg) - 1].Temperature()); // Печаетаем соответсвующую температуру
         }
+        else
+        	Serial.println("-1");
 	}
 
 	if (millis() - prev_time_1 > 1000) // Если мы не обновляли температуру больше секунды
@@ -240,4 +250,12 @@ void Readln(char * msg)
             break;
     }
     msg[i] = '\0';
+}
+
+void shutdown(void)
+{
+	// Выключаем два нагревателя
+    TVEL[0].setPower(0);
+    TVEL[1].setPower(0);
+    delay(6000);
 }
