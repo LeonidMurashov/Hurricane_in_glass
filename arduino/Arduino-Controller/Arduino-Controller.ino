@@ -145,11 +145,11 @@ void loop()
         // В силу наших определений можно всё определять по первой букве
         if (msg[0] == 'i') // isOn - узнать включен ли макет, 0/1
         {
-        	// Если обе твелы выключены и одна помпа
-        	if (!TVEL[0].Power() && !TVEL[1].Power() && !Pump.Power()) 
-        		Serial.print(0);
+        	// Если хотя бы одна помпа включена и один твел
+        	if (TVEL[0].Power() || TVEL[1].Power() || Pump.Power()) 
+        		Serial.println(1);
         	else
-        		Serial.print(1);
+        		Serial.println(0);
         }
         else if (msg[0] == 't') // turn 0/1 - включить/выключить макет
         {
@@ -175,17 +175,13 @@ void loop()
         	if (msg[0] == 's') // set
         	{
         		Readln(msg); // Читаем следующее слово
-        		int i = atoi(msg); // i - номер насоса
-        		i--;
-        		if (i == 5)
+        		if (atoi(msg) == 6)
         			Pump.Update();
         	}
         	else if (msg[0] == 'g') // get
         	{
         		Readln(msg); // Читаем следующее слово
-        		int i = atoi(msg); // i - номер насоса
-        		i--;
-        		if (i == 5) // Шестая помпа
+        		if (atoi(msg) == 6) // Шестая помпа
         			Serial.println(Pump.Power());
         	}
         }
@@ -195,16 +191,12 @@ void loop()
         	if (msg[0] == 's') // set
         	{
         		Readln(msg); // Читаем следующее слово
-        		int i = atoi(msg); // i - номер нагревателя
-        		i--;
-        		TVEL[i].Update(); // Устанавливаем мощность
+        		TVEL[atoi(msg) - 1].Update(); // Устанавливаем мощность
         	}
         	else if (msg[0] == 'g') // get
         	{
         		Readln(msg); // Читаем следующее слово
-        		int i = atoi(msg); // i - номер нагревателя
-        		i--;
-        		Serial.println(TVEL[i].Power()); // Печатаем мощность
+        		Serial.println(TVEL[atoi(msg) - 1].Power()); // Печатаем мощность
         	}
         }
         else if (msg[0] == 'E') // Запрашивается енергия
@@ -215,9 +207,7 @@ void loop()
         else if (msg[0] == 'T') // Запрашивается температура
         {
         	Readln(msg); // Считываем номер датчика
-        	int i = atoi(msg); // i - номер датчика
-        	i--;
-        	Serial.println(DS[i].Temperature()); // Печаетаем соответсвующую температуру
+        	Serial.println(DS[atoi(msg) - 1].Temperature()); // Печаетаем соответсвующую температуру
         }
 	}
 
