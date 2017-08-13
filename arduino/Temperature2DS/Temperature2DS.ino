@@ -81,122 +81,108 @@
 // а DS18B20s с внешним питанием позволят шине оставаться высокой. Информацию об использовании этой команды см. В разделе «Включение раздела DS18B20».
 
 #include <OneWire.h>
+OneWire  ds(2); // Создаём объект OneWire на 2-ом пине (нужен резистор в 4.7кОм)
 
-// Заведём структуру, которая будет в себе иметь номер датчика (ROM) и флаг о том, что он активен
-struct ROM
+// Заведём класс для датчик температуры
+class TermoSensor
 {
-    byte addr[8];
-    boolean f;
+    byte addr[8]; // Номер нашего датчика
+    boolean f; // Флаг, указывающий на то, включен он или нет
+    byte data[12]; // Массив данных
+    float celsius; // Переменная, в которую мы будем класть значение температуры с датчика
+
+public:
+    // Конструктор
+    TermoSensor(byte _1, byte _2, byte _3, byte _4, byte _5, byte _6, byte _7, byte _8)
+    {
+        addr[0] = _1;
+        addr[1] = _2;
+        addr[2] = _3;
+        addr[3] = _4;
+        addr[4] = _5;
+        addr[5] = _6;
+        addr[6] = _7;
+        addr[7] = _8;
+        f = false;
+    }
+
+    void Convert(void)
+    {
+        // Перейдём к считыванию информации с датчиков
+        ds.reset(); // Для начала сбросим наше устройство (вернёт 1, если подключено) 
+        ds.select(addr); // Выберем наше устройство 
+        ds.write(0x44); // Начинаем преобразование
+        // Код 0x44 -- это команда выполнить температурную конверсию
+    }
+
+    void getTemperature(void)
+    {
+        ds.reset(); 
+        ds.select(addr);    // Снова выбираем этот датчик
+        ds.write(0xBE);         // Читаем его память (Scratchpad)
+
+        for (int i = 0; i < 9; i++) // Нам нужно считать 9 байт         
+            data[i] = ds.read();
+
+        // Преобразуем данные в реальную температуру.
+        int16_t raw = (data[1] << 8) | data[0];
+
+        celsius = (float)raw / 16.0;
+    }
+
+    float Temperature(void)
+    {
+        return celsius;
+    }
 };
 
 // Мы знаем номер датчика и его серийный номер, поэтому заводим соответсвующий массив 
-struct ROM DS18B20[16] = 
+TermoSensor DS[16] = 
 {
-    40, 255, 144, 37, 164, 22, 4, 65, 0,
-    40, 255, 32, 150, 164, 22, 4, 23, 0,
-    40, 255, 66, 71, 164, 22, 4, 11, 0,
-    40, 255, 161, 155, 164, 22, 5, 210, 0,
-    40, 255, 187, 13, 164, 22, 5, 251, 0,
-    40, 255, 118, 161, 164, 22, 5, 142, 0,
-    40, 255, 151, 72, 164, 22, 4, 29, 0,
-    40, 255, 21, 11, 164, 22, 5, 99, 0,
-    40, 255, 91, 156, 164, 22, 5, 79, 0,
-    40, 255, 114, 96, 164, 22, 4, 121, 0,
-    40, 255, 74, 86, 164, 22, 4, 130, 0,
-    40, 255, 17, 78, 164, 22, 4, 67, 0,
-    40, 255, 43, 131, 164, 22, 4, 222, 0,
-    40, 255, 7, 148, 164, 22, 4, 185, 0,
-    40, 255, 178, 12, 164, 22, 5, 135, 0,
-    40, 255, 118, 224, 148, 22, 4, 97, 0
+    TermoSensor(40, 255, 144, 37, 164, 22, 4, 65), 
+    TermoSensor(40, 255, 32, 150, 164, 22, 4, 23), 
+    TermoSensor(40, 255, 66, 71, 164, 22, 4, 11), 
+    TermoSensor(40, 255, 161, 155, 164, 22, 5, 210), 
+    TermoSensor(40, 255, 187, 13, 164, 22, 5, 251), 
+    TermoSensor(40, 255, 118, 161, 164, 22, 5, 142), 
+    TermoSensor(40, 255, 151, 72, 164, 22, 4, 29), 
+    TermoSensor(40, 255, 21, 11, 164, 22, 5, 99), 
+    TermoSensor(40, 255, 91, 156, 164, 22, 5, 79), 
+    TermoSensor(40, 255, 114, 96, 164, 22, 4, 121), 
+    TermoSensor(40, 255, 74, 86, 164, 22, 4, 130), 
+    TermoSensor(40, 255, 17, 78, 164, 22, 4, 67), 
+    TermoSensor(40, 255, 43, 131, 164, 22, 4, 222), 
+    TermoSensor(40, 255, 7, 148, 164, 22, 4, 185), 
+    TermoSensor(40, 255, 178, 12, 164, 22, 5, 135), 
+    TermoSensor(40, 255, 118, 224, 148, 22, 4, 97)
 };
 
-boolean Equality(byte * ROM, byte * addr);
-
-OneWire  ds(2);  // Создаём объект OneWire на 10-ом пине (нужен резистор в 4.7кОм)
-byte i; // Это счётчик, byte используем для экономии памяти
-byte present = 0; // Флаг, показывающий отвечает нам устройство или нет
-byte addr[8]; // Текущий адрес устройства
-byte data[12]; // Массив данных
-float celsius; // Переменная, в которую мы будем класть значение температуры с датчика
+  
+int prev_time;
 
 void setup(void) 
 {
-    Serial.begin(9600);	// Начинаем последовательный вывод информации
-    delay(2000);
-    // Проверяем какие устройства доступны из заданных
-    while (ds.search(addr))
-    {
-        for (i = 0; i < 16; i++)
-        {
-            if (Equality(DS18B20[i].addr, addr)) // Если сигнал есть
-            {
-                DS18B20[i].f = true;
-                break;
-            }
-        }
-    }
-
-    for (i = 0; i < 16; i++)
-    {
-        if (DS18B20[i].f)
-        {
-            Serial.print("Sensor number ");
-            Serial.print(i + 1);
-            Serial.println(" is online!");
-        }
-        else
-        {
-            Serial.print("Sensor number ");
-            Serial.print(i + 1);
-            Serial.println(" is offline!");
-        }
-        
-    }
-
+    Serial.begin(115200);	// Начинаем последовательный вывод информации
+    prev_time = millis();
 }
 
 void loop(void) 
-{ 
-  	// Перейдём к считыванию информации с датчиков
-  	ds.reset();	// Для начала сбросим наше устройство (вернёт 1, если подключено) 
-  	ds.select(addr);	// Выберем наше устройство (сейчас оно у нас одно)
-  	ds.write(0x44);        // Начинаем преобразование //(паразитное питание ds.write(0x44, 1); )
- 	// Код 0x44 -- это команда выполнить температурную конверсию
-  	delay(750);     // Для того, чтобы конвертировалось, нужно подождать секунду (750 милисекунд должно хватить)
-  	// Теперь наши данные температуры лежат в памяти самого датчика
-  	// Далее мы должны использовать .depower(), чтобы считывать данные дальше, но .reset() позаботится об этом
-  
-  	present = ds.reset();	
-  	ds.select(addr);	// Снова выбираем этот датчик
-  	ds.write(0xBE);         // Читаем его память (Scratchpad)
-
-  	Serial.print("  Data = ");
-  	Serial.print(present, HEX);	// Флаг ответа.
-  	Serial.print(" ");
-  	for ( i = 0; i < 9; i++) // Нам нужно считать 9 байт         
-    	data[i] = ds.read();
-
-  	// Преобразуем данные в реальную температуру.
-  	// Convert the data to actual temperature
-  	// because the result is a 16 bit signed integer, it should
-  	// be stored to an "int16_t" type, which is always 16 bits
-  	// even when compiled on a 32 bit processor.
-  	int16_t raw = (data[1] << 8) | data[0];
-
-  	celsius = (float)raw / 16.0;
-  	Serial.print("  Temperature = ");
-  	Serial.print(celsius);
-  	Serial.print(" Celsius, ");
-}
-
-boolean Equality(byte * ROM, byte * addr)
 {
-    for (byte i = 0; i < 8; i++)
+    if (millis() - prev_time > 1000)
     {
-        if (ROM[i] != addr[i])
-            return false;
-    }
-
-    return true;
+        for (int i = 0; i < 16; i++)
+            DS[i].Convert();
+        delay (750);
+        for (int i = 0; i < 16; i++)
+            DS[i].getTemperature();
+        for (int i = 0; i < 16; i++)
+        {
+            Serial.print("Senson number ");
+            Serial.print(i + 1);
+            Serial.print(" show ");
+            Serial.print(DS[i].Temperature());
+            Serial.println(" celsius!");
+        }
+    }  	
 }
 
