@@ -10,7 +10,7 @@ unsigned long cloopTime;
 void flow ()
 {
   flow_frequency++;
-  }
+}
   
   void setup()
   {
@@ -20,17 +20,18 @@ void flow ()
     sei();  
     currentTime = millis();
     cloopTime = currentTime;
-    } 
-    void loop ()
-    {  
-      currentTime = millis();  
-      if(currentTime >= (cloopTime + 1000)) 
-      {    
-        cloopTime = currentTime;  
-        l_hour = (flow_frequency * 60.0 / 7.5);   
-        flow_frequency = 0;                   
-        Serial.print(l_hour, DEC);              
-        Serial.println(" L/hour");  
-        }
-     }
+  } 
+    
+  void loop ()
+  {  
+    currentTime = millis();  
+    if(currentTime >= (cloopTime + 1000)) 
+    {    
+      cloopTime = currentTime;  
+      l_hour = (flow_frequency * 60.0 / 7.5);   
+      flow_frequency = 0;                   
+      Serial.print(l_hour, DEC);              
+      Serial.println(" L/hour");  
+    }
+  }
 

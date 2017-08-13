@@ -1,56 +1,75 @@
-class TVEL
+void Readln(char * msg);
+// Класс нагрузка -- стандартный класс приборов, управляемых ШИМом
+class Load
 {
 	int pin; // Номер ШИМ-пина для ТВЭЛа
 	int power; // Мощность ТВЭЛа (0..255)
 	char msg[65]; // Сообщение приходящее от Rasbery для установки мощности
-	int len; // Длина этог сообщения
 
 	public:
-	TVEL(int pin) // Конструктор
+	// Конструктор
+	Load(int pin) 
 	{
-		this->pin = pin;
-		pinMode(pin, OUTPUT);
-		this->power = 0;
-		analogWrite(pin, power);
-		msg[0] = '\0';
-		len = 0;
+		this->pin = pin; // Устанавливаем соответсвующий пин
+		pinMode(pin, OUTPUT); // PWM требует, чтобы пин был настроен на выход
+		this->power = 0; // Ради безопасности при инициализации оставляем нагрузку выключенной
+		analogWrite(pin, power); // Запускаем режим ШИМ
+		msg[0] = '\0'; // Зануляем строку, чтобы убрать мусор
 	}
 
+    // Функция устанавливающая мощность [0, 1000]
+    void setPower(int power)
+    {
+        this->power = power; // Устанавливаем мощность        
+        analogWrite(pin, power); // Вырабатываем мощность на ШИМе
+    }
+
+	// Функция обновления режима работы по Serial-запросу
 	void Update(void)
 	{
-		if ((len = Serial.available()) > 0) // Если есть доступные данные
+		// Если есть доступные данные считываем их и только тогда изменяем режим работы
+		if (Serial.available() > 0) 
 		{
-			Serial.println(len);
-        	for (int i = 0; i < len; i++)
-        	{
-        		msg[i] = Serial.read(); // Считываем строку
-        		if (msg[i] == ' ' || msg[i] == '\n' || msg[i] == '\r')
-        		{
-        			msg[i] = '\0';
-        			break;
-        		}
-        	}
-        	power = atoi(msg);
-        	Serial.println(power);
-        	// Вырабатываем мощность на ШИМе
-			analogWrite(pin, power);
-			Serial.println("Power changed!");
+            Readln(msg); // Считываем слово
+        	setPower(map(atoi(msg), 0, 1000, 0, 255)); // Устанавливаем мощность в требуемом диапозоне
 		}
 		
 	}
+
+    // Функция возвращающая текущее значение мощности нагрузки
+    int Power(void)
+    {
+        return map(power, 0, 255, 0, 1000);
+    }
+
+    
 };
 
-TVEL TVEL_1(9);		// Объект класса TVEL на 9 пину
-TVEL TVEL_2(10);	// Объект класса TVEL на 10 пину
+Load TVEL[2] = {9, 10};		// Объект класса нагрузки на 9 и на 10пину
 
 void setup()
 {
 	Serial.begin(115200); // Инициализируем последовательный ввод
 }
 
+// В цикле будем постоянно спрашивать, а не нужно ли нам поменять подаваемую мощность
 void loop() 
 {
-	delay(5);
-	TVEL_1.Update();
-	TVEL_2.Update();
+	TVEL[0].Update(); 
+	TVEL[1].Update();
+}
+
+void Readln(char * msg)
+{
+    int i;
+    int len;
+    delay(5);
+    len = Serial.available();
+    for (i = 0; i < len; i++)
+    {
+        msg[i] = Serial.read(); // Считываем строку
+        if (msg[i] == ' ' || msg[i] == '\n' || msg[i] == '\r')
+            break;
+    }
+    msg[i] = '\0';
 }
