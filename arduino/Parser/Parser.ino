@@ -51,7 +51,7 @@ void loop()
         else if (msg[0] == 'P') // P set/get # M - установить/получить мощность M на насосе #
         {
         	Readln(msg); // Читаем следующее слово
-        	if (msg[0] = 's') // set
+        	if (msg[0] == 's') // set
         	{
         		Readln(msg); // Читаем следующее слово
         		int i = atoi(msg); // i - номер насоса
@@ -62,20 +62,20 @@ void loop()
         			Pump.setPower(power);*/
         		Pump[i].setPower(power);
         	}
-        	else // get
+        	else if (msg[0] == 'g') // get
         	{
         		Readln(msg); // Читаем следующее слово
         		int i = atoi(msg); // i - номер насоса
         		i--;
         	/*	if (i == 5)
-        			Serial.println(Pump.Power(power));*/
+        			Serial.println(Pump.Power());*/
         		Serial.println(Pump[i].Power());
         	}
         }
         else if (msg[0] == 'H') // H set/get # M/ - установить/получить мощность M на кипятильнике #
         {
         	Readln(msg); // Читаем следующее слово
-        	if (msg[0] = 's') // set
+        	if (msg[0] == 's') // set
         	{
         		Readln(msg); // Читаем следующее слово
         		int i = atoi(msg); // i - номер нагревателя
@@ -84,7 +84,7 @@ void loop()
         		int power = atoi(msg); // M - мощность
         		TVEL[i].setPower(power); // Устанавливаем мощность
         	}
-        	else // get
+        	else if (msg[0] == 'g') // get
         	{
         		Readln(msg); // Читаем следующее слово
         		int i = atoi(msg); // i - номер нагревателя
