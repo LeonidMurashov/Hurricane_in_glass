@@ -18,6 +18,7 @@ class Station():
         self.pipes = []
         self.sensors = []
         self.heaters = []
+        self.flows = []
 
     # Проверка подключения к rpi перед любыми действиями
     def checkConnection(self):
@@ -55,7 +56,6 @@ class Pipe():
         station.checkConnection()
         station.pipes.append(self)
         self.pin = pin
-        self.power = None
 
     # Задать мощность насоса
     def setPower(self, val):
@@ -74,7 +74,6 @@ class Sensor():
         station.checkConnection()
         station.sensors.append(self)
         self.pin = pin
-        self.temperature = None
 
     # Получить значение с датчика
     def getValue(self):
@@ -105,3 +104,15 @@ class Heater():
     # Получить мощность на нагревателе
     def getPower(self):
         return int(t.getHeater(self.pin))
+
+# Класс датчика потока
+class Flow():
+    def __init__(self, station, pin):
+        assert type(station) is Station, "Wrong argument type: {}".format(str(type(station)))
+        station.checkConnection()
+        self.pin = pin
+        station.flows.append(self)
+
+    # Получить значение с датичка потока
+    def getFlow(self):
+        return int(t.getFlow(self.pin))
