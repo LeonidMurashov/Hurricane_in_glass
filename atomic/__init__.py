@@ -59,8 +59,8 @@ class Pipe():
 
     # Задать мощность насоса
     def setPower(self, val):
-        error = "Wrong value {}: must be between 0 and 100"
-        assert val <= 100 and val>=0, error
+        error = "Wrong value {}: must be between 0 and 1"
+        assert val <= 1 and val>=0, error
         t.setPipe(self.pin, val)
 
     # Получить мощность насоса
@@ -97,8 +97,8 @@ class Heater():
 
     # Задать мощность на нагревателе
     def setPower(self, val):
-        error = "Wrong value: {}, must be between 0 and 100".format(val)
-        assert val <= 100 and val >= 0, error
+        error = "Wrong value: {}, must be between 0 and 1".format(val)
+        assert val <= 1 and val >= 0, error
         t.setHeater(self.pin, val)
 
     # Получить мощность на нагревателе
