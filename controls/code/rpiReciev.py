@@ -37,6 +37,8 @@ def auth():
         except:
             continue
 
+    print('ports found')	
+
     # Ошибка при неисправности одной из Arduino
     if ser1 is None or ser2 is None:
         # ADD: send signal
@@ -44,9 +46,11 @@ def auth():
 
     # Поиск Arduino с набором компонентов 1
     ser1.write(bytearray('AUTH', 'utf-8'))
-    ser2.write(bytearray('AUTH', 'utf-8'))
     auth1 = str(ser1.readline())
+    print('auth1 {}'.format(auth1))
+    ser2.write(bytearray('AUTH', 'utf-8'))
     auth2 = str(ser2.readline())
+    print('auth2 {}'.format(auth2))
     if auth2 == '1':
         ser2, ser1 = ser1, ser2
 
