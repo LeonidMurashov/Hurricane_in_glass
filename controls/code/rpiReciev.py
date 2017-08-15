@@ -6,8 +6,10 @@ import threading as T
 from queue import Queue
 
 # Словари, с компонентами каждого Arduino
-ser1Components = ['P1', 'P2']
-ser2Components = ['sP', 'P4']
+ser1Components = ['P1', 'P2', 'T1', 'T2', 'T3', 'T4', 'T5', 'T6',
+        'T7', 'T8', 'T9', 'T10', 'T11', 'T12', 'T13', 'T14',
+        'T15', 'T16']
+ser2Components = ['P3', 'P4', 'E']
 
 BOD = 9600
 
