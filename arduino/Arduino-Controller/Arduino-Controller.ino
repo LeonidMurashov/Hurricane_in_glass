@@ -132,7 +132,7 @@ void setup()
     prev_time_1 = millis();
     prev_time_2 = millis();
     delay(1000);
-    Serial.println("We are ready!");
+    //Serial.println("We are ready!");
 }
 
 void loop()
@@ -140,7 +140,7 @@ void loop()
 	// В цикле всегда пытаемся проверить, не пришла ли нам команда
 	if (Serial.available() > 0) 
 	{
-		Readln(msg);
+		    Readln(msg);
         // Дальше идёт много сравнений, чтобы определить, что есть что 
         // В силу наших определений можно всё определять по первой букве
         if (msg[0] == 'i') // isOn - узнать включен ли макет, 0/1
@@ -218,6 +218,10 @@ void loop()
         	int i = atoi(msg); // i - номер датчика
         	i--;
         	Serial.println(DS[i].Temperature()); // Печаетаем соответсвующую температуру
+        }
+        else if (msg[0] == 'A')
+        {
+          Serial.println(1);
         }
 	}
 
