@@ -6,12 +6,10 @@ import threading as T
 from queue import Queue
 
 # Словари, с компонентами каждого Arduino
-ser1Components = ['P1', 'P2', 'T1', 'T2', 'T3', 'T4', 'T5', 'T6',
-        'T7', 'T8', 'T9', 'T10', 'T11', 'T12', 'T13', 'T14',
-        'T15', 'T16']
-ser2Components = ['P3', 'P4', 'E']
+ser1Components = ['P', 'T', 'E']
+ser2Components = ['TODO: FILLME']
 
-BOD = 9600
+BOD = 115200
 
 # Инициализация сокетов
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -24,20 +22,22 @@ def auth():
     ser1, ser2 = None, None
 
     # Поиск нужных портов
-    for i in range(4):
+    for i in range(9):
         try:
-            ser1 = serial.Serial('/dev/ttyUSB'+str(i), BOD)
+            ser1 = serial.Serial('/dev/ttyUSB'+str(i), BOD, timeout=1)
             break
         except:
             continue
-    for i in range(i+1,4):
+    for i in range(i+1,9):
         try:
-            ser2 = serial.Serial('/dev/ttyUSB'+str(i),BOD)
+            ser2 = serial.Serial('/dev/ttyUSB'+str(i),BOD, timeout=1)
             break
         except:
             continue
 
-    print('ports found')	
+    print(ser1)
+    print(ser2)
+    print('ports found')
 
     # Ошибка при неисправности одной из Arduino
     if ser1 is None or ser2 is None:
@@ -45,39 +45,47 @@ def auth():
         raise Exception("Cannot connect USB's")
 
     # Поиск Arduino с набором компонентов 1
-    ser1.write(bytearray('AUTH', 'utf-8'))
+    time.sleep(2)
+    ser1.write(bytearray('AUTH\r\n', 'utf-8'))
     auth1 = str(ser1.readline())
     print('auth1 {}'.format(auth1))
-    ser2.write(bytearray('AUTH', 'utf-8'))
+    ser2.write(bytearray('AUTH\r\n', 'utf-8'))
     auth2 = str(ser2.readline())
     print('auth2 {}'.format(auth2))
-    if auth2 == '1':
+    if auth2[2:-5] == '1':
         ser2, ser1 = ser1, ser2
 
     return [ser1, ser2]
 
 def msgResponce(msg):
     print(msg)
-
     # Выделение частей запроса
     mid = msg.split(":")[0]
     device = msg.split(":")[1].split(" ")[0]
-
+    msg = msg[4:]
+    print(device)
     try:
         # Распределение запроса между Arduino
         if device in ser1Components:
+            print('deivce found in ser1')
             ser1.write(bytearray(msg,'utf-8'))
-            responce = str(ser1.readline())
+            print('request 2 arduino sent, w8 4 responce')
+            responce = str(ser1.readline())[2:-5]
+            print(responce)
         elif device in ser2Components:
+            print('device found in ser2')
             ser2.write(bytearray(msg,'utf-8'))
-            responce = str(ser2.readline())
+            print('request to arduino sent, w8 4 responce')
+            #time.sleep(1)
+            responce = ser2.readline()[2:-5]
+            print(responce)
         elif device == 'ping':
             responce = 'pong'
         elif device == 'turn':
             ser1.write(bytearray(msg, 'utf-8'))
             ser2.write(bytearray(msg, 'utf-8'))
-            responce = "{} {}".format(str(ser1.readline()),
-                    str(ser2.readline()))
+            responce = "{} {}".format(str(ser1.readline())[2:-5],
+                    str(ser2.readline()[2:-5]))
         # Ошибка при неизвестном компоненте
         else:
             print('Unknown device: {}'.format(device))
@@ -102,7 +110,7 @@ def getMsg(q):
         msg = s.recv(128)
         msg = msg.decode('utf-8')
         if msg.startswith("t "):
-            q.put(msg)[2:]
+            q.put(msg[2:])
 
 if __name__ == '__main__':
     # Авторизация Arduino и получение Serial объектов
