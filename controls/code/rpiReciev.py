@@ -100,12 +100,13 @@ def getMsg(q):
 
 if __name__ == '__main__':
     # Авторизация Arduino и получение Serial объектов
+    print('authorizing...')
     ser = auth()
     ser1, ser2 = ser[0], ser[1]
-
+    print('done!')
     # Создание очереди
     q = Queue()
-
+    print('starting threads')
     # Поток, отвечающий за непрерывное получение сообщений
     recieverThread = T.Thread(target=getMsg, args=([q]))
 

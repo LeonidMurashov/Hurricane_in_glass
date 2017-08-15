@@ -25,13 +25,12 @@ class Transmitter():
 
     # Функция получения ответа на запрос по опр. msgID
     def getMsg(self, msgID):
-        msg = s.recv(128)
-        msg = msg.decode('utf-8')
-        search = "r {}: ".format(msgID)
-        if msg.startswith(search):
-            return self.getMsg()
-        else:
-            return msg[6:]
+        msg = ''
+        search = "r {}:".format(msgID)
+        while not msg.startswith(search):
+            msg = s.recv(128)
+            msg = msg.decode('utf-8')
+        return msg[6:]
 
     # Функции, отправляющие запросы на опр. действия на макет:
 
