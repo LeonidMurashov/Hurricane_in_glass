@@ -27,7 +27,7 @@ class Transmitter():
     def getMsg(self, msgID):
         msg = s.recv(128)
         msg = msg.decode('utf-8')
-        search = "t {}: ".format(msgID)
+        search = "r {}: ".format(msgID)
         if msg.startswith(search):
             return self.getMsg()
         else:
