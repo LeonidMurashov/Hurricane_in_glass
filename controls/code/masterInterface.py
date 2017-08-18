@@ -665,6 +665,7 @@ class Ui_MainWindow(object):
         for i in range(1, 9):
             eval("translucent(self.label_{})".format(i))
 
+        self.crash1.clicked.connect(transm.testAlarm)
         self.turnOn.clicked.connect(transm.turnOn)
         self.modelOff.clicked.connect(transm.turnOff)
 

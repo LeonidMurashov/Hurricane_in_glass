@@ -39,6 +39,9 @@ class Transmitter():
 
     # Функции, отправляющие запросы на опр. действия на макет:
 
+    def testAlarm(self):
+        mid = self.sendMsg('test_alarm')
+
     def turnOn(self):
         mid = self.sendMsg('turn 1')
         code = self.getMsg(mid)
