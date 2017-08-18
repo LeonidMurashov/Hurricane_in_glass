@@ -1,14 +1,21 @@
 #include <OneWire.h>
+#include <Arduino.h>
+#include <SoftwareSerial.h>
+#include "DFRobotDFPlayerMini.h"
+
+// Инициализируем софтварные компорт и mp3 плеер
+SoftwareSerial mySoftwareSerial(7, 8); // RX, TX
+DFRobotDFPlayerMini myDFPlayer;
+
 void Readln(char * msg);
 OneWire  ds(2); // Создаём объект OneWire на 2-ом пине (нужен резистор в 4.7кОм)
-
 void shutdown(void);
 
 // Заведём класс для датчик температуры
 class TermoSensor
 {
     byte addr[8]; // Номер нашего датчика
-    boolean f; // Флаг, указывающий на то, включен он или нет
+    byte f_temper; // Флаг, отвечающий за температурный режим [0..3]
     byte data[12]; // Массив данных
     float celsius; // Переменная, в которую мы будем класть значение температуры с датчика
 
@@ -24,7 +31,7 @@ public:
         addr[5] = _6;
         addr[6] = _7;
         addr[7] = _8;
-        f = false;
+        f_temper = 0;
         celsius = -666;
     }
 
@@ -51,7 +58,21 @@ public:
 
         celsius = (float)raw / 16.0;
         if (celsius > 100)
-        	shutdown();
+        {
+            f_temper = 3;
+            shutdown();
+        }
+        else if (celsius > 75)
+            f_temper = 2;
+        else if (celsius > 50)
+            f_temper = 1;
+        else
+            f_temper = 0;       
+    }
+
+    byte getF(void)
+    {
+        return f_temper;
     }
 
     float Temperature(void)
@@ -128,13 +149,98 @@ Load TVEL[2] = {9, 10};		// Объект класса нагрузки на 9 и
 Load Pump(11); // Помпа на 11 пину
 
 char msg[65]; // Сообщение приходящее от Rasbery для парсинга команд
-int prev_time_1, prev_time_2;
+unsigned long prev_time_1, prev_time_2; // Переменные для фонового обновления температуры
+unsigned long prev_time_music; // Переменная для фонового обновления музыки 
+byte folder = 0; // Определяем номер папки откуда мы играем музыку
 
 void setup()
 {
+    mySoftwareSerial.begin(9600);
+    Serial.begin(115200);
+  
+    Serial.println();
+    Serial.println(F("DFRobot DFPlayer Mini Demo"));
+    Serial.println(F("Initializing DFPlayer ... (May take 3~5 seconds)"));
+  
+    if (!myDFPlayer.begin(mySoftwareSerial)) 
+    {  //Use softwareSerial to communicate with mp3.
+        Serial.println(F("Unable to begin:"));
+        Serial.println(F("1.Please recheck the connection!"));
+        Serial.println(F("2.Please insert the SD card!"));
+        while(true);
+    }
+    Serial.println(F("DFPlayer Mini online."));
+  
+    myDFPlayer.setTimeOut(500); //Set serial communictaion time out 500ms
+  
+    //----Set volume----
+    myDFPlayer.volume(30);  //Set volume value (0~30).
+    myDFPlayer.volumeUp(); //Volume Up
+    myDFPlayer.volumeDown(); //Volume Down
+  
+    //----Set different EQ----
+    myDFPlayer.EQ(DFPLAYER_EQ_NORMAL);
+//  myDFPlayer.EQ(DFPLAYER_EQ_POP);
+//  myDFPlayer.EQ(DFPLAYER_EQ_ROCK);
+//  myDFPlayer.EQ(DFPLAYER_EQ_JAZZ);
+//  myDFPlayer.EQ(DFPLAYER_EQ_CLASSIC);
+//  myDFPlayer.EQ(DFPLAYER_EQ_BASS);
+  
+    //----Set device we use SD as default----
+    //  myDFPlayer.outputDevice(DFPLAYER_DEVICE_U_DISK);
+    myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
+    //  myDFPlayer.outputDevice(DFPLAYER_DEVICE_AUX);
+    //  myDFPlayer.outputDevice(DFPLAYER_DEVICE_SLEEP);
+    //  myDFPlayer.outputDevice(DFPLAYER_DEVICE_FLASH);
+  
+  //----Mp3 control----
+    //  myDFPlayer.sleep();     //sleep
+    //  myDFPlayer.reset();     //Reset the module
+    //  myDFPlayer.enableDAC();  //Enable On-chip DAC
+    //  myDFPlayer.disableDAC();  //Disable On-chip DAC
+    //  myDFPlayer.outputSetting(true, 15); //output setting, enable the output and set the gain to 15
+  
+    //----Mp3 play----
+    myDFPlayer.next();  //Play next mp3
+    delay(10000);
+    myDFPlayer.previous();  //Play previous mp3
+    delay(10000);
+    myDFPlayer.play(1);  //Play the first mp3
+    delay(10000);
+    myDFPlayer.loop(1);  //Loop the first mp3
+    delay(10000);
+    myDFPlayer.pause();  //pause the mp3
+    delay(10000);
+    myDFPlayer.start();  //start the mp3 from the pause
+    delay(10000);
+    myDFPlayer.playFolder(1, 4);  //play specific mp3 in SD:/15/004.mp3; Folder Name(1~99); File Name(1~255)
+    delay(10000);
+    myDFPlayer.enableLoopAll(); //loop all mp3 files.
+    delay(10000);
+    myDFPlayer.disableLoopAll(); //stop loop all mp3 files.
+    delay(10000);
+    //  myDFPlayer.playMp3Folder(4); //play specific mp3 in SD:/MP3/0004.mp3; File Name(0~65535)
+    //  delay(1000);
+    myDFPlayer.advertise(1); //advertise specific mp3 in SD:/ADVERT/0003.mp3; File Name(0~65535)
+    delay(10000);
+    myDFPlayer.stopAdvertise(); //stop advertise
+    delay(10000);
+    //  myDFPlayer.playLargeFolder(2, 999); //play specific mp3 in SD:/02/004.mp3; Folder Name(1~10); File Name(1~1000)
+    //  delay(1000);
+    myDFPlayer.loopFolder(4); //loop all mp3 files in folder SD:/05.
+    delay(10000);
+    myDFPlayer.randomAll(); //Random play all the mp3.
+    delay(10000);
+    myDFPlayer.enableLoop(); //enable loop.
+    delay(10000);
+    myDFPlayer.disableLoop(); //disable loop.
+    delay(10000);
+
+
 	Serial.begin(115200);	// Начинаем последовательный вывод информации
     prev_time_1 = millis();
     prev_time_2 = millis();
+    prev_time_music = millis();
 }
 
 void loop()
@@ -221,6 +327,7 @@ void loop()
         	Serial.println("-1");
 	}
 
+    // Запрос на обновлениие температуры
 	if (millis() - prev_time_1 > 1000) // Если мы не обновляли температуру больше секунды
     {
         for (int i = 0; i < 16; i++)
@@ -229,12 +336,27 @@ void loop()
         prev_time_2 = millis(); // Обнулили последнее время получения температуры
     }
 
+    // Забираем посчитанные данные
     if ((millis() - prev_time_1 > 750) || (millis() - prev_time_2 > 1000))
     {
     	for (int i = 0; i < 16; i++)
             DS[i].getTemperature();
         prev_time_2 = millis();
     }
+
+    // Обновляем музыку в зависимости от температурного режима
+    if (millis() - prev_time_music > 3000) //Проверяем температурный режим каждые 3 секунды
+    {
+        byte t;
+        for (int i = 0; i < 16; i++)
+            t = max (folder, DS[i].getF());
+        if (t != folder)
+        {
+            folder = t;
+            myDFPlayer.loopFolder(folder); //loop all mp3 files in folder SD:/xx.
+        }
+    }
+
 }
 
 void Readln(char * msg)
