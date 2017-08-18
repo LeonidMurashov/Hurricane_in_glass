@@ -23,11 +23,14 @@ class Transmitter():
         msgID = getMsgID()
         request = "t {}:{}".format(msgID, msg)
         s.sendto(bytes(request, 'utf-8'),('255.255.255.255', 11719))
+        msgID = [msgID, msg]
         return msgID
 
     # Функция получения ответа на запрос по опр. msgID
     def getMsg(self, msgID):
         msg = ''
+        msgOld = msgID[1]
+        msgID = msgID[0]
         search = "r {}:".format(msgID)
         try:
             while not msg.startswith(search):
@@ -35,7 +38,7 @@ class Transmitter():
                 msg = msg.decode('utf-8')
             return msg[6:]
         except:
-            return -1
+            return self.getMsg(self.sendMsg(msgOld))
 
     # Функции, отправляющие запросы на опр. действия на макет:
 
