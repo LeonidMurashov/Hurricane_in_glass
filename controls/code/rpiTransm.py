@@ -2,6 +2,7 @@ import socket
 from threading import Thread
 import random
 import time
+import datetime
 
 # Создание случайного номера запроса
 from msgid import getMsgID
@@ -11,6 +12,7 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 s.bind(('0.0.0.0', 11719))
+s.settimeout(1)
 
 class Transmitter():
     def __init__(self):
@@ -27,10 +29,13 @@ class Transmitter():
     def getMsg(self, msgID):
         msg = ''
         search = "r {}:".format(msgID)
-        while not msg.startswith(search):
-            msg = s.recv(128)
-            msg = msg.decode('utf-8')
-        return msg[6:]
+        try:
+            while not msg.startswith(search):
+                msg = s.recv(128)
+                msg = msg.decode('utf-8')
+            return msg[6:]
+        except:
+            return -1
 
     # Функции, отправляющие запросы на опр. действия на макет:
 
@@ -47,13 +52,13 @@ class Transmitter():
         return code
 
     def getSensor(self, num):
-        mid = self.sendMsg('T{} get'.format(num))
+        mid = self.sendMsg('T {}'.format(num))
         temp = self.getMsg(mid)
         print("Температура {} : {} C".format(num, temp))
         return temp
 
     def getEnergy(self):
-        mid = self.sendMsg('E get')
+        mid = self.sendMsg('E')
         enrg = self.getMsg(mid)
         print("Энергия: {}".format(enrg))
         return enrg

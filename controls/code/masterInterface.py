@@ -13,12 +13,12 @@ import rpiTransm as rpi
 
 def getData():
     energy = transm.getEnergy()
-    ui.energyLcd.display(energy)
-    time.sleep(0.3)
+    if energy != -1:
+        ui.energyLcd.display(energy)
     for num in range(1, 17):
         val = transm.getSensor(num)
-        eval("ui.t{}.display(val)".format(num))
-        time.sleep(0.3)
+        if val != -1:
+            eval("ui.t{}.display(val)".format(num))
     if exit == 1:
         getData()
     else:
