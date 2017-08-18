@@ -64,36 +64,36 @@ class Transmitter():
         return enrg
 
     def getFlow(self, num):
-        mid = self.sendMsg("F{} get".format(num))
+        mid = self.sendMsg("F {}".format(num))
         flow = self.getMsg(mid)
         print("Поток {}: {} л/с".format(num, flow))
         return flow
 
     def setPipe(self, num, val):
-        mid = self.sendMsg("P{} set {}".format(num, val))
+        mid = self.sendMsg("P {} set {}".format(num, val))
         code = self.getMsg(mid)
         print("SET Насос {} {}%".format(num, val*100))
         return code
 
     def getPipe(self, num):
-        mid = self.sendMsg("P{} get".format(num))
+        mid = self.sendMsg("P {} get".format(num))
         val = self.getMsg(mid)
         print("GET Насос {} {}%".format(num, val))
         return val
 
     def setHeater(self, num, val):
-        mid = self.sendMsg("H{} set {}".format(num, val))
+        mid = self.sendMsg("H {} set {}".format(num, val))
         code = self.getMsg(mid)
         print("SET Нагреватель {} {}%".format(num, val*100))
         return code
 
     def getHeater(self, num):
-        mid = self.sendMsg("H{} get".format(num))
+        mid = self.sendMsg("H {} get".format(num))
         val = self.getMsg(mid)
         print("GET Нагреватель {} {}%".format(num, val))
         return val
 
     def setLED(self, red, green, blue):
-        mid = self.sendMsg("L set {} {} {}".format(red, green, blue))
+        mid = self.sendMsg("L {} {} {}".format(red, green, blue))
         code = self.getMsg(mid)
         return code
