@@ -10,10 +10,7 @@ ser1Components = ['P', 'T', 'E']
 ser2Components = ['TODO: FILLME']
 
 BOD = 115200
-<<<<<<< HEAD
 overheating = False
-=======
->>>>>>> c8be87225f4cd16e807d2ac77c1b571e49cc420e
 
 # Инициализация сокетов
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -81,25 +78,16 @@ def msgResponce(msg):
             th.start()
             responce = ' '
         # Распределение запроса между Arduino
-<<<<<<< HEAD
         elif device in ser1Components:
-=======
-        if device in ser1Components:
->>>>>>> c8be87225f4cd16e807d2ac77c1b571e49cc420e
             print('deivce found in ser1')
             ser1.write(bytearray(msg,'utf-8'))
             print('request 2 arduino sent, w8 4 responce')
             responce = str(ser1.readline())[2:-5]
             print(responce)
-<<<<<<< HEAD
-            responce = str(random.randint(0,100))
-=======
->>>>>>> c8be87225f4cd16e807d2ac77c1b571e49cc420e
         elif device in ser2Components:
             print('device found in ser2')
             ser2.write(bytearray(msg,'utf-8'))
             print('request to arduino sent, w8 4 responce')
-            #time.sleep(1)
             responce = ser2.readline()[2:-5]
             print(responce)
         elif device == 'ping':
@@ -117,7 +105,7 @@ def msgResponce(msg):
     except:
         print("Cannot connect to arduino")
         responce = '-1'
-    
+
     if overheating and device == 'T':
         responce = '100'
     s.sendto(bytes('r {}:{}'.format(mid, responce), 'utf-8'),
