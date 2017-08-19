@@ -106,26 +106,24 @@ void loop()
         }
         else if (msg[0] == 'P') // P set/get # M - установить/получить мощность M на насосе #
         {
-        	Readln(msg); // Читаем следующее слово
-        	if (msg[0] == 's') // set
-        	{
-        		Readln(msg); // Читаем следующее слово
-        		Pump[atoi(msg) - 1].Update();
-        	}
-        	else if (msg[0] == 'g') // get
-        	{
-        		Readln(msg); // Читаем следующее слово
-        		Serial.println(Pump[atoi(msg) - 1].Power());
-        	}
-        	else 
-        		Serial.println("-1"); // Пустышка
+            Readln(msg); // Получаем номер насоса
+            int number = atoi(msg);
+            number--;
+            Readln(msg); // Получаем режим
+            if (msg[0] == 's') // set
+                Pump[number].Update();
+            else if (msg[0] == 'g') // get
+                Serial.println(Pump[number].Power());
+            else
+                Serial.println("-1"); // Значит неправильно написали команду
         }
         else if (msg[0] == 'F') // Запрашивается поток воды
         {
         	Readln(msg); // Считываем номер датчика
-        	if (msg[0] == '1') // Если первый
+            int number = atoi(msg);
+        	if (number == 1) // Если первый
         		Serial.println(Result_1); // Печатаем первый результат
-        	else if (msg[0] == '2') // Если второй
+        	else if (number == 2) // Если второй
         		Serial.println(Result_2); // Печатаем второй результат
         	else
         		Serial.println("-1"); // Пустышка        	

@@ -240,41 +240,36 @@ void loop()
         		Pump.setPower(500);
         	}
         	else
-        		Serial.println("-1");
+        		Serial.println("-1"); // Значит неправильно написали команду
         }
         else if (msg[0] == 'P') // P set/get # M - установить/получить мощность M на насосе #
         {
-        	Readln(msg); // Читаем следующее слово
-        	if (msg[0] == 's') // set
+        	Readln(msg); // Получаем номер насоса
+        	int number = atoi(msg);
+        	if (number == 6) // На Arduino_Controller только погружная помпа номер 6
         	{
-        		Readln(msg); // Читаем следующее слово
-        		if (atoi(msg) == 6)
+        		Readln(msg); // Получаем режим
+        		if (msg[0] == 's') // set
         			Pump.Update();
-        	}
-        	else if (msg[0] == 'g') // get
-        	{
-        		Readln(msg); // Читаем следующее слово
-        		if (atoi(msg) == 6) // Шестая помпа
+        		else if (msg[0] == 'g') // get
         			Serial.println(Pump.Power());
+        		else
+        		Serial.println("-1"); // Значит неправильно написали команду
         	}
         	else
-        		Serial.println("-1");
+        		Serial.println("-1"); // Значит неправильно написали команду
         }
         else if (msg[0] == 'H') // H set/get # M/ - установить/получить мощность M на кипятильнике #
         {
-        	Readln(msg); // Читаем следующее слово
+        	Readln(msg); // Получаем номер кипятильника
+        	int number = atoi(msg);
+        	Readln(msg); // Получаем режим
         	if (msg[0] == 's') // set
-        	{
-        		Readln(msg); // Читаем следующее слово
         		TVEL[atoi(msg) - 1].Update(); // Устанавливаем мощность
-        	}
         	else if (msg[0] == 'g') // get
-        	{
-        		Readln(msg); // Читаем следующее слово
         		Serial.println(TVEL[atoi(msg) - 1].Power()); // Печатаем мощность
-        	}
         	else
-        		Serial.println("-1");
+        		Serial.println("-1"); // Значит неправильно написали команду
         }
         else if (msg[0] == 'E') // Запрашивается енергия
         {
