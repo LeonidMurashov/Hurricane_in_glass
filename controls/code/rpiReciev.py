@@ -6,7 +6,7 @@ import threading as T
 from queue import Queue
 
 # Словари, с компонентами каждого Arduino
-ser1Components = ['P', 'T', 'E']
+ser1Components = ['P', 'T', 'E', 'F', 'D', 'C']
 ser2Components = ['TODO: FILLME']
 
 BOD = 115200
@@ -83,26 +83,27 @@ def msgResponce(msg):
         elif device in ser1Components:
             print('deivce found in ser1')
             ser1.write(bytearray(msg,'utf-8'))
-            print('request 2 arduino sent, w8 4 responce')
             responce = str(ser1.readline())[2:-5]
             print(responce)
+            print()
         elif device in ser2Components:
             print('device found in ser2')
             ser2.write(bytearray(msg,'utf-8'))
-            print('request to arduino sent, w8 4 responce')
             responce = ser2.readline()[2:-5]
             print(responce)
+            print()
         elif device == 'ping':
             responce = 'pong'
         elif device == 'turn':
             ser1.write(bytearray(msg, 'utf-8'))
             ser2.write(bytearray(msg, 'utf-8'))
-            responce = "{} {}".format(str(ser1.readline())[2:-5],
-                    str(ser2.readline()[2:-5]))
+            responce = str(ser1.readline())[2:-5]
+
         # Ошибка при неизвестном компоненте
         else:
             print('Unknown device: {}'.format(device))
             responce = '-1'
+
     # Ошибка при отсутствии подключения к Arduino
     except:
         print("Cannot connect to arduino")
