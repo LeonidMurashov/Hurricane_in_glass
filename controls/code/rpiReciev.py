@@ -11,6 +11,7 @@ ser2Components = ['TODO: FILLME']
 
 BOD = 115200
 overheating = False
+power = True
 
 # Инициализация сокетов
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -58,6 +59,7 @@ def auth():
 
     return [ser1, ser2]
 
+# Симуляция перегрева
 def simulate_overheat():
     global overheating
     print('Testing overheating.')
