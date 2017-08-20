@@ -44,8 +44,7 @@ def auth():
 
     # Ошибка при неисправности одной из Arduino
     if ser1 is None or ser2 is None:
-        # ADD: send signal
-        raise Exception("Cannot connect USB's")
+    	return
 
     # Поиск Arduino с набором компонентов 1
     time.sleep(2)
@@ -104,16 +103,22 @@ def msgResponce(msg):
         else:
             print('Unknown device: {}'.format(device))
             responce = '-1'
-
+        led.stop_blinking()
     # Ошибка при отсутствии подключения к Arduino
     except:
         print("Cannot connect to arduino")
+        led.blink(1,1,0)
         responce = '-1'
 
     if overheating and device == 'T':
         responce = '100'
-    s.sendto(bytes('r {}:{}'.format(mid, responce), 'utf-8'),
-            ('255.255.255.255', 11719))
+
+    try:
+    	s.sendto(bytes('r {}:{}'.format(mid, responce), 'utf-8'),
+        	    ('255.255.255.255', 11719))
+  	except Exception as e:
+  		print(e.message)
+  		led.blink(0,0,1)
 
 # Функция, обрабатывающая сообщения из очереди
 def worker(q):
@@ -134,6 +139,12 @@ if __name__ == '__main__':
     # Авторизация Arduino и получение Serial объектов
     print('authorizing...')
     ser = auth()
+    while ser is None:
+    	led.blink(1,0,0)
+    	print("Cannot connect Arduinos!")
+		time.sleep(2)
+    	ser = auth()
+    led.stop_blinking()
     ser1, ser2 = ser[0], ser[1]
     print('done!')
     # Создание очереди
