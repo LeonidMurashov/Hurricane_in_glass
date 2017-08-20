@@ -44,7 +44,7 @@ def auth():
 
     # Ошибка при неисправности одной из Arduino
     if ser1 is None or ser2 is None:
-    	return
+        return
 
     # Поиск Arduino с набором компонентов 1
     time.sleep(2)
@@ -114,11 +114,11 @@ def msgResponce(msg):
         responce = '100'
 
     try:
-    	s.sendto(bytes('r {}:{}'.format(mid, responce), 'utf-8'),
-        	    ('255.255.255.255', 11719))
-  	except Exception as e:
-  		print(e.message)
-  		led.blink(0,0,1)
+        s.sendto(bytes('r {}:{}'.format(mid, responce), 'utf-8'),
+                ('255.255.255.255', 11719))
+      except Exception as e:
+          print(e.message)
+          led.blink(0,0,1)
 
 # Функция, обрабатывающая сообщения из очереди
 def worker(q):
@@ -140,10 +140,10 @@ if __name__ == '__main__':
     print('authorizing...')
     ser = auth()
     while ser is None:
-    	led.blink(1,0,0)
-    	print("Cannot connect Arduinos!")
-		time.sleep(2)
-    	ser = auth()
+        led.blink(1,0,0)
+        print("Cannot connect Arduinos!")
+        time.sleep(2)
+        ser = auth()
     led.stop_blinking()
     ser1, ser2 = ser[0], ser[1]
     print('done!')
