@@ -4,6 +4,7 @@ import random
 import time
 import threading as T
 from queue import Queue
+import led
 
 # Словари, с компонентами каждого Arduino
 ser1Components = ['P', 'T', 'E', 'F', 'D', 'C']
@@ -18,6 +19,8 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 s.bind(('0.0.0.0', 11719))
+
+led.init()
 
 # Авторизация Arduino, возвращает 2 serial объекта
 def auth():
@@ -37,8 +40,6 @@ def auth():
         except:
             continue
 
-    print(ser1)
-    print(ser2)
     print('ports found')
 
     # Ошибка при неисправности одной из Arduino
