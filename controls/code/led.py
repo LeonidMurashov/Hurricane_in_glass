@@ -24,6 +24,9 @@ def __blinker():
             time.sleep(0.5)
             light_led(0,0,0)
             time.sleep(0.5)
+        else:
+            light_led(0,1,0)
+            time.sleep(0.5)
 
 # Send boolean values
 def blink(r,g,b):
