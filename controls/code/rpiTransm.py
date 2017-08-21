@@ -42,7 +42,7 @@ class Transmitter():
 
     # Функции, отправляющие запросы на опр. действия на макет:
 
-    def dump(sef):
+    def dump(self):
         mid = self.sendMsg('D')
         code = self.getMsg(mid)
         print('Вода слита!')
