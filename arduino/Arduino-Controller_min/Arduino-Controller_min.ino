@@ -1,11 +1,4 @@
 #include <OneWire.h>
-#include <Arduino.h>
-#include <SoftwareSerial.h>
-#include "DFRobotDFPlayerMini.h"
-
-// Инициализируем софтварные компорт и mp3 плеер
-SoftwareSerial mySoftwareSerial(7, 8); // RX, TX
-DFRobotDFPlayerMini myDFPlayer;
 
 void Readln(char * msg);
 OneWire  ds(2); // Создаём объект OneWire на 2-ом пине (нужен резистор в 4.7кОм)
@@ -150,54 +143,13 @@ Load Pump(11); // Помпа на 11 пину
 
 char msg[65]; // Сообщение приходящее от Rasbery для парсинга команд
 unsigned long prev_time_1, prev_time_2; // Переменные для фонового обновления температуры
-unsigned long prev_time_music; // Переменная для фонового обновления музыки 
-byte folder = 0; // Определяем номер папки откуда мы играем музыку
 
 void setup()
 {
-//    mySoftwareSerial.begin(9600);
     Serial.begin(115200);
-  
-/*    Serial.println();
-    Serial.println(F("DFRobot DFPlayer Mini Demo"));
-    Serial.println(F("Initializing DFPlayer ... (May take 3~5 seconds)"));
-  
-    if (!myDFPlayer.begin(mySoftwareSerial)) 
-    {  //Use softwareSerial to communicate with mp3.
-        Serial.println(F("Unable to begin:"));
-        Serial.println(F("1.Please recheck the connection!"));
-        Serial.println(F("2.Please insert the SD card!"));
-        while(true);
-    }
-    Serial.println(F("DFPlayer Mini online."));
-  
-    myDFPlayer.setTimeOut(500); //Set serial communictaion time out 500ms
-  
-    //----Set volume----
-    myDFPlayer.volume(30);  //Set volume value (0~30).
-//    myDFPlayer.volumeUp(); //Volume Up
-//    myDFPlayer.volumeDown(); //Volume Down
-  
-    //----Set different EQ----
-    myDFPlayer.EQ(DFPLAYER_EQ_NORMAL);
-  
-    //----Set device we use SD as default----
-    myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
-  
-  //----Mp3 control----
-    //  myDFPlayer.sleep();     //sleep
-    //  myDFPlayer.reset();     //Reset the module
-    //  myDFPlayer.enableDAC();  //Enable On-chip DAC
-    //  myDFPlayer.disableDAC();  //Disable On-chip DAC
-    //  myDFPlayer.outputSetting(true, 15); //output setting, enable the output and set the gain to 15
-  
-    //----Mp3 play----
-    myDFPlayer.play(1);  //Play the first mp3
-    delay(30000);
-*/
+
     prev_time_1 = millis();
     prev_time_2 = millis();
- //   prev_time_music = millis();
 }
 
 void loop()
@@ -289,28 +241,13 @@ void loop()
     }
 
     // Забираем посчитанные данные
-    if ((millis() - prev_time_1 > 750) || (millis() - prev_time_2 > 1000))
+    if ((millis() - prev_time_1 > 800) || (millis() - prev_time_2 > 1000))
     {
     	for (int i = 0; i < 16; i++)
             DS[i].getTemperature();
         prev_time_2 = millis();
     }
-/*
-    // Обновляем музыку в зависимости от температурного режима
-    if (millis() - prev_time_music > 3000) //Проверяем температурный режим каждые 3 секунды
-    {
-        byte t;
-        for (int i = 0; i < 16; i++)
-            t = max (folder, DS[i].getF());
-        if (t != folder)
-        {
-            folder = t;
-            myDFPlayer.playFolder(folder, 1);
-            myDFPlayer.loopFolder(folder); //loop all mp3 files in folder SD:/xx.
-        }
-        prev_time_music = millis();
-    }
-*/
+
 }
 
 void Readln(char * msg)
