@@ -75,20 +75,15 @@
       <property name="autoFillBackground">
        <bool>false</bool>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout">
+      <layout class="QVBoxLayout" name="verticalLayout_9">
        <item>
-        <widget class="QWidget" name="reactor1Temp_2" native="true">
-         <property name="font">
-          <font>
-           <italic>false</italic>
-          </font>
-         </property>
+        <widget class="QWidget" name="widget_2" native="true">
          <property name="styleSheet">
           <string notr="true">border: 2px solid white;</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_10">
           <item>
-           <widget class="QLCDNumber" name="t13">
+           <widget class="QLCDNumber" name="r2power">
             <property name="font">
              <font>
               <family>Gadugi</family>
@@ -104,119 +99,15 @@
             <property name="frameShadow">
              <enum>QFrame::Plain</enum>
             </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_8">
-            <property name="font">
-             <font>
-              <family>Sans Serif</family>
-              <pointsize>18</pointsize>
-              <italic>false</italic>
-             </font>
-            </property>
-            <property name="autoFillBackground">
-             <bool>false</bool>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">color: rgb(255, 255, 255); border: 0;
-background-color: rgba(255, 255, 255, 0);</string>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Plain</enum>
-            </property>
-            <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Реактор 2 OUT, &lt;span style=&quot; vertical-align:super;&quot;&gt;0&lt;/span&gt;С&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QWidget" name="reactor1Temp_4" native="true">
-         <property name="font">
-          <font>
-           <italic>false</italic>
-          </font>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">border: 2px solid white;</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_24">
-          <item>
-           <widget class="QLCDNumber" name="t14">
-            <property name="font">
-             <font>
-              <family>Gadugi</family>
-              <italic>false</italic>
-             </font>
-            </property>
-            <property name="autoFillBackground">
-             <bool>false</bool>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">color: rgb(255, 255, 255);</string>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Plain</enum>
+            <property name="value" stdset="0">
+             <double>0.000000000000000</double>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="label_11">
-            <property name="font">
-             <font>
-              <family>Sans Serif</family>
-              <pointsize>18</pointsize>
-              <italic>false</italic>
-             </font>
-            </property>
-            <property name="autoFillBackground">
-             <bool>false</bool>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">color: rgb(255, 255, 255); border: 0;
-background-color: rgba(255, 255, 255, 0);</string>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Plain</enum>
-            </property>
-            <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Реактор 2 IN, &lt;span style=&quot; vertical-align:super;&quot;&gt;0&lt;/span&gt;С&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QWidget" name="reactor1Temp" native="true">
-         <property name="font">
-          <font>
-           <italic>false</italic>
-          </font>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">border: 2px solid white;</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_9">
-          <item>
-           <widget class="QLCDNumber" name="t15">
-            <property name="font">
-             <font>
-              <family>Gadugi</family>
-              <italic>false</italic>
-             </font>
-            </property>
-            <property name="autoFillBackground">
-             <bool>false</bool>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">color: rgb(255, 255, 255);</string>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Plain</enum>
+           <widget class="QSlider" name="r2slider">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
             </property>
            </widget>
           </item>
@@ -229,18 +120,21 @@ background-color: rgba(255, 255, 255, 0);</string>
               <italic>false</italic>
              </font>
             </property>
+            <property name="layoutDirection">
+             <enum>Qt::RightToLeft</enum>
+            </property>
             <property name="autoFillBackground">
              <bool>false</bool>
             </property>
             <property name="styleSheet">
-             <string notr="true">color: rgb(255, 255, 255); border: 0;
-background-color: rgba(255, 255, 255, 0);</string>
+             <string notr="true">color: rgb(255, 255, 255);
+border: 0px;</string>
             </property>
             <property name="frameShadow">
              <enum>QFrame::Plain</enum>
             </property>
             <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Реактор 1 OUT, &lt;span style=&quot; vertical-align:super;&quot;&gt;0&lt;/span&gt;С&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Мощность&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;Реактор 1, %&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
@@ -248,18 +142,13 @@ background-color: rgba(255, 255, 255, 0);</string>
         </widget>
        </item>
        <item>
-        <widget class="QWidget" name="reactor1Temp_3" native="true">
-         <property name="font">
-          <font>
-           <italic>false</italic>
-          </font>
-         </property>
+        <widget class="QWidget" name="widget" native="true">
          <property name="styleSheet">
           <string notr="true">border: 2px solid white;</string>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_23">
+         <layout class="QVBoxLayout" name="verticalLayout">
           <item>
-           <widget class="QLCDNumber" name="t16">
+           <widget class="QLCDNumber" name="r1power">
             <property name="font">
              <font>
               <family>Gadugi</family>
@@ -278,7 +167,14 @@ background-color: rgba(255, 255, 255, 0);</string>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="label_10">
+           <widget class="QSlider" name="r1slider">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_5">
             <property name="font">
              <font>
               <family>Sans Serif</family>
@@ -286,18 +182,21 @@ background-color: rgba(255, 255, 255, 0);</string>
               <italic>false</italic>
              </font>
             </property>
+            <property name="layoutDirection">
+             <enum>Qt::RightToLeft</enum>
+            </property>
             <property name="autoFillBackground">
              <bool>false</bool>
             </property>
             <property name="styleSheet">
-             <string notr="true">color: rgb(255, 255, 255); border: 0;
-background-color: rgba(255, 255, 255, 0);</string>
+             <string notr="true">color: rgb(255, 255, 255);
+border: 0px;</string>
             </property>
             <property name="frameShadow">
              <enum>QFrame::Plain</enum>
             </property>
             <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Реактор 1 IN, &lt;span style=&quot; vertical-align:super;&quot;&gt;0&lt;/span&gt;С&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Мощность&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;Реактор 2, %&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
@@ -364,66 +263,6 @@ background-color: rgba(255, 255, 255, 0);</string>
          </layout>
         </widget>
        </item>
-       <item>
-        <widget class="QWidget" name="widget_3" native="true">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="font">
-          <font>
-           <family>Gadugi</family>
-           <italic>false</italic>
-          </font>
-         </property>
-         <property name="autoFillBackground">
-          <bool>false</bool>
-         </property>
-         <property name="styleSheet">
-          <string notr="true"/>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_7">
-          <item>
-           <widget class="QPushButton" name="turnOn">
-            <property name="font">
-             <font>
-              <family>Sans Serif</family>
-              <pointsize>16</pointsize>
-              <italic>false</italic>
-             </font>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">color:white;</string>
-            </property>
-            <property name="text">
-             <string>Включить модель</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="modelOff">
-            <property name="font">
-             <font>
-              <family>Sans Serif</family>
-              <pointsize>16</pointsize>
-              <italic>false</italic>
-             </font>
-            </property>
-            <property name="autoFillBackground">
-             <bool>false</bool>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">color: rgb(255, 255, 255);</string>
-            </property>
-            <property name="text">
-             <string>Выключить модель</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-         <zorder>modelOff</zorder>
-         <zorder>turnOn</zorder>
-        </widget>
-       </item>
       </layout>
      </widget>
     </item>
@@ -479,7 +318,7 @@ background-color: rgba(255, 255, 255, 0);</string>
          <property name="styleSheet">
           <string notr="true">border: 0;</string>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_6">
+         <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
            <widget class="QLCDNumber" name="t1">
             <property name="styleSheet">
@@ -679,48 +518,6 @@ background-color: rgba(255, 255, 255, 0);</string>
          </layout>
         </widget>
        </item>
-       <item>
-        <widget class="QWidget" name="s1_12" native="true">
-         <property name="font">
-          <font>
-           <italic>false</italic>
-          </font>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">border: 0;</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_22">
-          <item>
-           <widget class="QLCDNumber" name="t11">
-            <property name="styleSheet">
-             <string notr="true">border: 2px solid white; color: white;</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QWidget" name="s1_11" native="true">
-         <property name="font">
-          <font>
-           <italic>false</italic>
-          </font>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">border: 0;</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_21">
-          <item>
-           <widget class="QLCDNumber" name="t12">
-            <property name="styleSheet">
-             <string notr="true">border: 2px solid white; color: white;</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
       </layout>
      </widget>
     </item>
@@ -738,7 +535,149 @@ background-color: rgba(255, 255, 255, 0);</string>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_26">
+      <layout class="QVBoxLayout" name="verticalLayout_11">
+       <item>
+        <widget class="QWidget" name="Nasos4_3" native="true">
+         <property name="font">
+          <font>
+           <family>Gadugi</family>
+           <italic>false</italic>
+          </font>
+         </property>
+         <property name="autoFillBackground">
+          <bool>false</bool>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">border: 2px solid white;</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_7">
+          <item>
+           <widget class="QLCDNumber" name="lcd6">
+            <property name="font">
+             <font>
+              <family>Gadugi</family>
+              <italic>false</italic>
+             </font>
+            </property>
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(255, 255, 255);</string>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Plain</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSlider" name="n4slider_3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_9">
+            <property name="font">
+             <font>
+              <family>Sans Serif</family>
+              <pointsize>18</pointsize>
+              <italic>false</italic>
+             </font>
+            </property>
+            <property name="layoutDirection">
+             <enum>Qt::RightToLeft</enum>
+            </property>
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(255, 255, 255);
+border: 0px;</string>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Plain</enum>
+            </property>
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Насос 6, %&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="Nasos4_2" native="true">
+         <property name="font">
+          <font>
+           <family>Gadugi</family>
+           <italic>false</italic>
+          </font>
+         </property>
+         <property name="autoFillBackground">
+          <bool>false</bool>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">border: 2px solid white;</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_6">
+          <item>
+           <widget class="QLCDNumber" name="lcd5">
+            <property name="font">
+             <font>
+              <family>Gadugi</family>
+              <italic>false</italic>
+             </font>
+            </property>
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(255, 255, 255);</string>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Plain</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSlider" name="n5slider">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_8">
+            <property name="font">
+             <font>
+              <family>Sans Serif</family>
+              <pointsize>18</pointsize>
+              <italic>false</italic>
+             </font>
+            </property>
+            <property name="layoutDirection">
+             <enum>Qt::RightToLeft</enum>
+            </property>
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(255, 255, 255);
+border: 0px;</string>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Plain</enum>
+            </property>
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Насос 5, %&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
        <item>
         <widget class="QWidget" name="Nasos4" native="true">
          <property name="font">
