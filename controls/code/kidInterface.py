@@ -590,7 +590,33 @@ class Ui_MainWindow(object):
         self.horizontalLayout_4.addWidget(self.waterpipes)
         MainWindow.setCentralWidget(self.centralwidget)
 
-        def trnslucent(widget):
+        def translucent(widget):
+            widget.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+            widget.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+
+        for i in range(1, 10):
+            eval("translucent(self.label_{})".format(i))
+
+        self.n1slider.valueChanged.connect(lambda: sliders(1))
+        self.n2slider.valueChanged.connect(lambda: sliders(2))
+        self.n3slider.valueChanged.connect(lambda: sliders(3))
+        self.n4slider.valueChanged.connect(lambda: sliders(4))
+        self.n5slider.valueChanged.connect(lambda: sliders(5))
+        self.n6slider.valueChanged.connect(lambda: sliders(6))
+        self.r1slider.valueChanged.connect(lambda: sliders(7))
+        self.r2slider.valueChanged.connect(lambda: sliders(8))
+
+
+        self.n1slider.sliderReleased.connect(lambda: slidersSender(1))
+        self.n2slider.sliderReleased.connect(lambda: slidersSender(2))
+        self.n3slider.sliderReleased.connect(lambda: slidersSender(3))
+        self.n5slider.sliderReleased.connect(lambda: slidersSender(4))
+        self.n6slider.sliderReleased.connect(lambda: slidersSender(5))
+        self.n5slider.sliderReleased.connect(lambda: slidersSender(6))
+        self.r1slider.sliderReleased.connect(lambda: slidersSender(7))
+        self.r2slider.sliderReleased.connect(lambda: slidersSender(8))
+
+        def translucent(widget):
             widget.setWindowFlags(QtCore.Qt.FramelessWindowHint)
             widget.setAttribute(QtCore.Qt.WA_TranslucentBackground)
 
