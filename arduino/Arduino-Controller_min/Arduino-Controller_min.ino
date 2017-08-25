@@ -150,6 +150,7 @@ void setup()
 
     prev_time_1 = millis();
     prev_time_2 = millis();
+
 }
 
 void loop()
@@ -160,7 +161,12 @@ void loop()
 		Readln(msg);
         // Дальше идёт много сравнений, чтобы определить, что есть что 
         // В силу наших определений можно всё определять по первой букве
-        if (msg[0] == 'i') // isOn - узнать включен ли макет, 0/1
+
+		if (msg[0] == 'A')
+		{
+			Serial.println(0);
+		}
+        else if (msg[0] == 'i') // isOn - узнать включен ли макет, 0/1
         {
         	// Если хотя бы одна помпа включена и один твел
         	if (TVEL[0].Power() || TVEL[1].Power() || Pump.Power()) 
@@ -177,6 +183,7 @@ void loop()
         		TVEL[0].setPower(0);
         		TVEL[1].setPower(0);
         		Pump.setPower(0);
+        		Serial.println(0);
         	}
         	else if (msg[0] == '1')	// Включаем макет
         	{
@@ -184,6 +191,7 @@ void loop()
         		TVEL[0].setPower(0);
         		TVEL[1].setPower(0);
         		Pump.setPower(500);
+        		Serial.println(0);
         	}
         	else
         		Serial.println("-1"); // Значит неправильно написали команду
@@ -196,7 +204,10 @@ void loop()
         	{
         		Readln(msg); // Получаем режим
         		if (msg[0] == 's') // set
+        		{
         			Pump.Update();
+        			Serial.println(0);
+        		}
         		else if (msg[0] == 'g') // get
         			Serial.println(Pump.Power());
         		else
@@ -209,11 +220,15 @@ void loop()
         {
         	Readln(msg); // Получаем номер кипятильника
         	int number = atoi(msg);
+        	number--;
         	Readln(msg); // Получаем режим
         	if (msg[0] == 's') // set
-        		TVEL[atoi(msg) - 1].Update(); // Устанавливаем мощность
+        	{
+        		TVEL[number].Update(); // Устанавливаем мощность
+        		Serial.println(0);
+        	}
         	else if (msg[0] == 'g') // get
-        		Serial.println(TVEL[atoi(msg) - 1].Power()); // Печатаем мощность
+        		Serial.println(TVEL[number].Power()); // Печатаем мощность
         	else
         		Serial.println("-1"); // Значит неправильно написали команду
         }
