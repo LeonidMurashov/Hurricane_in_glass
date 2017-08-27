@@ -61,6 +61,8 @@ void CountInt_2(void)
 Load Pump[5] = {5, 6, 9, 10, 11}; // Инициализировали нагрузку на этих пинах
 char msg[65]; // Сообщение приходящее от Rasbery для парсинга команд
 
+int error = 0; // Для парсера для возникновения ошибки
+
 void setup()
 {
 	Serial.begin(115200);	// Начинаем последовательный вывод информации
@@ -73,12 +75,20 @@ void setup()
 void loop()
 {
 	// В цикле всегда пытаемся проверить, не пришла ли нам команда
-	if (Serial.available() > 0) 
-	{
-		Readln(msg);
+    if (Serial.available() > 0) 
+    {
+        error = 1;
+        Readln(msg);
+
         // Дальше идёт много сравнений, чтобы определить, что есть что 
         // В силу наших определений можно всё определять по первой букве
-        if (msg[0] == 'i') // isOn - узнать включен ли макет, 0/1
+
+        // Авторизация
+        if (msg[0] == 'A')
+        {
+            Serial.println(2);
+        }
+        else if (msg[0] == 'i') // isOn - узнать включен ли макет, 0/1
         {
         	// Если хоть одна помпа включена
         	if (Pump[0].Power() || Pump[1].Power() || Pump[2].Power() || Pump[3].Power() || Pump[4].Power()) 
@@ -93,29 +103,39 @@ void loop()
         	{
         		// Выключаем все помпы
         		for (int i = 0; i < 5; i++)
-        			Pump[i].setPower(0); 
+        			Pump[i].setPower(0);
+                error = 0; // Всё хорошо
         	}
         	else if (msg[0] == '1')	// Включаем макет
         	{
         		// Включаем все помпы на половину мощности
         		for (int i = 0; i < 5; i++)
-        			Pump[i].setPower(500); 
+        			Pump[i].setPower(500);
+                error = 0; // Всё хорошо
         	}
         	else
-        		Serial.println("-1"); // Пустышка
+        		error = -1; // Неправильно ввели команду
         }
         else if (msg[0] == 'P') // P set/get # M - установить/получить мощность M на насосе #
         {
             Readln(msg); // Получаем номер насоса
             int number = atoi(msg);
-            number--;
-            Readln(msg); // Получаем режим
-            if (msg[0] == 's') // set
-                Pump[number].Update();
-            else if (msg[0] == 'g') // get
-                Serial.println(Pump[number].Power());
-            else
-                Serial.println("-1"); // Значит неправильно написали команду
+            if ((number > 0) && (number < 6))
+            {
+                number--;
+                Readln(msg); // Получаем режим
+                if (msg[0] == 's') // set
+                {
+                    Pump[number].Update();
+                    error = 0; // Всё хорошо
+                }
+                else if (msg[0] == 'g') // get
+                    Serial.println(Pump[number].Power());
+                else
+                    error = -1; // Неправильно ввели команду
+            }
+            error = -1; // Неправильно ввели команду
+            
         }
         else if (msg[0] == 'F') // Запрашивается поток воды
         {
@@ -126,10 +146,18 @@ void loop()
         	else if (number == 2) // Если второй
         		Serial.println(Result_2); // Печатаем второй результат
         	else
-        		Serial.println("-1"); // Пустышка        	
+        		error = -1; // Неправильно ввели команду        	
         }
         else
-        	Serial.println("-1"); // Пустышка
+        	error = -1; // Неправильно ввели команду
+
+        if (error)
+        {
+            if (error == -1)
+                Serial.println(-1);
+        }
+        else
+            Serial.println(0);
 
 	}
     // Если c момента последнего расчёта прошла 1 секунда
