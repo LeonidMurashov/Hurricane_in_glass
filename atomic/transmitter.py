@@ -42,21 +42,6 @@ class Transmitter():
 
     # Функции, отправляющие запросы на опр. действия на макет:
 
-    def dump(sef):
-        mid = self.sendMsg('D')
-        code = self.getMsg(mid)
-        print('Вода слита!')
-        return code
-
-    def cool(self):
-        mid = self.sendMsg('C')
-        code = self.getMsg(mid)
-        print('Вода охлаждена!')
-        return code
-
-    def testAlarm(self):
-        mid = self.sendMsg('test_alarm')
-
     def turnOn(self):
         mid = self.sendMsg('turn 1')
         code = self.getMsg(mid)

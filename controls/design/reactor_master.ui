@@ -45,7 +45,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>Hurricane_in_glass/controls/design/img/nuke logo.jpg</normaloff>Hurricane_in_glass/controls/design/img/nuke logo.jpg</iconset>
+    <normaloff>../../../../Desktop/Code/Hurricane_in_glass/controls/design/Hurricane_in_glass/controls/design/img/nuke logo.jpg</normaloff>../../../../Desktop/Code/Hurricane_in_glass/controls/design/Hurricane_in_glass/controls/design/img/nuke logo.jpg</iconset>
   </property>
   <property name="autoFillBackground">
    <bool>false</bool>
@@ -88,7 +88,7 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_10">
           <item>
-           <widget class="QLCDNumber" name="reactorLcd_2">
+           <widget class="QLCDNumber" name="t13">
             <property name="font">
              <font>
               <family>Gadugi</family>
@@ -110,8 +110,8 @@
            <widget class="QLabel" name="label_8">
             <property name="font">
              <font>
-              <family>Gadugi</family>
-              <pointsize>24</pointsize>
+              <family>Sans Serif</family>
+              <pointsize>18</pointsize>
               <italic>false</italic>
              </font>
             </property>
@@ -126,7 +126,64 @@ background-color: rgba(255, 255, 255, 0);</string>
              <enum>QFrame::Plain</enum>
             </property>
             <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:22pt;&quot;&gt;Реактор 2, &lt;/span&gt;&lt;span style=&quot; font-size:22pt; vertical-align:super;&quot;&gt;0&lt;/span&gt;&lt;span style=&quot; font-size:22pt;&quot;&gt;С&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Реактор 2 OUT, &lt;span style=&quot; vertical-align:super;&quot;&gt;0&lt;/span&gt;С&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="reactor1Temp_4" native="true">
+         <property name="font">
+          <font>
+           <italic>false</italic>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">border: 2px solid white;</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_24">
+          <item>
+           <widget class="QLCDNumber" name="t14">
+            <property name="font">
+             <font>
+              <family>Gadugi</family>
+              <italic>false</italic>
+             </font>
+            </property>
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(255, 255, 255);</string>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Plain</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_11">
+            <property name="font">
+             <font>
+              <family>Sans Serif</family>
+              <pointsize>18</pointsize>
+              <italic>false</italic>
+             </font>
+            </property>
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(255, 255, 255); border: 0;
+background-color: rgba(255, 255, 255, 0);</string>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Plain</enum>
+            </property>
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Реактор 2 IN, &lt;span style=&quot; vertical-align:super;&quot;&gt;0&lt;/span&gt;С&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
@@ -145,7 +202,7 @@ background-color: rgba(255, 255, 255, 0);</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_9">
           <item>
-           <widget class="QLCDNumber" name="reactorLcd">
+           <widget class="QLCDNumber" name="t15">
             <property name="font">
              <font>
               <family>Gadugi</family>
@@ -167,8 +224,8 @@ background-color: rgba(255, 255, 255, 0);</string>
            <widget class="QLabel" name="label_7">
             <property name="font">
              <font>
-              <family>Gadugi</family>
-              <pointsize>24</pointsize>
+              <family>Sans Serif</family>
+              <pointsize>18</pointsize>
               <italic>false</italic>
              </font>
             </property>
@@ -183,7 +240,64 @@ background-color: rgba(255, 255, 255, 0);</string>
              <enum>QFrame::Plain</enum>
             </property>
             <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:22pt;&quot;&gt;Реактор 1, &lt;/span&gt;&lt;span style=&quot; font-size:22pt; vertical-align:super;&quot;&gt;0&lt;/span&gt;&lt;span style=&quot; font-size:22pt;&quot;&gt;С&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Реактор 1 OUT, &lt;span style=&quot; vertical-align:super;&quot;&gt;0&lt;/span&gt;С&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="reactor1Temp_3" native="true">
+         <property name="font">
+          <font>
+           <italic>false</italic>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">border: 2px solid white;</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_23">
+          <item>
+           <widget class="QLCDNumber" name="t16">
+            <property name="font">
+             <font>
+              <family>Gadugi</family>
+              <italic>false</italic>
+             </font>
+            </property>
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(255, 255, 255);</string>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Plain</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_10">
+            <property name="font">
+             <font>
+              <family>Sans Serif</family>
+              <pointsize>18</pointsize>
+              <italic>false</italic>
+             </font>
+            </property>
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(255, 255, 255); border: 0;
+background-color: rgba(255, 255, 255, 0);</string>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Plain</enum>
+            </property>
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Реактор 1 IN, &lt;span style=&quot; vertical-align:super;&quot;&gt;0&lt;/span&gt;С&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
@@ -228,8 +342,8 @@ background-color: rgba(255, 255, 255, 0);</string>
            <widget class="QLabel" name="label_6">
             <property name="font">
              <font>
-              <family>Gadugi</family>
-              <pointsize>24</pointsize>
+              <family>Sans Serif</family>
+              <pointsize>18</pointsize>
               <italic>false</italic>
              </font>
             </property>
@@ -272,8 +386,8 @@ background-color: rgba(255, 255, 255, 0);</string>
            <widget class="QPushButton" name="turnOn">
             <property name="font">
              <font>
-              <family>Gadugi</family>
-              <pointsize>14</pointsize>
+              <family>Sans Serif</family>
+              <pointsize>16</pointsize>
               <italic>false</italic>
              </font>
             </property>
@@ -289,8 +403,8 @@ background-color: rgba(255, 255, 255, 0);</string>
            <widget class="QPushButton" name="crash1">
             <property name="font">
              <font>
-              <family>Gadugi</family>
-              <pointsize>14</pointsize>
+              <family>Sans Serif</family>
+              <pointsize>16</pointsize>
               <italic>false</italic>
              </font>
             </property>
@@ -301,16 +415,16 @@ background-color: rgba(255, 255, 255, 0);</string>
              <string notr="true">color: rgb(255, 255, 255);</string>
             </property>
             <property name="text">
-             <string>Поломка 1</string>
+             <string>Тестировать перегрев</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="crash2">
+           <widget class="QPushButton" name="dump">
             <property name="font">
              <font>
-              <family>Gadugi</family>
-              <pointsize>14</pointsize>
+              <family>Sans Serif</family>
+              <pointsize>16</pointsize>
               <italic>false</italic>
              </font>
             </property>
@@ -321,16 +435,16 @@ background-color: rgba(255, 255, 255, 0);</string>
              <string notr="true">color: rgb(255, 255, 255);</string>
             </property>
             <property name="text">
-             <string>Поломка 2</string>
+             <string>Слив</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="crash3">
+           <widget class="QPushButton" name="cooling">
             <property name="font">
              <font>
-              <family>Gadugi</family>
-              <pointsize>14</pointsize>
+              <family>Sans Serif</family>
+              <pointsize>16</pointsize>
               <italic>false</italic>
              </font>
             </property>
@@ -341,7 +455,7 @@ background-color: rgba(255, 255, 255, 0);</string>
              <string notr="true">color: rgb(255, 255, 255);</string>
             </property>
             <property name="text">
-             <string>Поломка N</string>
+             <string>Охлаждение</string>
             </property>
            </widget>
           </item>
@@ -349,8 +463,8 @@ background-color: rgba(255, 255, 255, 0);</string>
            <widget class="QPushButton" name="modelOff">
             <property name="font">
              <font>
-              <family>Gadugi</family>
-              <pointsize>14</pointsize>
+              <family>Sans Serif</family>
+              <pointsize>16</pointsize>
               <italic>false</italic>
              </font>
             </property>
@@ -366,31 +480,11 @@ background-color: rgba(255, 255, 255, 0);</string>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="playersOff">
-            <property name="font">
-             <font>
-              <family>Gadugi</family>
-              <pointsize>14</pointsize>
-              <italic>false</italic>
-             </font>
-            </property>
-            <property name="autoFillBackground">
-             <bool>false</bool>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">color: rgb(255, 255, 255);</string>
-            </property>
-            <property name="text">
-             <string>Выключить пульт игроков</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QPushButton" name="endGame">
             <property name="font">
              <font>
-              <family>Gadugi</family>
-              <pointsize>14</pointsize>
+              <family>Sans Serif</family>
+              <pointsize>16</pointsize>
               <italic>false</italic>
              </font>
             </property>
@@ -408,10 +502,9 @@ background-color: rgba(255, 255, 255, 0);</string>
          </layout>
          <zorder>modelOff</zorder>
          <zorder>endGame</zorder>
-         <zorder>playersOff</zorder>
          <zorder>crash1</zorder>
-         <zorder>crash2</zorder>
-         <zorder>crash3</zorder>
+         <zorder>dump</zorder>
+         <zorder>cooling</zorder>
          <zorder>turnOn</zorder>
         </widget>
        </item>
@@ -444,7 +537,9 @@ background-color: rgba(255, 255, 255, 0);</string>
            <widget class="QLabel" name="label">
             <property name="font">
              <font>
-              <pointsize>12</pointsize>
+              <family>Sans Serif</family>
+              <pointsize>18</pointsize>
+              <italic>false</italic>
              </font>
             </property>
             <property name="styleSheet">
@@ -472,7 +567,7 @@ background-color: rgba(255, 255, 255, 0);</string>
           <item>
            <widget class="QLCDNumber" name="t1">
             <property name="styleSheet">
-             <string notr="true">border: 2px solid white;</string>
+             <string notr="true">border: 2px solid white; color: white;</string>
             </property>
            </widget>
           </item>
@@ -493,7 +588,7 @@ background-color: rgba(255, 255, 255, 0);</string>
           <item>
            <widget class="QLCDNumber" name="t2">
             <property name="styleSheet">
-             <string notr="true">border: 2px solid white;</string>
+             <string notr="true">border: 2px solid white; color: white;</string>
             </property>
            </widget>
           </item>
@@ -514,7 +609,7 @@ background-color: rgba(255, 255, 255, 0);</string>
           <item>
            <widget class="QLCDNumber" name="t3">
             <property name="styleSheet">
-             <string notr="true">border: 2px solid white;</string>
+             <string notr="true">border: 2px solid white; color: white;</string>
             </property>
            </widget>
           </item>
@@ -535,7 +630,7 @@ background-color: rgba(255, 255, 255, 0);</string>
           <item>
            <widget class="QLCDNumber" name="t4">
             <property name="styleSheet">
-             <string notr="true">border: 2px solid white;</string>
+             <string notr="true">border: 2px solid white; color: white;</string>
             </property>
            </widget>
           </item>
@@ -556,7 +651,7 @@ background-color: rgba(255, 255, 255, 0);</string>
           <item>
            <widget class="QLCDNumber" name="t5">
             <property name="styleSheet">
-             <string notr="true">border: 2px solid white;</string>
+             <string notr="true">border: 2px solid white; color: white;</string>
             </property>
            </widget>
           </item>
@@ -577,7 +672,7 @@ background-color: rgba(255, 255, 255, 0);</string>
           <item>
            <widget class="QLCDNumber" name="t6">
             <property name="styleSheet">
-             <string notr="true">border: 2px solid white;</string>
+             <string notr="true">border: 2px solid white; color: white;</string>
             </property>
            </widget>
           </item>
@@ -598,7 +693,7 @@ background-color: rgba(255, 255, 255, 0);</string>
           <item>
            <widget class="QLCDNumber" name="t7">
             <property name="styleSheet">
-             <string notr="true">border: 2px solid white;</string>
+             <string notr="true">border: 2px solid white; color: white;</string>
             </property>
            </widget>
           </item>
@@ -619,7 +714,7 @@ background-color: rgba(255, 255, 255, 0);</string>
           <item>
            <widget class="QLCDNumber" name="t8">
             <property name="styleSheet">
-             <string notr="true">border: 2px solid white;</string>
+             <string notr="true">border: 2px solid white; color: white;</string>
             </property>
            </widget>
           </item>
@@ -640,7 +735,7 @@ background-color: rgba(255, 255, 255, 0);</string>
           <item>
            <widget class="QLCDNumber" name="t9">
             <property name="styleSheet">
-             <string notr="true">border: 2px solid white;</string>
+             <string notr="true">border: 2px solid white; color: white;</string>
             </property>
            </widget>
           </item>
@@ -661,28 +756,7 @@ background-color: rgba(255, 255, 255, 0);</string>
           <item>
            <widget class="QLCDNumber" name="t10">
             <property name="styleSheet">
-             <string notr="true">border: 2px solid white;</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QWidget" name="s1_13" native="true">
-         <property name="font">
-          <font>
-           <italic>false</italic>
-          </font>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">border: 0;</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_23">
-          <item>
-           <widget class="QLCDNumber" name="t11">
-            <property name="styleSheet">
-             <string notr="true">border: 2px solid white;</string>
+             <string notr="true">border: 2px solid white; color: white;</string>
             </property>
            </widget>
           </item>
@@ -701,9 +775,9 @@ background-color: rgba(255, 255, 255, 0);</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_22">
           <item>
-           <widget class="QLCDNumber" name="t12">
+           <widget class="QLCDNumber" name="t11">
             <property name="styleSheet">
-             <string notr="true">border: 2px solid white;</string>
+             <string notr="true">border: 2px solid white; color: white;</string>
             </property>
            </widget>
           </item>
@@ -722,72 +796,9 @@ background-color: rgba(255, 255, 255, 0);</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_21">
           <item>
-           <widget class="QLCDNumber" name="t13">
+           <widget class="QLCDNumber" name="t12">
             <property name="styleSheet">
-             <string notr="true">border: 2px solid white;</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QWidget" name="s1_14" native="true">
-         <property name="font">
-          <font>
-           <italic>false</italic>
-          </font>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">border: 0;</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_24">
-          <item>
-           <widget class="QLCDNumber" name="t14">
-            <property name="styleSheet">
-             <string notr="true">border: 2px solid white;</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QWidget" name="s1_16" native="true">
-         <property name="font">
-          <font>
-           <italic>false</italic>
-          </font>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">border: 0;</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_26">
-          <item>
-           <widget class="QLCDNumber" name="t15">
-            <property name="styleSheet">
-             <string notr="true">border: 2px solid white;</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QWidget" name="s1_15" native="true">
-         <property name="font">
-          <font>
-           <italic>false</italic>
-          </font>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">border: 0;</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_25">
-          <item>
-           <widget class="QLCDNumber" name="t16">
-            <property name="styleSheet">
-             <string notr="true">border: 2px solid white;</string>
+             <string notr="true">border: 2px solid white; color: white;</string>
             </property>
            </widget>
           </item>
@@ -811,7 +822,7 @@ background-color: rgba(255, 255, 255, 0);</string>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_11">
+      <layout class="QVBoxLayout" name="verticalLayout_26">
        <item>
         <widget class="QWidget" name="Nasos4" native="true">
          <property name="font">
@@ -850,8 +861,8 @@ background-color: rgba(255, 255, 255, 0);</string>
            <widget class="QLabel" name="label_2">
             <property name="font">
              <font>
-              <family>Gadugi</family>
-              <pointsize>24</pointsize>
+              <family>Sans Serif</family>
+              <pointsize>18</pointsize>
               <italic>false</italic>
              </font>
             </property>
@@ -914,8 +925,8 @@ border: 0px;</string>
            <widget class="QLabel" name="label_3">
             <property name="font">
              <font>
-              <family>Gadugi</family>
-              <pointsize>24</pointsize>
+              <family>Sans Serif</family>
+              <pointsize>18</pointsize>
               <italic>false</italic>
              </font>
             </property>
@@ -978,8 +989,8 @@ border: 0px;</string>
            <widget class="QLabel" name="label_4">
             <property name="font">
              <font>
-              <family>Gadugi</family>
-              <pointsize>24</pointsize>
+              <family>Sans Serif</family>
+              <pointsize>18</pointsize>
               <italic>false</italic>
              </font>
             </property>
@@ -1136,11 +1147,9 @@ border: 0px;</string>
             </property>
             <property name="font">
              <font>
-              <family>Gadugi</family>
-              <pointsize>24</pointsize>
-              <weight>50</weight>
+              <family>Sans Serif</family>
+              <pointsize>18</pointsize>
               <italic>false</italic>
-              <bold>false</bold>
              </font>
             </property>
             <property name="layoutDirection">
@@ -1164,6 +1173,322 @@ border: 0px;</string>
          </layout>
         </widget>
        </item>
+       <item>
+        <widget class="QWidget" name="flow1wid" native="true">
+         <property name="font">
+          <font>
+           <family>Gadugi</family>
+           <italic>false</italic>
+          </font>
+         </property>
+         <property name="acceptDrops">
+          <bool>false</bool>
+         </property>
+         <property name="autoFillBackground">
+          <bool>false</bool>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">border: 2px solid white;</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_11">
+          <item>
+           <widget class="QLCDNumber" name="flow1">
+            <property name="font">
+             <font>
+              <family>Gadugi</family>
+              <italic>false</italic>
+             </font>
+            </property>
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(255, 255, 255);</string>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Plain</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_5">
+            <property name="palette">
+             <palette>
+              <active>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>255</red>
+                  <green>255</green>
+                  <blue>255</blue>
+                 </color>
+                </brush>
+               </colorrole>
+               <colorrole role="Text">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>255</red>
+                  <green>255</green>
+                  <blue>255</blue>
+                 </color>
+                </brush>
+               </colorrole>
+               <colorrole role="ButtonText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>255</red>
+                  <green>255</green>
+                  <blue>255</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </active>
+              <inactive>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>255</red>
+                  <green>255</green>
+                  <blue>255</blue>
+                 </color>
+                </brush>
+               </colorrole>
+               <colorrole role="Text">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>255</red>
+                  <green>255</green>
+                  <blue>255</blue>
+                 </color>
+                </brush>
+               </colorrole>
+               <colorrole role="ButtonText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>255</red>
+                  <green>255</green>
+                  <blue>255</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </inactive>
+              <disabled>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>255</red>
+                  <green>255</green>
+                  <blue>255</blue>
+                 </color>
+                </brush>
+               </colorrole>
+               <colorrole role="Text">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>255</red>
+                  <green>255</green>
+                  <blue>255</blue>
+                 </color>
+                </brush>
+               </colorrole>
+               <colorrole role="ButtonText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>255</red>
+                  <green>255</green>
+                  <blue>255</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </disabled>
+             </palette>
+            </property>
+            <property name="font">
+             <font>
+              <family>Sans Serif</family>
+              <pointsize>18</pointsize>
+              <italic>false</italic>
+             </font>
+            </property>
+            <property name="layoutDirection">
+             <enum>Qt::RightToLeft</enum>
+            </property>
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(255, 255, 255);
+border: 0px;</string>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Plain</enum>
+            </property>
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Поток 1, л/с&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="flow2wid" native="true">
+         <property name="font">
+          <font>
+           <family>Gadugi</family>
+           <italic>false</italic>
+          </font>
+         </property>
+         <property name="acceptDrops">
+          <bool>false</bool>
+         </property>
+         <property name="autoFillBackground">
+          <bool>false</bool>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">border: 2px solid white;</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_25">
+          <item>
+           <widget class="QLCDNumber" name="flow2">
+            <property name="font">
+             <font>
+              <family>Gadugi</family>
+              <italic>false</italic>
+             </font>
+            </property>
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(255, 255, 255);</string>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Plain</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_9">
+            <property name="palette">
+             <palette>
+              <active>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>255</red>
+                  <green>255</green>
+                  <blue>255</blue>
+                 </color>
+                </brush>
+               </colorrole>
+               <colorrole role="Text">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>255</red>
+                  <green>255</green>
+                  <blue>255</blue>
+                 </color>
+                </brush>
+               </colorrole>
+               <colorrole role="ButtonText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>255</red>
+                  <green>255</green>
+                  <blue>255</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </active>
+              <inactive>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>255</red>
+                  <green>255</green>
+                  <blue>255</blue>
+                 </color>
+                </brush>
+               </colorrole>
+               <colorrole role="Text">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>255</red>
+                  <green>255</green>
+                  <blue>255</blue>
+                 </color>
+                </brush>
+               </colorrole>
+               <colorrole role="ButtonText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>255</red>
+                  <green>255</green>
+                  <blue>255</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </inactive>
+              <disabled>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>255</red>
+                  <green>255</green>
+                  <blue>255</blue>
+                 </color>
+                </brush>
+               </colorrole>
+               <colorrole role="Text">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>255</red>
+                  <green>255</green>
+                  <blue>255</blue>
+                 </color>
+                </brush>
+               </colorrole>
+               <colorrole role="ButtonText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>255</red>
+                  <green>255</green>
+                  <blue>255</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </disabled>
+             </palette>
+            </property>
+            <property name="font">
+             <font>
+              <family>Sans Serif</family>
+              <pointsize>18</pointsize>
+              <italic>false</italic>
+             </font>
+            </property>
+            <property name="layoutDirection">
+             <enum>Qt::RightToLeft</enum>
+            </property>
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(255, 255, 255);
+border: 0px;</string>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Plain</enum>
+            </property>
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Поток 2, л/с&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>
@@ -1171,7 +1496,7 @@ border: 0px;</string>
   </widget>
  </widget>
  <resources>
-  <include location="reactor_res.qrc"/>
+  <include location="../../../../Desktop/Code/Hurricane_in_glass/controls/design/reactor_res.qrc"/>
  </resources>
  <connections/>
 </ui>
