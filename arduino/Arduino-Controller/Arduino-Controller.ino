@@ -4,18 +4,20 @@
 #include "DFRobotDFPlayerMini.h"
 
 // Инициализируем софтварные компорт и mp3 плеер
-SoftwareSerial mySoftwareSerial(7, 8); // RX, TX
+SoftwareSerial mySoftwareSerial(8, 7); // RX, TX
 DFRobotDFPlayerMini myDFPlayer;
 
 void Readln(char * msg);
 OneWire  ds(2); // Создаём объект OneWire на 2-ом пине (нужен резистор в 4.7кОм)
 void shutdown(void);
 
+const float seciruty_temp = 95; // Температура переграва системы безопасности
+float user_temp = 1000; // Температура перегрева, которую устанавливает пользователь
+
 // Заведём класс для датчик температуры
 class TermoSensor
 {
     byte addr[8]; // Номер нашего датчика
-    byte f_temper; // Флаг, отвечающий за температурный режим [0..3]
     byte data[12]; // Массив данных
     float celsius; // Переменная, в которую мы будем класть значение температуры с датчика
 
@@ -32,7 +34,8 @@ public:
         addr[6] = _7;
         addr[7] = _8;
         f_temper = 0;
-        celsius = -666;
+        celsius = -666; // Сразу видно, что датчик температуры ещё не успел инициализироваться и подсчитать первую температуру
+        
     }
 
     void Convert(void)
@@ -57,24 +60,21 @@ public:
         int16_t raw = (data[1] << 8) | data[0];
 
         celsius = (float)raw / 16.0;
-        if (celsius > 100)
+        // Если температура больше критической температуры безопасности или температуры установленной учениками, 
+        if ((celsius >= seciruty_temp) || (celsius >= user_temp)) 
         {
-            f_temper = 3;
-            shutdown();
-        }
-        else if (celsius > 75)
-            f_temper = 2;
-        else if (celsius > 50)
-            f_temper = 1;
-        else
-            f_temper = 0;       
+            shutdown(); // и отключаем нагреватели
+            Alarm(15000); // Включаем сигнализацию на 15 секунд
+        }    
     }
 
+    // Функция возвращающпая флаг сигнализации
     byte getF(void)
     {
         return f_temper;
     }
 
+    // Функция возвращающая температуру в градусах Цельсия
     float Temperature(void)
     {
         return celsius;
@@ -150,39 +150,37 @@ Load Pump(11); // Помпа на 11 пину
 
 char msg[65]; // Сообщение приходящее от Rasbery для парсинга команд
 unsigned long prev_time_1, prev_time_2; // Переменные для фонового обновления температуры
-unsigned long prev_time_music; // Переменная для фонового обновления музыки 
 byte folder = 0; // Определяем номер папки откуда мы играем музыку
+
+int error = 0; // Байт для парсера для возникновения ошибки
+
+// Если по какой-то причине у нас не будет виден плеер, мы перезагружаем ардуину
+void(* resetFunc) (void) = 0; // Объявляем функцию reset с адресом 0
 
 void setup()
 {
-//    mySoftwareSerial.begin(9600);
+    mySoftwareSerial.begin(9600); // Инициализируем собственный порт для музыки 
     Serial.begin(115200);
   
-/*    Serial.println();
-    Serial.println(F("DFRobot DFPlayer Mini Demo"));
-    Serial.println(F("Initializing DFPlayer ... (May take 3~5 seconds)"));
-  
+    // Если мы не видим плеер, мы перезагружаем ардуину
     if (!myDFPlayer.begin(mySoftwareSerial)) 
-    {  //Use softwareSerial to communicate with mp3.
-        Serial.println(F("Unable to begin:"));
-        Serial.println(F("1.Please recheck the connection!"));
-        Serial.println(F("2.Please insert the SD card!"));
-        while(true);
-    }
-    Serial.println(F("DFPlayer Mini online."));
+        resetFunc(); // Вызываем reset
   
     myDFPlayer.setTimeOut(500); //Set serial communictaion time out 500ms
   
-    //----Set volume----
+    // Устанавливаем звукна полную мощность
     myDFPlayer.volume(30);  //Set volume value (0~30).
 //    myDFPlayer.volumeUp(); //Volume Up
 //    myDFPlayer.volumeDown(); //Volume Down
   
-    //----Set different EQ----
+    // Устанавливаем нормальные настройки эквалайзера
     myDFPlayer.EQ(DFPLAYER_EQ_NORMAL);
   
-    //----Set device we use SD as default----
+    // Устанавливаем устройство с которого производится чтение -- microSD
     myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
+
+    // Включаем наш режим проигрывания звука через внешние колонки
+    myDFPlayer.enableDAC();  
   
   //----Mp3 control----
     //  myDFPlayer.sleep();     //sleep
@@ -190,94 +188,144 @@ void setup()
     //  myDFPlayer.enableDAC();  //Enable On-chip DAC
     //  myDFPlayer.disableDAC();  //Disable On-chip DAC
     //  myDFPlayer.outputSetting(true, 15); //output setting, enable the output and set the gain to 15
-  
-    //----Mp3 play----
-    myDFPlayer.play(1);  //Play the first mp3
-    delay(30000);
-*/
+
     prev_time_1 = millis();
     prev_time_2 = millis();
- //   prev_time_music = millis();
 }
 
 void loop()
-{  
-	// В цикле всегда пытаемся проверить, не пришла ли нам команда
-	if (Serial.available() > 0) 
-	{
-		Readln(msg);
+{
+    // В цикле всегда пытаемся проверить, не пришла ли нам команда
+    if (Serial.available() > 0) 
+    {
+        error = 1;
+        Readln(msg);
         // Дальше идёт много сравнений, чтобы определить, что есть что 
         // В силу наших определений можно всё определять по первой букве
-        if (msg[0] == 'i') // isOn - узнать включен ли макет, 0/1
+
+        // Авторизация
+        if (msg[0] == 'A')
         {
-        	// Если хотя бы одна помпа включена и один твел
-        	if (TVEL[0].Power() || TVEL[1].Power() || Pump.Power()) 
-        		Serial.println(1);
-        	else
-        		Serial.println(0);
+            Serial.println(0);
+        }
+        else if (msg[0] == 'i') // isOn - узнать включен ли макет, 0/1
+        {
+            // Если хотя бы одна помпа включена и один твел
+            if (TVEL[0].Power() || TVEL[1].Power() || Pump.Power()) 
+                Serial.println(1);
+            else
+                Serial.println(0);
         }
         else if (msg[0] == 't') // turn 0/1 - включить/выключить макет
         {
-        	Readln(msg);
-        	if (msg[0] == '0') // Выключаем макет
-        	{
-        		// Выключаем два нагревателя и помпы
-        		TVEL[0].setPower(0);
-        		TVEL[1].setPower(0);
-        		Pump.setPower(0);
-        	}
-        	else if (msg[0] == '1')	// Включаем макет
-        	{
-        		// Реактор оставляем выключенным для безопасности
-        		TVEL[0].setPower(0);
-        		TVEL[1].setPower(0);
-        		Pump.setPower(500);
-        	}
-        	else
-        		Serial.println("-1"); // Значит неправильно написали команду
+            Readln(msg);
+            if (msg[0] == '0') // Выключаем макет
+            {
+                // Выключаем два нагревателя и помпы
+                TVEL[0].setPower(0);
+                TVEL[1].setPower(0);
+                Pump.setPower(0);
+                error = 0;
+            }
+            else if (msg[0] == '1') // Включаем макет
+            {
+                // Реактор оставляем выключенным для безопасности
+                TVEL[0].setPower(0);
+                TVEL[1].setPower(0);
+                Pump.setPower(500);
+                error = 0;
+            }
+            else
+                error = -1; // Значит неправильно написали команду
         }
         else if (msg[0] == 'P') // P set/get # M - установить/получить мощность M на насосе #
         {
-        	Readln(msg); // Получаем номер насоса
-        	int number = atoi(msg);
-        	if (number == 6) // На Arduino_Controller только погружная помпа номер 6
-        	{
-        		Readln(msg); // Получаем режим
-        		if (msg[0] == 's') // set
-        			Pump.Update();
-        		else if (msg[0] == 'g') // get
-        			Serial.println(Pump.Power());
-        		else
-        		Serial.println("-1"); // Значит неправильно написали команду
-        	}
-        	else
-        		Serial.println("-1"); // Значит неправильно написали команду
+            Readln(msg); // Получаем номер насоса
+            int number = atoi(msg);
+            if (number == 6) // На Arduino_Controller только погружная помпа номер 6
+            {
+                Readln(msg); // Получаем режим
+                if (msg[0] == 's') // set
+                {
+                    Pump.Update();
+                    error = 0;
+                }
+                else if (msg[0] == 'g') // get
+                    Serial.println(Pump.Power());
+                else
+                error = -1; // Значит неправильно написали команду
+            }
+            else
+                error = -1; // Значит неправильно написали команду
         }
         else if (msg[0] == 'H') // H set/get # M/ - установить/получить мощность M на кипятильнике #
         {
-        	Readln(msg); // Получаем номер кипятильника
-        	int number = atoi(msg);
-        	Readln(msg); // Получаем режим
-        	if (msg[0] == 's') // set
-        		TVEL[atoi(msg) - 1].Update(); // Устанавливаем мощность
-        	else if (msg[0] == 'g') // get
-        		Serial.println(TVEL[atoi(msg) - 1].Power()); // Печатаем мощность
-        	else
-        		Serial.println("-1"); // Значит неправильно написали команду
+            Readln(msg); // Получаем номер кипятильника
+            int number = atoi(msg);
+            // Проверка на корректные значения номеров кипятильников
+            if ((number < 3) && (number > 0))
+            {
+                number--;
+                Readln(msg); // Получаем режим
+                if (msg[0] == 's') // set
+                {
+                    TVEL[number].Update(); // Устанавливаем мощность
+                    Serial.println(0);
+                }
+                else if (msg[0] == 'g') // get
+                    Serial.println(TVEL[number].Power()); // Печатаем мощность
+                else
+                    error = -1; // Значит неправильно написали команду
+            }
+            else
+                error = -1; // Значит неправильно написали команду
         }
         else if (msg[0] == 'E') // Запрашивается енергия
         {
-        	// Обязательно нужна формула!!!
-        	Serial.println(666);
+            Serial.println(1500 * (TVEL[0].Power() + TVEL[1].Power()));
         }
         else if (msg[0] == 'T') // Запрашивается температура
         {
-        	Readln(msg); // Считываем номер датчика
-        	Serial.println(DS[atoi(msg) - 1].Temperature()); // Печаетаем соответсвующую температуру
+            Readln(msg); // Считываем номер датчика
+            Serial.println(DS[atoi(msg) - 1].Temperature()); // Печаетаем соответсвующую температуру
+        }
+        else if (msg[0] == 'D') // Сливаем воду
+        {
+            Pump.setPower(1000); // Мощность подводной помпы устанавливаем на максимум
+            error = 0; // Значит всё хорошо
+        }
+        else if (msg[2] == 'A') //T_ALARM M - установить температуру включения сирены
+        {
+            Readln(msg); // Считываем считываем температуру пользовательской сирены
+            user_temp = atoi(msg); // Установили новое значение пользовательской температуры включения сирены
+            error = 0; // Всё хорошо
+        }
+        else if (msg[6] == 'U') // Увеличиваем громкость
+        {
+            myDFPlayer.volumeUp();
+            error = 0; // Всё хорошо
+        }
+        else if (msg[6] == 'D') // Увеличиваем громкость
+        {
+            myDFPlayer.volumeDown();
+            error = 0; // Всё хорошо
+        }
+        else if (msg[5] == 'a') //test_alarm - включить сирену на 15 секунд
+        {
+            Alarm(15000); // Включили сирену на 15 секунда
+            error = 0; // Всё хорошо
         }
         else
-        	Serial.println("-1");
-	}
+            error = -1;
+
+        if (error)
+        {
+            if (error == -1)
+                Serial.println(-1);
+        }
+        else
+            Serial.println(0);
+    }
 
     // Запрос на обновлениие температуры
 	if (millis() - prev_time_1 > 1000) // Если мы не обновляли температуру больше секунды
@@ -289,28 +337,21 @@ void loop()
     }
 
     // Забираем посчитанные данные
-    if ((millis() - prev_time_1 > 750) || (millis() - prev_time_2 > 1000))
+    if ((millis() - prev_time_1 > 800) || (millis() - prev_time_2 > 1000))
     {
     	for (int i = 0; i < 16; i++)
             DS[i].getTemperature();
         prev_time_2 = millis();
     }
-/*
-    // Обновляем музыку в зависимости от температурного режима
-    if (millis() - prev_time_music > 3000) //Проверяем температурный режим каждые 3 секунды
-    {
-        byte t;
-        for (int i = 0; i < 16; i++)
-            t = max (folder, DS[i].getF());
-        if (t != folder)
-        {
-            folder = t;
-            myDFPlayer.playFolder(folder, 1);
-            myDFPlayer.loopFolder(folder); //loop all mp3 files in folder SD:/xx.
-        }
-        prev_time_music = millis();
-    }
-*/
+}
+
+void Alarm(unsigned long time)
+{
+    myDFPlayer.play(1);
+    myDFPlayer.enableLoop(); //enable loop.
+    delay(time); // Сирена играет 15 секунд
+    myDFPlayer.disableLoop(); //disable loop.
+    myDFPlayer.pause(); // Останавливаем сирену
 }
 
 void Readln(char * msg)
@@ -333,5 +374,4 @@ void shutdown(void)
 	// Выключаем два нагревателя
     TVEL[0].setPower(0);
     TVEL[1].setPower(0);
-    delay(6000);
 }
