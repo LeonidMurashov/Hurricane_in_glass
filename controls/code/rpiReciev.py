@@ -4,6 +4,7 @@ import random
 import time
 import threading as T
 from queue import Queue
+import led
 
 # Словари, с компонентами каждого Arduino
 ser1Components = ['P', 'T', 'E', 'F', 'D', 'C']
@@ -12,6 +13,8 @@ ser2Components = ['TODO: FILLME']
 BOD = 115200
 overheating = False
 power = True
+led.init()
+led.blink(0,1,0)
 
 # Инициализация сокетов
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -37,14 +40,11 @@ def auth():
         except:
             continue
 
-    print(ser1)
-    print(ser2)
     print('ports found')
 
     # Ошибка при неисправности одной из Arduino
     if ser1 is None or ser2 is None:
-        # ADD: send signal
-        raise Exception("Cannot connect USB's")
+        return
 
     # Поиск Arduino с набором компонентов 1
     time.sleep(2)
@@ -68,6 +68,7 @@ def simulate_overheat():
     overheating = False
 
 def msgResponce(msg):
+    global ser1,ser2
     print(msg)
     # Выделение частей запроса
     mid = msg.split(":")[0]
@@ -103,16 +104,26 @@ def msgResponce(msg):
         else:
             print('Unknown device: {}'.format(device))
             responce = '-1'
-
+        led.stop_blink()
     # Ошибка при отсутствии подключения к Arduino
     except:
         print("Cannot connect to arduino")
+        led.blink(1,1,0)
         responce = '-1'
-
+        ser = auth()
+        while ser is None:
+            time.sleep(0.5)
+            ser = auth()
+        ser1, ser2 = ser[0], ser[1]
     if overheating and device == 'T':
         responce = '100'
-    s.sendto(bytes('r {}:{}'.format(mid, responce), 'utf-8'),
-            ('255.255.255.255', 11719))
+
+    try:
+        s.sendto(bytes('r {}:{}'.format(mid, responce), 'utf-8'),
+                ('255.255.255.255', 11719))
+    except Exception as e:
+        print(e)
+        led.blink(0,0,1)
 
 # Функция, обрабатывающая сообщения из очереди
 def worker(q):
@@ -130,20 +141,31 @@ def getMsg(q):
             q.put(msg[2:])
 
 if __name__ == '__main__':
-    # Авторизация Arduino и получение Serial объектов
-    print('authorizing...')
-    ser = auth()
-    ser1, ser2 = ser[0], ser[1]
-    print('done!')
-    # Создание очереди
-    q = Queue()
-    print('starting threads')
-    # Поток, отвечающий за непрерывное получение сообщений
-    recieverThread = T.Thread(target=getMsg, args=([q]))
+    try:
+        # Авторизация Arduino и получение Serial объектов
+        print('authorizing...')
+        ser = auth()
+        while ser is None:
+            led.blink(1,0,0)
+            print("Cannot connect Arduinos!")
+            time.sleep(2)
+            ser = auth()
+        led.stop_blink()
+        ser1, ser2 = ser[0], ser[1]
+        print('done!')
+        # Создание очереди
+        q = Queue()
+        print('starting threads')
+        # Поток, отвечающий за непрерывное получение сообщений
+        recieverThread = T.Thread(target=getMsg, args=([q]))
 
-    # Поток, отвечающий за выполнение запросов из очереди
-    workerThread = T.Thread(target=worker, args=([q]))
+        # Поток, отвечающий за выполнение запросов из очереди
+        workerThread = T.Thread(target=worker, args=([q]))
 
-    # Запуск потоков
-    recieverThread.start()
-    workerThread.start()
+        # Запуск потоков
+        recieverThread.start()
+        workerThread.start()
+    except Exception as e:
+        print(e)
+        led.dispose()
+        exit()
