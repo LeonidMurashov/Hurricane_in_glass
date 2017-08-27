@@ -393,6 +393,32 @@ void loop()
                 break;
             }
 
+            // reset
+            case 'r':
+            {
+                Readln(msg); // Считываем arduino или mp3
+                switch(msg[0])
+                {
+                    // Перезагружаем arduino
+                    case 'a':
+                    {
+                        resetFunc(); // Вызываем reset
+                        break; // Формально он не нужен
+                    }
+
+                    // Перезагружаем плеер
+                    case 'm':
+                    {
+                        myDFPlayer.reset();
+                        error = 0; // Всё хорошо
+                        break;
+                    }
+
+                    default:
+                        error = -1;
+                }
+            }
+
             default: 
                 error = -1; // Значит неправильно написали команду
         }            
