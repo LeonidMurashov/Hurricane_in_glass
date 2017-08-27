@@ -7,8 +7,8 @@ from queue import Queue
 import led
 
 # Словари, с компонентами каждого Arduino
-ser1Components = ['T', 'E', 'H', 'L', 'W', 'brightness', 'ALARM','volume', 'alarm']
-ser2Components = ['P', 'F', 'D', 'C']
+ser1Components = ['T', 'E', 'D', 'H', 'L', 'W', 'brightness', 'ALARM','volume', 'alarm']
+ser2Components = ['P', 'F', 'C']
 
 BOD = 115200
 overheating = False
