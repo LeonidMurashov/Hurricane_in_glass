@@ -18,6 +18,7 @@ byte R = 0, G = 0, B = 0;
 SoftwareSerial mySoftwareSerial(8, 7); // RX, TX
 DFRobotDFPlayerMini myDFPlayer;
 
+void Alarm(unsigned long time);
 void Readln(char * msg);
 OneWire  ds(2); // Создаём объект OneWire на 2-ом пине (нужен резистор в 4.7кОм)
 void shutdown(void);
