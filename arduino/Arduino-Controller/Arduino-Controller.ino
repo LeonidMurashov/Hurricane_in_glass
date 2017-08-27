@@ -1,12 +1,34 @@
 #include <OneWire.h>
+#include <Arduino.h>
+#include <SoftwareSerial.h>
+#include "DFRobotDFPlayerMini.h"
+#include "FastLED.h"
+#include "MsTimer2.h"
+
+// Подсветка
+#define LED_PIN     3
+#define NUM_LEDS    54
+#define LED_TYPE    WS2812B
+#define COLOR_ORDER GRB
+
+CRGB leds[NUM_LEDS]; //Инициализируем массив светодиодов
+byte R = 0, G = 0, B = 0;
+
+// Инициализируем софтварные компорт и mp3 плеер
+SoftwareSerial mySoftwareSerial(8, 7); // RX, TX
+DFRobotDFPlayerMini myDFPlayer;
+
 void Readln(char * msg);
 OneWire  ds(2); // Создаём объект OneWire на 2-ом пине (нужен резистор в 4.7кОм)
+void shutdown(void);
+
+const float seciruty_temp = 95; // Температура переграва системы безопасности
+float user_temp = 1000; // Температура перегрева, которую устанавливает пользователь
 
 // Заведём класс для датчик температуры
 class TermoSensor
 {
     byte addr[8]; // Номер нашего датчика
-    boolean f; // Флаг, указывающий на то, включен он или нет
     byte data[12]; // Массив данных
     float celsius; // Переменная, в которую мы будем класть значение температуры с датчика
 
@@ -22,8 +44,8 @@ public:
         addr[5] = _6;
         addr[6] = _7;
         addr[7] = _8;
-        f = false;
-        celsius = -666;
+        celsius = -666; // Сразу видно, что датчик температуры ещё не успел инициализироваться и подсчитать первую температуру
+        
     }
 
     void Convert(void)
@@ -48,8 +70,15 @@ public:
         int16_t raw = (data[1] << 8) | data[0];
 
         celsius = (float)raw / 16.0;
+        // Если температура больше критической температуры безопасности или температуры установленной учениками, 
+        if ((celsius >= seciruty_temp) || (celsius >= user_temp)) 
+        {
+            shutdown(); // и отключаем нагреватели
+            Alarm(15000); // Включаем сигнализацию на 15 секунд
+        }    
     }
 
+    // Функция возвращающая температуру в градусах Цельсия
     float Temperature(void)
     {
         return celsius;
@@ -124,107 +153,377 @@ Load TVEL[2] = {9, 10};		// Объект класса нагрузки на 9 и
 Load Pump(11); // Помпа на 11 пину
 
 char msg[65]; // Сообщение приходящее от Rasbery для парсинга команд
-int prev_time_1, prev_time_2;
+unsigned long prev_time_1, prev_time_2; // Переменные для фонового обновления температуры
+byte folder = 0; // Определяем номер папки откуда мы играем музыку
+
+int error = 0; // Для парсера для возникновения ошибки
+
+// Если по какой-то причине у нас не будет виден плеер, мы перезагружаем ардуину
+void(* resetFunc) (void) = 0; // Объявляем функцию reset с адресом 0
+
+// Функция обработки прерывания по таймеру для зажигания светодиодов
+void flash (void)
+{
+    // Просто рисуем то, что нам нужно
+    FastLED.show();
+}
 
 void setup()
 {
-	Serial.begin(115200);	// Начинаем последовательный вывод информации
+    // Подсветка
+    delay(1000);
+    LEDS.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
+    FastLED.setBrightness(128);
+    FastLED.clear();
+
+    // Устанавливаем прерывание по таймеру для подсветки
+    MsTimer2::set(10, flash); // 10ms period
+
+    mySoftwareSerial.begin(9600); // Инициализируем собственный порт для музыки 
+    Serial.begin(115200);
+  
+    // Если мы не видим плеер, мы перезагружаем ардуину
+    if (!myDFPlayer.begin(mySoftwareSerial)) 
+        resetFunc(); // Вызываем reset
+  
+    myDFPlayer.setTimeOut(500); //Set serial communictaion time out 500ms
+  
+    // Устанавливаем звукна полную мощность
+    myDFPlayer.volume(30);  //Set volume value (0~30).
+//    myDFPlayer.volumeUp(); //Volume Up
+//    myDFPlayer.volumeDown(); //Volume Down
+  
+    // Устанавливаем нормальные настройки эквалайзера
+    myDFPlayer.EQ(DFPLAYER_EQ_NORMAL);
+  
+    // Устанавливаем устройство с которого производится чтение -- microSD
+    myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
+
+    // Включаем наш режим проигрывания звука через внешние колонки
+    myDFPlayer.enableDAC();  
+  
+  //----Mp3 control----
+    //  myDFPlayer.sleep();     //sleep
+    //  myDFPlayer.reset();     //Reset the module
+    //  myDFPlayer.enableDAC();  //Enable On-chip DAC
+    //  myDFPlayer.disableDAC();  //Disable On-chip DAC
+    //  myDFPlayer.outputSetting(true, 15); //output setting, enable the output and set the gain to 15
+
     prev_time_1 = millis();
     prev_time_2 = millis();
-    delay(1000);
-    //Serial.println("We are ready!");
+
+    delay(6000);
+    MsTimer2::start(); // Начинаем светить
 }
 
 void loop()
 {
-	// В цикле всегда пытаемся проверить, не пришла ли нам команда
-	if (Serial.available() > 0) 
-	{
-		    Readln(msg);
-        // Дальше идёт много сравнений, чтобы определить, что есть что 
-        // В силу наших определений можно всё определять по первой букве
-        if (msg[0] == 'i') // isOn - узнать включен ли макет, 0/1
-        {
-        	// Если обе твелы выключены и одна помпа
-        	if (!TVEL[0].Power() && !TVEL[1].Power() && !Pump.Power()) 
-        		Serial.print(0);
-        	else
-        		Serial.print(1);
-        }
-        else if (msg[0] == 't') // turn 0/1 - включить/выключить макет
-        {
-        	Readln(msg);
-        	if (msg[0] == '0') // Выключаем макет
-        	{
-        		// Выключаем два нагревателя и помпы
-        		TVEL[0].setPower(0);
-        		TVEL[1].setPower(0);
-        		Pump.setPower(0);
-        	}
-        	else	// Включаем макет
-        	{
-        		// Реактор оставляем выключенным для безопасности
-        		TVEL[0].setPower(0);
-        		TVEL[1].setPower(0);
-        		Pump.setPower(500);
-        	}
-        }
-        else if (msg[0] == 'P') // P set/get # M - установить/получить мощность M на насосе #
-        {
-        	Readln(msg); // Читаем следующее слово
-        	if (msg[0] == 's') // set
-        	{
-        		Readln(msg); // Читаем следующее слово
-        		int i = atoi(msg); // i - номер насоса
-        		i--;
-        		if (i == 5)
-        			Pump.Update();
-        	}
-        	else if (msg[0] == 'g') // get
-        	{
-        		Readln(msg); // Читаем следующее слово
-        		int i = atoi(msg); // i - номер насоса
-        		i--;
-        		if (i == 5) // Шестая помпа
-        			Serial.println(Pump.Power());
-        	}
-        }
-        else if (msg[0] == 'H') // H set/get # M/ - установить/получить мощность M на кипятильнике #
-        {
-        	Readln(msg); // Читаем следующее слово
-        	if (msg[0] == 's') // set
-        	{
-        		Readln(msg); // Читаем следующее слово
-        		int i = atoi(msg); // i - номер нагревателя
-        		i--;
-        		TVEL[i].Update(); // Устанавливаем мощность
-        	}
-        	else if (msg[0] == 'g') // get
-        	{
-        		Readln(msg); // Читаем следующее слово
-        		int i = atoi(msg); // i - номер нагревателя
-        		i--;
-        		Serial.println(TVEL[i].Power()); // Печатаем мощность
-        	}
-        }
-        else if (msg[0] == 'E') // Запрашивается енергия
-        {
-        	// Обязательно нужна формула!!!
-        	Serial.println(666);
-        }
-        else if (msg[0] == 'T') // Запрашивается температура
-        {
-        	Readln(msg); // Считываем номер датчика
-        	int i = atoi(msg); // i - номер датчика
-        	i--;
-        	Serial.println(DS[i].Temperature()); // Печаетаем соответсвующую температуру
-        }
-        else if (msg[0] == 'A')
-        {
-          Serial.println(1);
-        }
-	}
+    // В цикле всегда пытаемся проверить, не пришла ли нам команда
+    if (Serial.available() > 0) 
+    {
+        error = 1;
+        Readln(msg);
 
+        // Дальше идёт switch
+        // В силу наших определений можно всё определять по первой букве
+
+        switch (msg[0])
+        {
+            // Авторизация
+            case 'I': 
+            {
+                Serial.println(1);
+                break;
+            }
+
+            // isOn - узнать включен ли макет, 0/1
+            case 'i':
+            {
+                // Если хотя бы одна помпа включена и один твел
+                if (TVEL[0].Power() || TVEL[1].Power() || Pump.Power()) 
+                    Serial.println(1);
+                else
+                    Serial.println(0);
+                break;
+            }
+
+            // turn 0/1 - включить/выключить макет
+            case 't':
+            {
+                Readln(msg);
+                switch (msg[0])
+                {
+                    // Выключаем макет
+                    case '0':
+                    {
+                        // Выключаем два нагревателя и помпы
+                        TVEL[0].setPower(0);
+                        TVEL[1].setPower(0);
+                        Pump.setPower(0);
+                        error = 0;
+                        break;
+                    }
+
+                    // Включаем макет
+                    case '1':
+                    {
+                        // Реактор оставляем выключенным для безопасности
+                        TVEL[0].setPower(0);
+                        TVEL[1].setPower(0);
+                        Pump.setPower(500);
+                        error = 0;
+                        break;
+                    }
+
+                    default:
+                        error = -1; // Значит неправильно написали команду
+                }
+                break;
+            }
+
+            // P set/get # M - установить/получить мощность M на насосе #
+            case 'P':
+            {
+                Readln(msg); // Получаем номер насоса
+                int number = atoi(msg);
+                if (number == 6) // На Arduino_Controller только погружная помпа номер 6
+                {
+                    Readln(msg); // Получаем режим
+                    switch (msg[0])
+                    {
+                        // set
+                        case 's':
+                        {
+                            Pump.Update();
+                            error = 0;
+                            break;
+                        }
+
+                        // get
+                        case 'g':
+                        {
+                            Serial.println(Pump.Power());
+                            break;
+                        }
+
+                        default:
+                            error = -1; // Значит неправильно написали команду
+                    }
+                }
+                else
+                    error = -1; // Значит неправильно написали команду
+                break;
+            }
+
+            // H set/get # M/ - установить/получить мощность M на кипятильнике #
+            case 'H':
+            {
+                Readln(msg); // Получаем номер кипятильника
+                int number = atoi(msg);
+                // Проверка на корректные значения номеров кипятильников
+                if ((number < 3) && (number > 0))
+                {
+                    number--;
+                    Readln(msg); // Получаем режим
+                    switch (msg[0])
+                    {
+                        // set
+                        case 's':
+                        {
+                            TVEL[number].Update(); // Устанавливаем мощность
+                            Serial.println(0);
+                            break;
+                        }
+
+                        // get
+                        case 'g':
+                        {
+                            Serial.println(TVEL[number].Power()); // Печатаем мощность
+                            break;
+                        }
+
+                        default:
+                            error = -1; // Значит неправильно написали команду
+                    }
+                }
+                else
+                    error = -1; // Значит неправильно написали команду
+
+                break;
+            }
+
+            // Запрашивается енергия
+            case 'E':
+            {
+                Serial.println(1500 * (TVEL[0].Power() + TVEL[1].Power()));
+                break;
+            }
+
+            // Запрашивается температура
+            case 'T':
+            {
+                Readln(msg); // Считываем номер датчика
+                Serial.println(DS[atoi(msg) - 1].Temperature()); // Печаетаем соответсвующую температуру
+                break;
+            }
+
+            // Устанавливаем цвет подсветки
+            case 'L':
+            {
+                Readln(msg);
+                R = atoi(msg); // Красный
+                Readln (msg);
+                G = atoi(msg); // Зелёный
+                Readln(msg);
+                B = atoi(msg); // Голубой
+
+                //Заполняем всё одним и тем же светом
+                MsTimer2::stop();
+                fill_solid(leds, NUM_LEDS, CRGB(R, G, B));
+                MsTimer2::start();
+                error = 0;
+                break;
+            }
+
+            // Мигать или нет
+            case 'W':
+            {
+                Readln(msg);
+                switch(msg[0])
+                {
+                    // Мигаем
+                    case '1':
+                    {
+                        MsTimer2::stop(); // Запретили прерывание
+                        MsTimer2::set(100, flash); // Поменяли период на 100миллисекунд 10фпс
+                        MsTimer2::start(); // Разрешили прерывание
+                        error = 0;
+                        break;
+                    }
+
+                    // Не мигаем
+                    case '0':
+                    {
+                        MsTimer2::stop(); // Запретили прерывание
+                        MsTimer2::set(10, flash); // Поменяли период на 10миллисекунд 100фпс
+                        MsTimer2::start(); // Разрешили прерывание
+                        error = 0;
+                        break;
+                    }
+
+                    default:
+                        error = -1;
+                }
+
+                break;
+            }
+
+            // Устанавливаем яркость подсветки
+            case 'b':
+            {
+                Readln(msg); // Считали яркость подсветки
+                MsTimer2::stop(); // Запретили прерывание
+                FastLED.setBrightness(atoi(msg)); // Установили подсветку
+                MsTimer2::start(); // Разрешили прерывание
+                error = 0; // Значит всё хорошо
+                break;
+            }
+            // Сливаем воду
+            case 'D':
+            {
+                Pump.setPower(1000); // Мощность подводной помпы устанавливаем на максимум
+                error = 0; // Значит всё хорошо
+                break;
+            }
+
+            //ALARM M - установить температуру включения сирены
+            case 'A':
+            {
+                Readln(msg); // Считываем считываем температуру пользовательской сирены
+                user_temp = atoi(msg); // Установили новое значение пользовательской температуры включения сирены
+                error = 0; // Всё хорошо
+                break;
+            }
+
+            // Изменяем громкость
+            case 'v':
+            {
+                Readln(msg); // Считваем команду
+                switch (msg[0])
+                {
+                    // Увеличиваем громкость
+                    case '+':
+                    {
+                        myDFPlayer.volumeUp();
+                        error = 0; // Всё хорошо
+                        break;
+                    }
+
+                    // Уменьшаем громкость
+                    case '-':
+                    {
+                        myDFPlayer.volumeDown();
+                        error = 0; // Всё хорошо
+                        break;
+                    }
+
+                    default:
+                        error = -1; // Значит неправильно написали команду
+                }
+
+                break;
+            }
+
+            //alarm - включить сирену на 15 секунд
+            case 'a':
+            {
+                Alarm(15000); // Включили сирену на 15 секунда
+                error = 0; // Всё хорошо
+                break;
+            }
+
+            // reset
+            case 'r':
+            {
+                Readln(msg); // Считываем arduino или mp3
+                switch(msg[0])
+                {
+                    // Перезагружаем arduino
+                    case 'a':
+                    {
+                        resetFunc(); // Вызываем reset
+                        break; // Формально он не нужен
+                    }
+
+                    // Перезагружаем плеер
+                    case 'm':
+                    {
+                        myDFPlayer.reset();
+                        error = 0; // Всё хорошо
+                        break;
+                    }
+
+                    default:
+                        error = -1;
+                }
+
+                break;
+            }
+
+            default: 
+                error = -1; // Значит неправильно написали команду
+        }            
+
+        if (error)
+        {
+            if (error == -1)
+                Serial.println(-1);
+        }
+        else
+            Serial.println(0);
+    }
+
+    // Запрос на обновлениие температуры
 	if (millis() - prev_time_1 > 1000) // Если мы не обновляли температуру больше секунды
     {
         for (int i = 0; i < 16; i++)
@@ -233,12 +532,22 @@ void loop()
         prev_time_2 = millis(); // Обнулили последнее время получения температуры
     }
 
-    if ((millis() - prev_time_1 > 750) || (millis() - prev_time_2 > 1000))
+    // Забираем посчитанные данные
+    if ((millis() - prev_time_1 > 800) || (millis() - prev_time_2 > 1000))
     {
     	for (int i = 0; i < 16; i++)
             DS[i].getTemperature();
         prev_time_2 = millis();
     }
+}
+
+void Alarm(unsigned long time)
+{
+    myDFPlayer.play(1);
+    myDFPlayer.enableLoop(); //enable loop.
+    delay(time); // Сирена играет 15 секунд
+    myDFPlayer.disableLoop(); //disable loop.
+    myDFPlayer.pause(); // Останавливаем сирену
 }
 
 void Readln(char * msg)
@@ -254,4 +563,11 @@ void Readln(char * msg)
             break;
     }
     msg[i] = '\0';
+}
+
+void shutdown(void)
+{
+	// Выключаем два нагревателя
+    TVEL[0].setPower(0);
+    TVEL[1].setPower(0);
 }

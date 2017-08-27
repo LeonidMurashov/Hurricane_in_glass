@@ -20,9 +20,9 @@ void loop()
         {
         //	if (!Pump[0].Power() && !Pump[1].Power() && !Pump[2].Power() && !Pump[3].Power() && !Pump[4].Power()) // Если все помпы выключены
         	if (!TVEL[0].Power() && !TVEL[1].Power() && !Pump.Power()) // Если обе твелы выключены и одна помпа
-        		Serial.print(0);
+        		Serial.println(0);
         	else
-        		Serial.print(1);
+        		Serial.println(1);
         }
         else if (msg[0] == 't') // turn 0/1 - включить/выключить макет
         {
@@ -56,11 +56,9 @@ void loop()
         		Readln(msg); // Читаем следующее слово
         		int i = atoi(msg); // i - номер насоса
         		i--;
-        		Readln(msg); // Читаем следующее слово
-        		int power = atoi(msg); // M - мощность
         	/*	if (i == 5)
-        			Pump.setPower(power);*/
-        		Pump[i].setPower(power);
+        			Pump.Update();*/
+        		Pump[i].Update(power);
         	}
         	else if (msg[0] == 'g') // get
         	{
