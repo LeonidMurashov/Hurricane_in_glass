@@ -7,8 +7,8 @@ from queue import Queue
 import led
 
 # Словари, с компонентами каждого Arduino
-ser1Components = ['P', 'T', 'E', 'F', 'D', 'C']
-ser2Components = ['TODO: FILLME']
+ser1Components = ['T', 'E', 'H', 'L', 'W', 'brightness', 'ALARM','volume', 'alarm']
+ser2Components = ['P', 'F', 'D', 'C']
 
 BOD = 115200
 overheating = False
@@ -48,10 +48,10 @@ def auth():
 
     # Поиск Arduino с набором компонентов 1
     time.sleep(2)
-    ser1.write(bytearray('AUTH\r\n', 'utf-8'))
+    ser1.write(bytearray('Identification\r\n', 'utf-8'))
     auth1 = str(ser1.readline())
     print('auth1 {}'.format(auth1))
-    ser2.write(bytearray('AUTH\r\n', 'utf-8'))
+    ser2.write(bytearray('Identification\r\n', 'utf-8'))
     auth2 = str(ser2.readline())
     print('auth2 {}'.format(auth2))
     if auth2[2:-5] == '1':
@@ -76,12 +76,13 @@ def msgResponce(msg):
     msg = msg[4:]
     print(device)
     try:
-        if device == 'test_alarm':
+        if device == 'alarm':
             th = T.Thread(target=simulate_overheat)
             th.start()
             responce = ' '
+
         # Распределение запроса между Arduino
-        elif device in ser1Components:
+        if device in ser1Components:
             print('deivce found in ser1')
             ser1.write(bytearray(msg,'utf-8'))
             responce = str(ser1.readline())[2:-5]
@@ -99,6 +100,15 @@ def msgResponce(msg):
             ser1.write(bytearray(msg, 'utf-8'))
             ser2.write(bytearray(msg, 'utf-8'))
             responce = str(ser1.readline())[2:-5]
+        elif device == 'isOn':
+            ser1.write(bytearray(msg, 'utf-8'))
+            ser2.write(bytearray(msg, 'utf-8'))
+            responce1 = str(ser1.readline())[2:-5]
+            responce2 = str(ser2.readline())[2:-5]
+            if responce1 == '1' or responce2 == '1':
+                responce = '1'
+            else:
+                responce = '0'
 
         # Ошибка при неизвестном компоненте
         else:
