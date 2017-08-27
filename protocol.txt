@@ -3,7 +3,7 @@
 
 Next:
 ------------------------------------------
-Indentification 1/2 - индентификация ардуин 1-Arduino-Controller, 2-Arduino-User
+Identification 1/2 - индентификация ардуин 1-Arduino-Controller, 2-Arduino-User
 
 ОБЕ АРДУИНЫж
 isOn - узнать включен ли макет, 0/1
