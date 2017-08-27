@@ -2,6 +2,17 @@
 #include <Arduino.h>
 #include <SoftwareSerial.h>
 #include "DFRobotDFPlayerMini.h"
+#include "FastLED.h"
+#include "MsTimer2.h"
+
+// Подсветка
+#define LED_PIN     3
+#define NUM_LEDS    54
+#define LED_TYPE    WS2812B
+#define COLOR_ORDER GRB
+
+CRGB leds[NUM_LEDS]; //Инициализируем массив светодиодов
+byte R = 0, G = 0, B = 0;
 
 // Инициализируем софтварные компорт и mp3 плеер
 SoftwareSerial mySoftwareSerial(8, 7); // RX, TX
@@ -150,8 +161,24 @@ int error = 0; // Для парсера для возникновения оши
 // Если по какой-то причине у нас не будет виден плеер, мы перезагружаем ардуину
 void(* resetFunc) (void) = 0; // Объявляем функцию reset с адресом 0
 
+// Функция обработки прерывания по таймеру для зажигания светодиодов
+void flash (void)
+{
+    // Просто рисуем то, что нам нужно
+    FastLED.show();
+}
+
 void setup()
 {
+    // Подсветка
+    delay(1000);
+    LEDS.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
+    FastLED.setBrightness(128);
+    FastLED.clear();
+
+    // Устанавливаем прерывание по таймеру для подсветки
+    MsTimer2::set(10, flash); // 10ms period
+
     mySoftwareSerial.begin(9600); // Инициализируем собственный порт для музыки 
     Serial.begin(115200);
   
@@ -186,6 +213,7 @@ void setup()
     prev_time_2 = millis();
 
     delay(6000);
+    MsTimer2::start(); // Начинаем светить
 }
 
 void loop()
@@ -339,6 +367,67 @@ void loop()
                 break;
             }
 
+            // Устанавливаем цвет подсветки
+            case 'L':
+            {
+                Readln(msg);
+                R = atoi(msg); // Красный
+                Readln (msg);
+                G = atoi(msg); // Зелёный
+                Readln(msg);
+                B = atoi(msg); // Голубой
+
+                //Заполняем всё одним и тем же светом
+                MsTimer2::stop();
+                fill_solid(leds, NUM_LEDS, CRGB(R, G, B));
+                MsTimer2::start();
+                error = 0;
+                break;
+            }
+
+            // Мигать или нет
+            case 'W':
+            {
+                Readln(msg);
+                switch(msg[0])
+                {
+                    // Мигаем
+                    case '1':
+                    {
+                        MsTimer2::stop(); // Запретили прерывание
+                        MsTimer2::set(100, flash); // Поменяли период на 100миллисекунд 10фпс
+                        MsTimer2::start(); // Разрешили прерывание
+                        error = 0;
+                        break;
+                    }
+
+                    // Не мигаем
+                    case '0':
+                    {
+                        MsTimer2::stop(); // Запретили прерывание
+                        MsTimer2::set(10, flash); // Поменяли период на 10миллисекунд 100фпс
+                        MsTimer2::start(); // Разрешили прерывание
+                        error = 0;
+                        break;
+                    }
+
+                    default:
+                        error = -1;
+                }
+
+                break;
+            }
+
+            // Устанавливаем яркость подсветки
+            case 'b':
+            {
+                Readln(msg); // Считали яркость подсветки
+                MsTimer2::stop(); // Запретили прерывание
+                FastLED.setBrightness(atoi(msg)); // Установили подсветку
+                MsTimer2::start(); // Разрешили прерывание
+                error = 0; // Значит всё хорошо
+                break;
+            }
             // Сливаем воду
             case 'D':
             {
@@ -417,6 +506,8 @@ void loop()
                     default:
                         error = -1;
                 }
+
+                break;
             }
 
             default: 
