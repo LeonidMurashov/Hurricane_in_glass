@@ -196,123 +196,206 @@ void loop()
         error = 1;
         Readln(msg);
 
-        // Дальше идёт много сравнений, чтобы определить, что есть что 
+        // Дальше идёт switch
         // В силу наших определений можно всё определять по первой букве
 
-        // Авторизация
-        if (msg[0] == 'A')
+        switch (msg[0])
         {
-            Serial.println(1);
-        }
-        else if (msg[0] == 'i') // isOn - узнать включен ли макет, 0/1
-        {
-            // Если хотя бы одна помпа включена и один твел
-            if (TVEL[0].Power() || TVEL[1].Power() || Pump.Power()) 
+            // Авторизация
+            case 'I': 
+            {
                 Serial.println(1);
-            else
-                Serial.println(0);
-        }
-        else if (msg[0] == 't') // turn 0/1 - включить/выключить макет
-        {
-            Readln(msg);
-            if (msg[0] == '0') // Выключаем макет
-            {
-                // Выключаем два нагревателя и помпы
-                TVEL[0].setPower(0);
-                TVEL[1].setPower(0);
-                Pump.setPower(0);
-                error = 0;
+                break;
             }
-            else if (msg[0] == '1') // Включаем макет
+
+            // isOn - узнать включен ли макет, 0/1
+            case 'i':
             {
-                // Реактор оставляем выключенным для безопасности
-                TVEL[0].setPower(0);
-                TVEL[1].setPower(0);
-                Pump.setPower(500);
-                error = 0;
-            }
-            else
-                error = -1; // Значит неправильно написали команду
-        }
-        else if (msg[0] == 'P') // P set/get # M - установить/получить мощность M на насосе #
-        {
-            Readln(msg); // Получаем номер насоса
-            int number = atoi(msg);
-            if (number == 6) // На Arduino_Controller только погружная помпа номер 6
-            {
-                Readln(msg); // Получаем режим
-                if (msg[0] == 's') // set
-                {
-                    Pump.Update();
-                    error = 0;
-                }
-                else if (msg[0] == 'g') // get
-                    Serial.println(Pump.Power());
+                // Если хотя бы одна помпа включена и один твел
+                if (TVEL[0].Power() || TVEL[1].Power() || Pump.Power()) 
+                    Serial.println(1);
                 else
-                error = -1; // Значит неправильно написали команду
-            }
-            else
-                error = -1; // Значит неправильно написали команду
-        }
-        else if (msg[0] == 'H') // H set/get # M/ - установить/получить мощность M на кипятильнике #
-        {
-            Readln(msg); // Получаем номер кипятильника
-            int number = atoi(msg);
-            // Проверка на корректные значения номеров кипятильников
-            if ((number < 3) && (number > 0))
-            {
-                number--;
-                Readln(msg); // Получаем режим
-                if (msg[0] == 's') // set
-                {
-                    TVEL[number].Update(); // Устанавливаем мощность
                     Serial.println(0);
+                break;
+            }
+
+            // turn 0/1 - включить/выключить макет
+            case 't':
+            {
+                Readln(msg);
+                switch (msg[0])
+                {
+                    // Выключаем макет
+                    case '0':
+                    {
+                        // Выключаем два нагревателя и помпы
+                        TVEL[0].setPower(0);
+                        TVEL[1].setPower(0);
+                        Pump.setPower(0);
+                        error = 0;
+                        break;
+                    }
+
+                    // Включаем макет
+                    case '1':
+                    {
+                        // Реактор оставляем выключенным для безопасности
+                        TVEL[0].setPower(0);
+                        TVEL[1].setPower(0);
+                        Pump.setPower(500);
+                        error = 0;
+                        break;
+                    }
+
+                    default:
+                        error = -1; // Значит неправильно написали команду
                 }
-                else if (msg[0] == 'g') // get
-                    Serial.println(TVEL[number].Power()); // Печатаем мощность
+                break;
+            }
+
+            // P set/get # M - установить/получить мощность M на насосе #
+            case 'P':
+            {
+                Readln(msg); // Получаем номер насоса
+                int number = atoi(msg);
+                if (number == 6) // На Arduino_Controller только погружная помпа номер 6
+                {
+                    Readln(msg); // Получаем режим
+                    switch (msg[0])
+                    {
+                        // set
+                        case 's':
+                        {
+                            Pump.Update();
+                            error = 0;
+                            break;
+                        }
+
+                        // get
+                        case 'g':
+                        {
+                            Serial.println(Pump.Power());
+                            break;
+                        }
+
+                        default:
+                            error = -1; // Значит неправильно написали команду
+                    }
+                }
                 else
                     error = -1; // Значит неправильно написали команду
+                break;
             }
-            else
+
+            // H set/get # M/ - установить/получить мощность M на кипятильнике #
+            case 'H':
+            {
+                Readln(msg); // Получаем номер кипятильника
+                int number = atoi(msg);
+                // Проверка на корректные значения номеров кипятильников
+                if ((number < 3) && (number > 0))
+                {
+                    number--;
+                    Readln(msg); // Получаем режим
+                    switch (msg[0])
+                    {
+                        // set
+                        case 's':
+                        {
+                            TVEL[number].Update(); // Устанавливаем мощность
+                            Serial.println(0);
+                            break;
+                        }
+
+                        // get
+                        case 'g':
+                        {
+                            Serial.println(TVEL[number].Power()); // Печатаем мощность
+                            break;
+                        }
+
+                        default:
+                            error = -1; // Значит неправильно написали команду
+                    }
+                }
+                else
+                    error = -1; // Значит неправильно написали команду
+
+                break;
+            }
+
+            // Запрашивается енергия
+            case 'E':
+            {
+                Serial.println(1500 * (TVEL[0].Power() + TVEL[1].Power()));
+                break;
+            }
+
+            // Запрашивается температура
+            case 'T':
+            {
+                Readln(msg); // Считываем номер датчика
+                Serial.println(DS[atoi(msg) - 1].Temperature()); // Печаетаем соответсвующую температуру
+                break;
+            }
+
+            // Сливаем воду
+            case 'D':
+            {
+                Pump.setPower(1000); // Мощность подводной помпы устанавливаем на максимум
+                error = 0; // Значит всё хорошо
+                break;
+            }
+
+            //ALARM M - установить температуру включения сирены
+            case 'A':
+            {
+                Readln(msg); // Считываем считываем температуру пользовательской сирены
+                user_temp = atoi(msg); // Установили новое значение пользовательской температуры включения сирены
+                error = 0; // Всё хорошо
+                break;
+            }
+
+            // Изменяем громкость
+            case 'v':
+            {
+                Readln(msg); // Считваем команду
+                switch (msg[0])
+                {
+                    // Увеличиваем громкость
+                    case '+':
+                    {
+                        myDFPlayer.volumeUp();
+                        error = 0; // Всё хорошо
+                        break;
+                    }
+
+                    // Уменьшаем громкость
+                    case '-':
+                    {
+                        myDFPlayer.volumeDown();
+                        error = 0; // Всё хорошо
+                        break;
+                    }
+
+                    default:
+                        error = -1; // Значит неправильно написали команду
+                }
+
+                break;
+            }
+
+            //alarm - включить сирену на 15 секунд
+            case 'a':
+            {
+                Alarm(15000); // Включили сирену на 15 секунда
+                error = 0; // Всё хорошо
+                break;
+            }
+
+            default: 
                 error = -1; // Значит неправильно написали команду
-        }
-        else if (msg[0] == 'E') // Запрашивается енергия
-        {
-            Serial.println(1500 * (TVEL[0].Power() + TVEL[1].Power()));
-        }
-        else if (msg[0] == 'T') // Запрашивается температура
-        {
-            Readln(msg); // Считываем номер датчика
-            Serial.println(DS[atoi(msg) - 1].Temperature()); // Печаетаем соответсвующую температуру
-        }
-        else if (msg[0] == 'D') // Сливаем воду
-        {
-            Pump.setPower(1000); // Мощность подводной помпы устанавливаем на максимум
-            error = 0; // Значит всё хорошо
-        }
-        else if (msg[2] == 'A') //T_ALARM M - установить температуру включения сирены
-        {
-            Readln(msg); // Считываем считываем температуру пользовательской сирены
-            user_temp = atoi(msg); // Установили новое значение пользовательской температуры включения сирены
-            error = 0; // Всё хорошо
-        }
-        else if (msg[6] == 'U') // Увеличиваем громкость
-        {
-            myDFPlayer.volumeUp();
-            error = 0; // Всё хорошо
-        }
-        else if (msg[6] == 'D') // Увеличиваем громкость
-        {
-            myDFPlayer.volumeDown();
-            error = 0; // Всё хорошо
-        }
-        else if (msg[5] == 'a') //test_alarm - включить сирену на 15 секунд
-        {
-            Alarm(15000); // Включили сирену на 15 секунда
-            error = 0; // Всё хорошо
-        }
-        else
-            error = -1;
+        }            
 
         if (error)
         {

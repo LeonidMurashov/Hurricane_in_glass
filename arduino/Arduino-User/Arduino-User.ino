@@ -80,76 +80,124 @@ void loop()
         error = 1;
         Readln(msg);
 
-        // Дальше идёт много сравнений, чтобы определить, что есть что 
+        // Дальше идёт switch
         // В силу наших определений можно всё определять по первой букве
 
-        // Авторизация
-        if (msg[0] == 'A')
+        switch(msg[0])
         {
-            Serial.println(2);
-        }
-        else if (msg[0] == 'i') // isOn - узнать включен ли макет, 0/1
-        {
-        	// Если хоть одна помпа включена
-        	if (Pump[0].Power() || Pump[1].Power() || Pump[2].Power() || Pump[3].Power() || Pump[4].Power()) 
-        		Serial.print(1);
-        	else
-        		Serial.print(0);
-        }
-        else if (msg[0] == 't') // turn 0/1 - включить/выключить макет
-        {
-        	Readln(msg);
-        	if (msg[0] == '0') // Выключаем макет
-        	{
-        		// Выключаем все помпы
-        		for (int i = 0; i < 5; i++)
-        			Pump[i].setPower(0);
-                error = 0; // Всё хорошо
-        	}
-        	else if (msg[0] == '1')	// Включаем макет
-        	{
-        		// Включаем все помпы на половину мощности
-        		for (int i = 0; i < 5; i++)
-        			Pump[i].setPower(500);
-                error = 0; // Всё хорошо
-        	}
-        	else
-        		error = -1; // Неправильно ввели команду
-        }
-        else if (msg[0] == 'P') // P set/get # M - установить/получить мощность M на насосе #
-        {
-            Readln(msg); // Получаем номер насоса
-            int number = atoi(msg);
-            if ((number > 0) && (number < 6))
+            // Авторизация
+            case 'I':
             {
-                number--;
-                Readln(msg); // Получаем режим
-                if (msg[0] == 's') // set
-                {
-                    Pump[number].Update();
-                    error = 0; // Всё хорошо
-                }
-                else if (msg[0] == 'g') // get
-                    Serial.println(Pump[number].Power());
-                else
-                    error = -1; // Неправильно ввели команду
+                Serial.println(2);
+                break;
             }
-            error = -1; // Неправильно ввели команду
-            
+
+            // isOn - узнать включен ли макет, 0/1
+            case 'i':
+            {
+                // Если хоть одна помпа включена
+                if (Pump[0].Power() || Pump[1].Power() || Pump[2].Power() || Pump[3].Power() || Pump[4].Power()) 
+                    Serial.print(1);
+                else
+                    Serial.print(0);
+                break;
+            }
+
+            // turn 0/1 - включить/выключить макет
+            case 't':
+            {
+                Readln(msg);
+                switch(msg[0])
+                {
+                    // Выключаем макет
+                    case '0':
+                    {
+                        // Выключаем все помпы
+                        for (int i = 0; i < 5; i++)
+                            Pump[i].setPower(0);
+                        error = 0; // Всё хорошо
+
+                        break;
+                    }
+
+                    case '1':
+                    {
+                        // Включаем все помпы на половину мощности
+                        for (int i = 0; i < 5; i++)
+                            Pump[i].setPower(500);
+                        error = 0; // Всё хорошо
+
+                        break;
+                    }
+
+                    default:
+                        error = -1; // Неправильно ввели команду
+                }
+
+                break;
+            }
+
+            // P set/get # M - установить/получить мощность M на насосе #
+            case 'P':
+            {
+                Readln(msg); // Получаем номер насоса
+                int number = atoi(msg);
+                if ((number > 0) && (number < 6))
+                {
+                    number--;
+                    Readln(msg); // Получаем режим
+                    switch(msg[0])
+                    {
+                        // set
+                        case 's':
+                        {
+                            Pump[number].Update();
+                            error = 0; // Всё хорошо
+                            break;
+                        }
+
+                        // get
+                        case 'g':
+                        {
+                            Serial.println(Pump[number].Power());
+                            break;
+                        }
+
+                        default:
+                            error = -1; // Неправильно ввели команду
+                    }
+                }
+                error = -1; // Неправильно ввели команду
+            }
+
+            // Запрашивается поток воды
+            case 'F':
+            {
+                Readln(msg); // Считываем номер датчика
+                switch(msg[0])
+                {
+                    // Первый
+                    case '1':
+                    {
+                        Serial.println(Result_1); // Печатаем первый результат
+                        break;
+                    }
+
+                    // Второй
+                    case '2':
+                    {
+                        Serial.println(Result_2); // Печатаем второй результат
+                        break;
+                    }
+
+                    default:
+                        error = -1; // Неправильно ввели команду
+                }
+            }
+
+            default:
+                error = -1; // Неправильно ввели команду
         }
-        else if (msg[0] == 'F') // Запрашивается поток воды
-        {
-        	Readln(msg); // Считываем номер датчика
-            int number = atoi(msg);
-        	if (number == 1) // Если первый
-        		Serial.println(Result_1); // Печатаем первый результат
-        	else if (number == 2) // Если второй
-        		Serial.println(Result_2); // Печатаем второй результат
-        	else
-        		error = -1; // Неправильно ввели команду        	
-        }
-        else
-        	error = -1; // Неправильно ввели команду
 
         if (error)
         {
