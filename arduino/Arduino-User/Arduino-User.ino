@@ -67,7 +67,7 @@ void(* resetFunc) (void) = 0; // Объявляем функцию reset с ад
 
 void setup()
 {
-	Serial.begin(115200);	// Начинаем последовательный вывод информации
+	Serial.begin(9600);	// Начинаем последовательный вывод информации
     pinMode(2, INPUT); // Конфигурируем вывод к которому подключён датчик, как вход
     attachInterrupt(0, CountInt_1, RISING); // Назначаем функцию CountInt_1 как обработчик прерываний intSensor при каждом выполнении условия RISING - переход от 0 к 1
     pinMode(3, INPUT); // Конфигурируем вывод к которому подключён датчик, как вход
@@ -247,15 +247,22 @@ void loop()
 
 void Readln(char * msg)
 {
-    int i;
+    int i, k;
     int len;
+    int b;
     delay(5);
     len = Serial.available();
-    for (i = 0; i < len; i++)
+    for (i = 0; i < len + 10; i++)
     {
-        msg[i] = Serial.read(); // Считываем строку
-        if (msg[i] == ' ' || msg[i] == '\n' || msg[i] == '\r')
+       for(k = 0; k < 100; k++)
+       {
+          if (Serial.peek() != -1){
+            msg[i] = Serial.read();
             break;
+          }
+       }
+       if (msg[i] == ' ' || msg[i] == '\n' || msg[i] == '\r')
+          break;
     }
     msg[i] = '\0';
 }

@@ -4,10 +4,11 @@
 #include "DFRobotDFPlayerMini.h"
 #include "FastLED.h"
 #include "MsTimer2.h"
+#include "DallasTemperature.h"
 
 // Подсветка
-#define LED_PIN     3
-#define NUM_LEDS    54
+#define LED_PIN     4
+#define NUM_LEDS    55
 #define LED_TYPE    WS2812B
 #define COLOR_ORDER GRB
 
@@ -15,13 +16,15 @@ CRGB leds[NUM_LEDS]; //Инициализируем массив светоди�
 byte R = 0, G = 0, B = 0;
 
 // Инициализируем софтварные компорт и mp3 плеер
-SoftwareSerial mySoftwareSerial(8, 7); // RX, TX
+SoftwareSerial mySoftwareSerial(7, 8); // RX, TX
 DFRobotDFPlayerMini myDFPlayer;
 
 void Alarm(unsigned long time);
 void Readln(char * msg);
-OneWire  ds(2); // Создаём объект OneWire на 2-ом пине (нужен резистор в 4.7кОм)
 void shutdown(void);
+
+OneWire  oneWire(2); // Создаём объект OneWire на 2-ом пине (нужен резистор в 4.7кОм)
+DallasTemperature sensors(&oneWire);
 
 const float seciruty_temp = 95; // Температура переграва системы безопасности
 float user_temp = 1000; // Температура перегрева, которую устанавливает пользователь
@@ -29,7 +32,7 @@ float user_temp = 1000; // Температура перегрева, котор
 // Заведём класс для датчик температуры
 class TermoSensor
 {
-    byte addr[8]; // Номер нашего датчика
+    DeviceAddress addr; // Номер нашего датчика
     byte data[12]; // Массив данных
     float celsius; // Переменная, в которую мы будем класть значение температуры с датчика
 
@@ -46,31 +49,14 @@ public:
         addr[6] = _7;
         addr[7] = _8;
         celsius = -666; // Сразу видно, что датчик температуры ещё не успел инициализироваться и подсчитать первую температуру
-        
-    }
-
-    void Convert(void)
-    {
-        // Перейдём к считыванию информации с датчиков
-        ds.reset(); // Для начала сбросим наше устройство (вернёт 1, если подключено) 
-        ds.select(addr); // Выберем наше устройство 
-        ds.write(0x44); // Начинаем преобразование
-        // Код 0x44 -- это команда выполнить температурную конверсию
+        sensors.setResolution(addr, 12);       
     }
 
     void getTemperature(void)
     {
-        ds.reset(); 
-        ds.select(addr);    // Снова выбираем этот датчик
-        ds.write(0xBE);         // Читаем его память (Scratchpad)
-
-        for (int i = 0; i < 9; i++) // Нам нужно считать 9 байт         
-            data[i] = ds.read();
-
-        // Преобразуем данные в реальную температуру.
-        int16_t raw = (data[1] << 8) | data[0];
-
-        celsius = (float)raw / 16.0;
+        float buff;
+        buff = sensors.getTempC(addr);
+        if ((buff != 0.0)&&(buff != -127.0)) celsius = buff;
         // Если температура больше критической температуры безопасности или температуры установленной учениками, 
         if ((celsius >= seciruty_temp) || (celsius >= user_temp)) 
         {
@@ -89,22 +75,22 @@ public:
 // Мы знаем номер датчика и его серийный номер, поэтому заводим соответсвующий массив 
 TermoSensor DS[16] = 
 {
-    TermoSensor(40, 255, 144, 37, 164, 22, 4, 65), 
-    TermoSensor(40, 255, 32, 150, 164, 22, 4, 23), 
-    TermoSensor(40, 255, 66, 71, 164, 22, 4, 11), 
-    TermoSensor(40, 255, 161, 155, 164, 22, 5, 210), 
-    TermoSensor(40, 255, 187, 13, 164, 22, 5, 251), 
-    TermoSensor(40, 255, 118, 161, 164, 22, 5, 142), 
-    TermoSensor(40, 255, 151, 72, 164, 22, 4, 29), 
-    TermoSensor(40, 255, 21, 11, 164, 22, 5, 99), 
-    TermoSensor(40, 255, 91, 156, 164, 22, 5, 79), 
-    TermoSensor(40, 255, 114, 96, 164, 22, 4, 121), 
-    TermoSensor(40, 255, 74, 86, 164, 22, 4, 130), 
-    TermoSensor(40, 255, 17, 78, 164, 22, 4, 67), 
-    TermoSensor(40, 255, 43, 131, 164, 22, 4, 222), 
-    TermoSensor(40, 255, 7, 148, 164, 22, 4, 185), 
-    TermoSensor(40, 255, 178, 12, 164, 22, 5, 135), 
-    TermoSensor(40, 255, 118, 224, 148, 22, 4, 97)
+    TermoSensor(0x28, 0xFF, 0x90, 0x25, 0xA4, 0x16, 0x04, 0x41), //1 
+    TermoSensor(0x28, 0xFF, 0xC2, 0xA6, 0x8A, 0x16, 0x03, 0xE5), //2
+    TermoSensor(0x28, 0xFF, 0x11, 0x4E, 0xA4, 0x16, 0x04, 0x43), //3 
+    TermoSensor(0x28, 0xFF, 0xB2, 0x0C, 0xA4, 0x16, 0x05, 0x87), //4
+    TermoSensor(0x28, 0xFF, 0xBB, 0x0D, 0xA4, 0x16, 0x05, 0xFB), //5 
+    TermoSensor(0x28, 0xFF, 0x76, 0xE0, 0x94, 0x16, 0x04, 0x61), //6 
+    TermoSensor(0x28, 0xFF, 0xC8, 0x71, 0x92, 0x16, 0x05, 0x6D), //7 
+    TermoSensor(0x28, 0xFF, 0x72, 0x60, 0xA4, 0x16, 0x04, 0x79), //8
+    TermoSensor(0x38, 0xFE, 0x72, 0x62, 0xA4, 0x26, 0x74, 0x59), 
+    TermoSensor(0x38, 0xFE, 0x72, 0x62, 0xA4, 0x36, 0x84, 0x29), 
+    TermoSensor(0x28, 0xFF, 0xD3, 0xAF, 0xA1, 0x16, 0x04, 0x11), //11 Внутри рекатора 2 
+    TermoSensor(0x28, 0xFF, 0x9F, 0x07, 0x93, 0x16, 0x04, 0xFD), //12 Внутри реактора 1 
+    TermoSensor(0x28, 0xFF, 0x20, 0x96, 0xA4, 0x16, 0x04, 0x17), //13 машинный зал 2 энергоблок 
+    TermoSensor(0x28, 0xFF, 0x29, 0xA2, 0x8A, 0x16, 0x03, 0x41), //14 вход реактора 2 
+    TermoSensor(0x28, 0xFF, 0xA1, 0x9B, 0xA4, 0x16, 0x05, 0xD2), //15 машинный зал 1 энергоблок 
+    TermoSensor(0x28, 0xFF, 0x30, 0x6C, 0x92, 0x16, 0x05, 0x50)  //16 вход реактора 1
 };
 
 // Класс нагрузка -- стандартный класс приборов, управляемых ШИМом
@@ -180,11 +166,13 @@ void setup()
     // Устанавливаем прерывание по таймеру для подсветки
     MsTimer2::set(10, flash); // 10ms period
 
-    mySoftwareSerial.begin(9600); // Инициализируем собственный порт для музыки 
-    Serial.begin(115200);
-  
+ //   mySoftwareSerial.begin(9600); // Инициализируем собственный порт для музыки 
+    Serial.begin(9600);
+    Serial.println(1);
+/*    
     // Если мы не видим плеер, мы перезагружаем ардуину
     if (!myDFPlayer.begin(mySoftwareSerial)) 
+        Serial.println("Mp3 error");
         resetFunc(); // Вызываем reset
   
     myDFPlayer.setTimeOut(500); //Set serial communictaion time out 500ms
@@ -209,17 +197,23 @@ void setup()
     //  myDFPlayer.enableDAC();  //Enable On-chip DAC
     //  myDFPlayer.disableDAC();  //Disable On-chip DAC
     //  myDFPlayer.outputSetting(true, 15); //output setting, enable the output and set the gain to 15
+*/
 
-    prev_time_1 = millis();
-    prev_time_2 = millis();
+    // Датчики температуры
+    sensors.begin();
+    //Serial.print("There are ");
+    //sensors.setResolution(9);
+    //sensors.setWaitForConversion(1);
+    sensors.setCheckForConversion(1);
+    //prev_time_1 = millis();
 
-    delay(6000);
+    delay(1000);
     MsTimer2::start(); // Начинаем светить
+    Serial.println(1);
 }
 
 void loop()
 {
-    // В цикле всегда пытаемся проверить, не пришла ли нам команда
     if (Serial.available() > 0) 
     {
         error = 1;
@@ -365,6 +359,8 @@ void loop()
             {
                 Readln(msg); // Считываем номер датчика
                 Serial.println(DS[atoi(msg) - 1].Temperature()); // Печаетаем соответсвующую температуру
+                //Serial.println(atoi(msg));
+                //Serial.println(Serial.peek());
                 break;
             }
 
@@ -521,25 +517,32 @@ void loop()
                 Serial.println(-1);
         }
         else
-            Serial.println(0);
+            Serial.println(5);
     }
 
     // Запрос на обновлениие температуры
-	if (millis() - prev_time_1 > 1000) // Если мы не обновляли температуру больше секунды
+	if (sensors.isConversionComplete()) // Если мы не обновляли температуру больше секунды
     {
+        //sensors.requestTemperatures();
+        //prev_time_1 = millis(); // Обнулили последнее время получения температуры
         for (int i = 0; i < 16; i++)
-            DS[i].Convert(); // Отправляем запрос на конвертацию
-        prev_time_1 = millis(); // Обнулили последнее время запроса на конвертацию
-        prev_time_2 = millis(); // Обнулили последнее время получения температуры
+            DS[i].getTemperature();
+        sensors.requestTemperatures();
+        /*if (sensors.isConversionComplete())
+        {
+          for (int i = 0; i < 16; i++)
+                DS[i].getTemperature();
+        }*/
     }
+  //sensors.requestTemperatures();
+  //Serial.println(DS[12].Temperature());
 
     // Забираем посчитанные данные
-    if ((millis() - prev_time_1 > 800) || (millis() - prev_time_2 > 1000))
+    /*if (sensors.isConversionComplete())
     {
     	for (int i = 0; i < 16; i++)
             DS[i].getTemperature();
-        prev_time_2 = millis();
-    }
+    }*/
 }
 
 void Alarm(unsigned long time)
@@ -553,15 +556,22 @@ void Alarm(unsigned long time)
 
 void Readln(char * msg)
 {
-    int i;
+    int i, k;
     int len;
+    int b;
     delay(5);
     len = Serial.available();
-    for (i = 0; i < len; i++)
+    for (i = 0; i < len + 10; i++)
     {
-        msg[i] = Serial.read(); // Считываем строку
-        if (msg[i] == ' ' || msg[i] == '\n' || msg[i] == '\r')
+       for(k = 0; k < 100; k++)
+       {
+          if (Serial.peek() != -1){
+            msg[i] = Serial.read();
             break;
+          }
+       }
+       if (msg[i] == ' ' || msg[i] == '\n' || msg[i] == '\r')
+          break;
     }
     msg[i] = '\0';
 }
