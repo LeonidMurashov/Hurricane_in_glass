@@ -36,7 +36,8 @@ class Transmitter():
             while not msg.startswith(search):
                 msg = s.recv(128)
                 msg = msg.decode('utf-8')
-            return msg[6:]
+            print("MSG: "+msg)
+            return msg[8:-5]
         except:
             return self.getMsg(self.sendMsg(msgOld))
 
@@ -56,6 +57,9 @@ class Transmitter():
 
     def testAlarm(self):
         mid = self.sendMsg('test_alarm')
+        code = self.getMsg(mid)
+        print("Симулируем перегрев!")
+        return code
 
     def turnOn(self):
         mid = self.sendMsg('turn 1')
@@ -88,9 +92,9 @@ class Transmitter():
         return flow
 
     def setPipe(self, num, val):
-        mid = self.sendMsg("P {} set {}".format(num, val))
+        mid = self.sendMsg("P {} set {}".format(num, val*10))
         code = self.getMsg(mid)
-        print("SET Насос {} {}%".format(num, val*100))
+        print("SET Насос {} {}%".format(num, val))
         return code
 
     def getPipe(self, num):
@@ -113,5 +117,10 @@ class Transmitter():
 
     def setLED(self, red, green, blue):
         mid = self.sendMsg("L {} {} {}".format(red, green, blue))
+        code = self.getMsg(mid)
+        return code
+
+    def setAlarm(self, temp):
+        mid = self.sendMsg("ALARM {}".format(temp))
         code = self.getMsg(mid)
         return code

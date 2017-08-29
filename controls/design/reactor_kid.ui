@@ -75,7 +75,7 @@
       <property name="autoFillBackground">
        <bool>false</bool>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_9">
+      <layout class="QVBoxLayout" name="verticalLayout_21">
        <item>
         <widget class="QWidget" name="widget_2" native="true">
          <property name="styleSheet">
@@ -204,6 +204,71 @@ border: 0px;</string>
         </widget>
        </item>
        <item>
+        <widget class="QWidget" name="widget_3" native="true">
+         <property name="styleSheet">
+          <string notr="true">border: 2px solid white;</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_9">
+          <item>
+           <widget class="QLCDNumber" name="cpower">
+            <property name="font">
+             <font>
+              <family>Gadugi</family>
+              <italic>false</italic>
+             </font>
+            </property>
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(255, 255, 255);</string>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Plain</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSlider" name="cslider">
+            <property name="maximum">
+             <number>120</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_10">
+            <property name="font">
+             <font>
+              <family>Sans Serif</family>
+              <pointsize>18</pointsize>
+              <italic>false</italic>
+             </font>
+            </property>
+            <property name="layoutDirection">
+             <enum>Qt::RightToLeft</enum>
+            </property>
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(255, 255, 255);
+border: 0px;</string>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Plain</enum>
+            </property>
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Температура тревоги, &lt;span style=&quot; vertical-align:super;&quot;&gt;0&lt;/span&gt;С&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
         <widget class="QWidget" name="widget_4" native="true">
          <property name="font">
           <font>
@@ -324,6 +389,9 @@ border: 0px;</string>
             <property name="styleSheet">
              <string notr="true">border: 2px solid white; color: white;</string>
             </property>
+            <property name="digitCount">
+             <number>10</number>
+            </property>
            </widget>
           </item>
          </layout>
@@ -344,6 +412,9 @@ border: 0px;</string>
            <widget class="QLCDNumber" name="t2">
             <property name="styleSheet">
              <string notr="true">border: 2px solid white; color: white;</string>
+            </property>
+            <property name="digitCount">
+             <number>10</number>
             </property>
            </widget>
           </item>
@@ -366,6 +437,9 @@ border: 0px;</string>
             <property name="styleSheet">
              <string notr="true">border: 2px solid white; color: white;</string>
             </property>
+            <property name="digitCount">
+             <number>10</number>
+            </property>
            </widget>
           </item>
          </layout>
@@ -386,6 +460,9 @@ border: 0px;</string>
            <widget class="QLCDNumber" name="t4">
             <property name="styleSheet">
              <string notr="true">border: 2px solid white; color: white;</string>
+            </property>
+            <property name="digitCount">
+             <number>10</number>
             </property>
            </widget>
           </item>
@@ -408,6 +485,9 @@ border: 0px;</string>
             <property name="styleSheet">
              <string notr="true">border: 2px solid white; color: white;</string>
             </property>
+            <property name="digitCount">
+             <number>10</number>
+            </property>
            </widget>
           </item>
          </layout>
@@ -428,6 +508,9 @@ border: 0px;</string>
            <widget class="QLCDNumber" name="t6">
             <property name="styleSheet">
              <string notr="true">border: 2px solid white; color: white;</string>
+            </property>
+            <property name="digitCount">
+             <number>10</number>
             </property>
            </widget>
           </item>
@@ -450,6 +533,9 @@ border: 0px;</string>
             <property name="styleSheet">
              <string notr="true">border: 2px solid white; color: white;</string>
             </property>
+            <property name="digitCount">
+             <number>10</number>
+            </property>
            </widget>
           </item>
          </layout>
@@ -470,6 +556,9 @@ border: 0px;</string>
            <widget class="QLCDNumber" name="t8">
             <property name="styleSheet">
              <string notr="true">border: 2px solid white; color: white;</string>
+            </property>
+            <property name="digitCount">
+             <number>10</number>
             </property>
            </widget>
           </item>
@@ -492,6 +581,9 @@ border: 0px;</string>
             <property name="styleSheet">
              <string notr="true">border: 2px solid white; color: white;</string>
             </property>
+            <property name="digitCount">
+             <number>10</number>
+            </property>
            </widget>
           </item>
          </layout>
@@ -512,6 +604,9 @@ border: 0px;</string>
            <widget class="QLCDNumber" name="t10">
             <property name="styleSheet">
              <string notr="true">border: 2px solid white; color: white;</string>
+            </property>
+            <property name="digitCount">
+             <number>10</number>
             </property>
            </widget>
           </item>

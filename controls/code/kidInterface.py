@@ -4,6 +4,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from threading import Thread
 import time
 import rpiTransm as rpi
+import time
 
 def exitor():
     if exit != 1:
@@ -12,19 +13,31 @@ def exitor():
 
 def getData():
     energy = transm.getEnergy()
-    if energy != -1:
+    if energy != "-1" and energy != "-666.00":
         ui.energyLcd.display(energy)
+    time.sleep(0.1)
     exitor()
     for num in range(1, 11):
         val = transm.getSensor(num)
-        if val != -1:
-            eval("ui.t{}.display('{}. '+val)".format(num, num))
+        if val != "-1" and val != "-666.00" and val != "0.00":
+            eval("ui.t{}.display(val)".format(num))
         exitor()
+        time.sleep(0.1)
     if exit == 1:
         getData()
     else:
         print("Exiting")
         sys.exit(exit)
+
+def updSensor():
+    while exit == 1:
+        for i in range(1, 10):
+            slidersSender(i)
+            time.sleep(0.1)
+            exitor()
+
+
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -60,8 +73,8 @@ class Ui_MainWindow(object):
         self.menu2.setFont(font)
         self.menu2.setAutoFillBackground(False)
         self.menu2.setObjectName("menu2")
-        self.verticalLayout_9 = QtWidgets.QVBoxLayout(self.menu2)
-        self.verticalLayout_9.setObjectName("verticalLayout_9")
+        self.verticalLayout_21 = QtWidgets.QVBoxLayout(self.menu2)
+        self.verticalLayout_21.setObjectName("verticalLayout_21")
         self.widget_2 = QtWidgets.QWidget(self.menu2)
         self.widget_2.setStyleSheet("border: 2px solid white;")
         self.widget_2.setObjectName("widget_2")
@@ -95,7 +108,7 @@ class Ui_MainWindow(object):
         self.label_7.setFrameShadow(QtWidgets.QFrame.Plain)
         self.label_7.setObjectName("label_7")
         self.verticalLayout_10.addWidget(self.label_7)
-        self.verticalLayout_9.addWidget(self.widget_2)
+        self.verticalLayout_21.addWidget(self.widget_2)
         self.widget = QtWidgets.QWidget(self.menu2)
         self.widget.setStyleSheet("border: 2px solid white;")
         self.widget.setObjectName("widget")
@@ -128,7 +141,41 @@ class Ui_MainWindow(object):
         self.label_5.setFrameShadow(QtWidgets.QFrame.Plain)
         self.label_5.setObjectName("label_5")
         self.verticalLayout.addWidget(self.label_5)
-        self.verticalLayout_9.addWidget(self.widget)
+        self.verticalLayout_21.addWidget(self.widget)
+        self.widget_3 = QtWidgets.QWidget(self.menu2)
+        self.widget_3.setStyleSheet("border: 2px solid white;")
+        self.widget_3.setObjectName("widget_3")
+        self.verticalLayout_9 = QtWidgets.QVBoxLayout(self.widget_3)
+        self.verticalLayout_9.setObjectName("verticalLayout_9")
+        self.cpower = QtWidgets.QLCDNumber(self.widget_3)
+        font = QtGui.QFont()
+        font.setFamily("Gadugi")
+        font.setItalic(False)
+        self.cpower.setFont(font)
+        self.cpower.setAutoFillBackground(False)
+        self.cpower.setStyleSheet("color: rgb(255, 255, 255);")
+        self.cpower.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.cpower.setObjectName("cpower")
+        self.verticalLayout_9.addWidget(self.cpower)
+        self.cslider = QtWidgets.QSlider(self.widget_3)
+        self.cslider.setMaximum(120)
+        self.cslider.setOrientation(QtCore.Qt.Horizontal)
+        self.cslider.setObjectName("cslider")
+        self.verticalLayout_9.addWidget(self.cslider)
+        self.label_10 = QtWidgets.QLabel(self.widget_3)
+        font = QtGui.QFont()
+        font.setFamily("Sans Serif")
+        font.setPointSize(18)
+        font.setItalic(False)
+        self.label_10.setFont(font)
+        self.label_10.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.label_10.setAutoFillBackground(False)
+        self.label_10.setStyleSheet("color: rgb(255, 255, 255);\n"
+"border: 0px;")
+        self.label_10.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.label_10.setObjectName("label_10")
+        self.verticalLayout_9.addWidget(self.label_10)
+        self.verticalLayout_21.addWidget(self.widget_3)
         self.widget_4 = QtWidgets.QWidget(self.menu2)
         font = QtGui.QFont()
         font.setFamily("Gadugi")
@@ -160,7 +207,7 @@ class Ui_MainWindow(object):
         self.label_6.setFrameShadow(QtWidgets.QFrame.Plain)
         self.label_6.setObjectName("label_6")
         self.verticalLayout_8.addWidget(self.label_6)
-        self.verticalLayout_9.addWidget(self.widget_4)
+        self.verticalLayout_21.addWidget(self.widget_4)
         self.horizontalLayout_4.addWidget(self.menu2)
         self.sensors = QtWidgets.QWidget(self.centralwidget)
         font = QtGui.QFont()
@@ -605,42 +652,18 @@ class Ui_MainWindow(object):
         self.n6slider.valueChanged.connect(lambda: sliders(6))
         self.r1slider.valueChanged.connect(lambda: sliders(7))
         self.r2slider.valueChanged.connect(lambda: sliders(8))
+        self.cslider.valueChanged.connect(lambda: sliders(9))
 
 
-        self.n1slider.sliderReleased.connect(lambda: slidersSender(1))
-        self.n2slider.sliderReleased.connect(lambda: slidersSender(2))
-        self.n3slider.sliderReleased.connect(lambda: slidersSender(3))
-        self.n5slider.sliderReleased.connect(lambda: slidersSender(4))
-        self.n6slider.sliderReleased.connect(lambda: slidersSender(5))
-        self.n5slider.sliderReleased.connect(lambda: slidersSender(6))
-        self.r1slider.sliderReleased.connect(lambda: slidersSender(7))
-        self.r2slider.sliderReleased.connect(lambda: slidersSender(8))
-
-        def translucent(widget):
-            widget.setWindowFlags(QtCore.Qt.FramelessWindowHint)
-            widget.setAttribute(QtCore.Qt.WA_TranslucentBackground)
-
-        for i in range(1, 10):
-            eval("translucent(self.label_{})".format(i))
-
-        self.n1slider.valueChanged.connect(lambda: sliders(1))
-        self.n2slider.valueChanged.connect(lambda: sliders(2))
-        self.n3slider.valueChanged.connect(lambda: sliders(3))
-        self.n4slider.valueChanged.connect(lambda: sliders(4))
-        self.n5slider.valueChanged.connect(lambda: sliders(5))
-        self.n6slider.valueChanged.connect(lambda: sliders(6))
-        self.r1slider.valueChanged.connect(lambda: sliders(7))
-        self.r2slider.valueChanged.connect(lambda: sliders(8))
-
-
-        self.n1slider.sliderReleased.connect(lambda: slidersSender(1))
-        self.n2slider.sliderReleased.connect(lambda: slidersSender(2))
-        self.n3slider.sliderReleased.connect(lambda: slidersSender(3))
-        self.n5slider.sliderReleased.connect(lambda: slidersSender(4))
-        self.n6slider.sliderReleased.connect(lambda: slidersSender(5))
-        self.n5slider.sliderReleased.connect(lambda: slidersSender(6))
-        self.r1slider.sliderReleased.connect(lambda: slidersSender(7))
-        self.r2slider.sliderReleased.connect(lambda: slidersSender(8))
+#        self.n1slider.sliderReleased.connect(lambda: slidersSender(1))
+#        self.n2slider.sliderReleased.connect(lambda: slidersSender(2))
+#        self.n3slider.sliderReleased.connect(lambda: slidersSender(3))
+#        self.n4slider.sliderReleased.connect(lambda: slidersSender(4))
+#        self.n5slider.sliderReleased.connect(lambda: slidersSender(5))
+#        self.n6slider.sliderReleased.connect(lambda: slidersSender(6))
+#        self.r1slider.sliderReleased.connect(lambda: slidersSender(7))
+#        self.r2slider.sliderReleased.connect(lambda: slidersSender(8))
+#        self.cslider.sliderReleased.connect(lambda: slidersSender(9))
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -658,6 +681,7 @@ class Ui_MainWindow(object):
         self.label_3.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">Насос 3, %</p></body></html>"))
         self.label_4.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">Насос 2, %</p></body></html>"))
         self.label_1.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">Насос 1, %</p></body></html>"))
+        self.label_10.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">Температура тревоги, %</p></body></html>"))
 
 import reactor_res_rc
 
@@ -665,21 +689,28 @@ def sliders(num):
     if num == 7:
         val = ui.r1slider.value()
         ui.r1power.display(val)
-    elif num ==8:
+    elif num == 8:
         val = ui.r2slider.value()
         ui.r2power.display(val)
+    elif num == 9:
+        val = ui.cslider.value()
+        ui.cpower.display(val)
     else:
         val = eval('ui.n{}slider.value()'.format(num))
         eval('ui.lcd{}.display(val)'.format(num))
 
 def slidersSender(num):
-    # Добавить setHeater
     if num == 7:
         val = ui.r1slider.value()
+        transm.setHeater(1, val)
     elif num == 8:
         val = ui.r2slider.value()
+        transm.setHeater(2, val)
+    elif num == 9:
+        val = ui.cslider.value()
+        transm.setAlarm(val)
     else:
-        val = eval('ui.n{}slider.value()'.format(num))/100
+        val = eval('ui.n{}slider.value()'.format(num))
         transm.setPipe(num, val)
 
 def runApp():
@@ -698,4 +729,6 @@ if __name__ == "__main__":
 
     dataThread = Thread(target=getData, args=())
     dataThread.start()
+    sliderThread = Thread(target=updSensor, args=())
+    sliderThread.start()
     runApp()

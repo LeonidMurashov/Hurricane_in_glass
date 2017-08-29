@@ -1,15 +1,11 @@
-# -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'reactor_master.ui'
-#
-# Created by: PyQt5 UI code generator 5.5.1
-#
-# WARNING! All changes made in this file will be lost!
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 from threading import Thread
 import time
 import rpiTransm as rpi
+import datetime
+import time
+
+koef = 1
 
 def exitor():
     if exit != 1:
@@ -20,24 +16,30 @@ def getData():
     energy = transm.getEnergy()
     if energy != -1:
         ui.energyLcd.display(energy)
+    time.sleep(0.1)
     exitor()
     for num in range(1, 17):
-        val = transm.getSensor(num)
-        if val != -1:
+        val = str(transm.getSensor(num))
+        if val != "-1" and val != "-666.00" and val != "0.00":
+            #val = "{}. {}".format(num, val)
             eval("ui.t{}.display(val)".format(num))
+        time.sleep(0.1)
         exitor()
     flow = transm.getFlow(1)
-    if flow != -1:
+    if flow != "-1" and flow != "-666.00":
         ui.flow1.display(flow)
+    time.sleep(0.1)
     exitor()
     flow = transm.getFlow(2)
-    if flow != -1:
+    if flow != "-1" and flow != "-666.00":
         ui.flow2.display(flow)
+    time.sleep(0.1)
     exitor()
-    for num in range(1, 5):
+    for num in range(1, 7):
         nasos = transm.getPipe(num)
-        if nasos != -1:
+        if nasos != "-1" and nasos != "-666.00":
             eval('ui.lcd{}.display(nasos)'.format(num))
+        time.sleep(0.1)
         exitor()
     if exit == 1:
         getData()
@@ -49,7 +51,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setWindowModality(QtCore.Qt.ApplicationModal)
-        MainWindow.resize(1025, 768)
+        MainWindow.resize(1024, 768)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -497,6 +499,26 @@ class Ui_MainWindow(object):
         self.t12.setObjectName("t12")
         self.verticalLayout_21.addWidget(self.t12)
         self.verticalLayout_27.addWidget(self.s1_11)
+        self.label_14 = QtWidgets.QLabel(self.sensors)
+        font = QtGui.QFont()
+        font.setFamily("Sans Serif")
+        font.setPointSize(18)
+        font.setItalic(False)
+        self.label_14.setFont(font)
+        self.label_14.setStyleSheet("color: white; border: 0px;")
+        self.label_14.setObjectName("label_14")
+        self.verticalLayout_27.addWidget(self.label_14)
+        self.frame = QtWidgets.QFrame(self.sensors)
+        self.frame.setStyleSheet("border: 0px; ")
+        self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.frame.setObjectName("frame")
+        self.cslider = QtWidgets.QSlider(self.frame)
+        self.cslider.setGeometry(QtCore.QRect(10, 10, 330, 20))
+        self.cslider.setOrientation(QtCore.Qt.Horizontal)
+        self.cslider.setObjectName("cslider")
+        self.cslider.setStyleSheet("border: 2px solid white;")
+        self.verticalLayout_27.addWidget(self.frame)
         self.horizontalLayout_4.addWidget(self.sensors)
         self.waterpipes = QtWidgets.QWidget(self.centralwidget)
         font = QtGui.QFont()
@@ -506,8 +528,76 @@ class Ui_MainWindow(object):
         self.waterpipes.setAutoFillBackground(False)
         self.waterpipes.setStyleSheet("")
         self.waterpipes.setObjectName("waterpipes")
-        self.verticalLayout_26 = QtWidgets.QVBoxLayout(self.waterpipes)
+        self.verticalLayout_30 = QtWidgets.QVBoxLayout(self.waterpipes)
+        self.verticalLayout_30.setObjectName("verticalLayout_30")
+        self.Nasos4_2 = QtWidgets.QWidget(self.waterpipes)
+        font = QtGui.QFont()
+        font.setFamily("Gadugi")
+        font.setItalic(False)
+        self.Nasos4_2.setFont(font)
+        self.Nasos4_2.setAutoFillBackground(False)
+        self.Nasos4_2.setStyleSheet("border: 2px solid white;")
+        self.Nasos4_2.setObjectName("Nasos4_2")
+        self.verticalLayout_26 = QtWidgets.QVBoxLayout(self.Nasos4_2)
         self.verticalLayout_26.setObjectName("verticalLayout_26")
+        self.lcd6 = QtWidgets.QLCDNumber(self.Nasos4_2)
+        font = QtGui.QFont()
+        font.setFamily("Gadugi")
+        font.setItalic(False)
+        self.lcd6.setFont(font)
+        self.lcd6.setAutoFillBackground(False)
+        self.lcd6.setStyleSheet("color: rgb(255, 255, 255);")
+        self.lcd6.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.lcd6.setObjectName("lcd6")
+        self.verticalLayout_26.addWidget(self.lcd6)
+        self.label_12 = QtWidgets.QLabel(self.Nasos4_2)
+        font = QtGui.QFont()
+        font.setFamily("Sans Serif")
+        font.setPointSize(18)
+        font.setItalic(False)
+        self.label_12.setFont(font)
+        self.label_12.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.label_12.setAutoFillBackground(False)
+        self.label_12.setStyleSheet("color: rgb(255, 255, 255);\n"
+"border: 0px;")
+        self.label_12.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.label_12.setObjectName("label_12")
+        self.verticalLayout_26.addWidget(self.label_12)
+        self.verticalLayout_30.addWidget(self.Nasos4_2)
+        self.Nasos4_3 = QtWidgets.QWidget(self.waterpipes)
+        font = QtGui.QFont()
+        font.setFamily("Gadugi")
+        font.setItalic(False)
+        self.Nasos4_3.setFont(font)
+        self.Nasos4_3.setAutoFillBackground(False)
+        self.Nasos4_3.setStyleSheet("border: 2px solid white;")
+        self.Nasos4_3.setObjectName("Nasos4_3")
+        self.verticalLayout_29 = QtWidgets.QVBoxLayout(self.Nasos4_3)
+        self.verticalLayout_29.setObjectName("verticalLayout_29")
+        self.lcd5 = QtWidgets.QLCDNumber(self.Nasos4_3)
+        font = QtGui.QFont()
+        font.setFamily("Gadugi")
+        font.setItalic(False)
+        self.lcd5.setFont(font)
+        self.lcd5.setAutoFillBackground(False)
+        self.lcd5.setStyleSheet("color: rgb(255, 255, 255);")
+        self.lcd5.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.lcd5.setObjectName("lcd5")
+        self.verticalLayout_29.addWidget(self.lcd5)
+        self.label_13 = QtWidgets.QLabel(self.Nasos4_3)
+        font = QtGui.QFont()
+        font.setFamily("Sans Serif")
+        font.setPointSize(18)
+        font.setItalic(False)
+        self.label_13.setFont(font)
+        self.label_13.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.label_13.setAutoFillBackground(False)
+        self.label_13.setStyleSheet("color: rgb(255, 255, 255);\n"
+"border: 0px;")
+        self.label_13.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.label_13.setObjectName("label_13")
+        self.verticalLayout_29.addWidget(self.label_13)
+        self.verticalLayout_30.addWidget(self.Nasos4_3)
         self.Nasos4 = QtWidgets.QWidget(self.waterpipes)
         font = QtGui.QFont()
         font.setFamily("Gadugi")
@@ -541,7 +631,7 @@ class Ui_MainWindow(object):
         self.label_2.setFrameShadow(QtWidgets.QFrame.Plain)
         self.label_2.setObjectName("label_2")
         self.verticalLayout_3.addWidget(self.label_2)
-        self.verticalLayout_26.addWidget(self.Nasos4)
+        self.verticalLayout_30.addWidget(self.Nasos4)
         self.Nasos3 = QtWidgets.QWidget(self.waterpipes)
         font = QtGui.QFont()
         font.setFamily("Gadugi")
@@ -575,7 +665,7 @@ class Ui_MainWindow(object):
         self.label_3.setFrameShadow(QtWidgets.QFrame.Plain)
         self.label_3.setObjectName("label_3")
         self.verticalLayout_4.addWidget(self.label_3)
-        self.verticalLayout_26.addWidget(self.Nasos3)
+        self.verticalLayout_30.addWidget(self.Nasos3)
         self.Nasos2 = QtWidgets.QWidget(self.waterpipes)
         font = QtGui.QFont()
         font.setFamily("Gadugi")
@@ -609,7 +699,7 @@ class Ui_MainWindow(object):
         self.label_4.setFrameShadow(QtWidgets.QFrame.Plain)
         self.label_4.setObjectName("label_4")
         self.verticalLayout_5.addWidget(self.label_4)
-        self.verticalLayout_26.addWidget(self.Nasos2)
+        self.verticalLayout_30.addWidget(self.Nasos2)
         self.Nasos1 = QtWidgets.QWidget(self.waterpipes)
         font = QtGui.QFont()
         font.setFamily("Gadugi")
@@ -673,7 +763,7 @@ class Ui_MainWindow(object):
         self.label_1.setFrameShadow(QtWidgets.QFrame.Plain)
         self.label_1.setObjectName("label_1")
         self.verticalLayout_2.addWidget(self.label_1)
-        self.verticalLayout_26.addWidget(self.Nasos1)
+        self.verticalLayout_30.addWidget(self.Nasos1)
         self.flow1wid = QtWidgets.QWidget(self.waterpipes)
         font = QtGui.QFont()
         font.setFamily("Gadugi")
@@ -737,7 +827,7 @@ class Ui_MainWindow(object):
         self.label_5.setFrameShadow(QtWidgets.QFrame.Plain)
         self.label_5.setObjectName("label_5")
         self.verticalLayout_11.addWidget(self.label_5)
-        self.verticalLayout_26.addWidget(self.flow1wid)
+        self.verticalLayout_30.addWidget(self.flow1wid)
         self.flow2wid = QtWidgets.QWidget(self.waterpipes)
         font = QtGui.QFont()
         font.setFamily("Gadugi")
@@ -801,7 +891,7 @@ class Ui_MainWindow(object):
         self.label_9.setFrameShadow(QtWidgets.QFrame.Plain)
         self.label_9.setObjectName("label_9")
         self.verticalLayout_25.addWidget(self.label_9)
-        self.verticalLayout_26.addWidget(self.flow2wid)
+        self.verticalLayout_30.addWidget(self.flow2wid)
         self.horizontalLayout_4.addWidget(self.waterpipes)
         MainWindow.setCentralWidget(self.centralwidget)
 
@@ -809,8 +899,10 @@ class Ui_MainWindow(object):
             widget.setWindowFlags(QtCore.Qt.FramelessWindowHint)
             widget.setAttribute(QtCore.Qt.WA_TranslucentBackground)
 
-        for i in range(1, 11):
+        for i in range(1, 15):
             eval("translucent(self.label_{})".format(i))
+
+        translucent(self.frame)
 
         self.turnOn.clicked.connect(transm.turnOn)
         self.modelOff.clicked.connect(transm.turnOff)
@@ -819,6 +911,8 @@ class Ui_MainWindow(object):
         self.modelOff.clicked.connect(transm.turnOff)
         self.dump.clicked.connect(transm.dump)
         self.cooling.clicked.connect(transm.cool)
+
+        self.cslider.sliderReleased.connect(lambda: citty())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -844,12 +938,34 @@ class Ui_MainWindow(object):
         self.label_1.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">Насос 1, %</p></body></html>"))
         self.label_5.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">Поток 1, л/с</p></body></html>"))
         self.label_9.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">Поток 2, л/с</p></body></html>"))
+        self.label_14.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">Потребление города, %</p></body></html>"))
+        self.label_12.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">Насос 6, %</p></body></html>"))
+        self.label_13.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">Насос 5, %</p></body></html>"))
+
 
 import reactor_res_rc
+
+def citty():
+    enrg = ui.energyLcd.value() - ui.cslider.value()*koef
+    # Добавить переключение яркости
+
 
 def runApp():
     global exit
     exit = app.exec_()
+
+def logger():
+    while exit == 1:
+        with open("log.txt", "a+") as log:
+            enrg = ui.energyLcd.value()
+            city = ui.cslider.value()*koef
+            log.write("{} Enrg: {}, City: {} \n".format(
+                datetime.datetime.now(), enrg, city))
+        for i in range(0, 30):
+            time.sleep(1)
+            if exit != 1:
+                break
+
 
 if __name__ == "__main__":
     import sys
@@ -863,4 +979,6 @@ if __name__ == "__main__":
 
     dataThread = Thread(target=getData, args=())
     dataThread.start()
+    logThread = Thread(targer=logger, args=())
+    logThread.start()
     runApp()
