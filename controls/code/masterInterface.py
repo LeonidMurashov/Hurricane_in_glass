@@ -979,6 +979,6 @@ if __name__ == "__main__":
 
     dataThread = Thread(target=getData, args=())
     dataThread.start()
-    logThread = Thread(targer=logger, args=())
-    logThread.start()
+    #logThread = Thread(target=logger, args=())
+    #logThread.start()
     runApp()
