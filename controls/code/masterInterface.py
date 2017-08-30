@@ -52,6 +52,7 @@ def getData():
         energy = (float(temperatures[2][-1]) - float(temperatures[1][-1])) * 11
     except ValueError:
         energy = 0
+    logger()
     if energy > 0:
         print('{0:.2f}'.format(energy))
         ui.energyLcd.display('{0:.2f}'.format(energy))
@@ -1029,16 +1030,15 @@ def runApp():
     exit = app.exec_()
 
 def logger():
-    while exit == 1:
-        with open("log.txt", "a+") as log:
-            enrg = ui.energyLcd.value()
-            city = ui.cslider.value()*koef
-            log.write("{} Enrg: {}, City: {} \n".format(
-                datetime.datetime.now(), enrg, city))
-        for i in range(0, 30):
-            time.sleep(1)
-            if exit != 1:
-                break
+    with open("log.txt", "a+") as log:
+        enrg = ui.energyLcd.value()
+        city = ui.cslider.value()*koef
+        log.write("{} Enrg: {}, City: {} \n".format(
+            datetime.datetime.now(), enrg, city))
+    for i in range(0, 30):
+        time.sleep(1)
+        if exit != 1:
+            break
 
 
 if __name__ == "__main__":
@@ -1053,6 +1053,4 @@ if __name__ == "__main__":
 
     dataThread = Thread(target=getData, args=())
     dataThread.start()
-    #logThread = Thread(target=logger, args=())
-    #logThread.start()
     runApp()
