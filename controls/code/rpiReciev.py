@@ -71,15 +71,15 @@ def msgResponce(msg):
     global ser1,ser2
     ser1.reset_input_buffer()
     ser2.reset_input_buffer()
-    print(msg)
+    #print(msg)
     # Выделение частей запроса
     mid = msg.split(":")[0]
     device = msg.split(":")[1].split(" ")[0]
     msg = msg[4:]
-    print(device)
-    print(msg)
+    #print(device)
+    #print(msg)
     try:
-        if device == 'alarm':
+        if device == 'test_alarm':
             th = T.Thread(target=simulate_overheat)
             th.start()
             responce = ' '
@@ -87,20 +87,20 @@ def msgResponce(msg):
         # Распределение запроса между Arduino
         elif device in ser1Components:
             t = time.time()
-            print('deivce found in ser1')
+            #print('deivce found in ser1')
             ser1.write(bytearray(msg,'utf-8'))
             responce = str(ser1.readline())[2:-5]
-            print(responce)
-            print(time.time() - t)
-            print()
+            #print(responce)
+            #print(time.time() - t)
+            #print()
         elif device in ser2Components:
             t = time.time()
-            print('device found in ser2')
+            #print('device found in ser2')
             ser2.write(bytearray(msg,'utf-8'))
             responce = ser2.readline()
-            print(responce)
-            print(time.time() - t)
-            print()
+            #print(responce)
+            #print(time.time() - t)
+            #print()
         elif device == 'ping':
             responce = 'pong'
         elif device == 'turn':
@@ -132,8 +132,8 @@ def msgResponce(msg):
             time.sleep(0.5)
             ser = auth()
         ser1, ser2 = ser[0], ser[1]
-    if overheating and device == 'T':
-        responce = '100'
+    if overheating == True and device == 'T':
+        responce = '100.0'
 
     try:
         t = time.time()
@@ -145,19 +145,26 @@ def msgResponce(msg):
         #led.blink(0,0,1)
 
 # Функция, обрабатывающая сообщения из очереди
-def worker(q):
+def worker(q, qk):
     while True:
-        msg = q.get()
-        msgResponce(msg)
-        q.task_done()
+        if not q.empty():
+            msg = q.get()
+            msgResponce(msg)
+            q.task_done()
+        if not qk.empty():
+            msg = qk.get()
+            msgResponce(msg)
+            qk.task_done()
 
 # Функция постоянного получения сообщений
-def getMsg(q):
+def getMsg(q, qk):
     while 1:
         msg = s.recv(128)
         msg = msg.decode('utf-8')
         if msg.startswith("t "):
             q.put(msg[2:])
+        elif msg.startswith("k "):
+            qk.put(msg[2:])
 
 if __name__ == '__main__':
     try:
@@ -174,16 +181,22 @@ if __name__ == '__main__':
         print('done!')
         # Создание очереди
         q = Queue()
+        qk = Queue()
         print('starting threads')
         # Поток, отвечающий за непрерывное получение сообщений
-        recieverThread = T.Thread(target=getMsg, args=([q]))
+        recieverThread = T.Thread(target=getMsg, args=([q, qk]))
 
         # Поток, отвечающий за выполнение запросов из очереди
-        workerThread = T.Thread(target=worker, args=([q]))
+        workerThread = T.Thread(target=worker, args=([q, qk]))
+
+        # Поток, отвечвющий за выполнение запросов детей
+        #workerKidThread = T.Thread(target=worker, args=([qk]))
+
 
         # Запуск потоков
         recieverThread.start()
         workerThread.start()
+        #workerKidThread.start()
     except Exception as e:
         print(e)
         #led.dispose()

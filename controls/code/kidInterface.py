@@ -3,8 +3,17 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from threading import Thread
 import time
-import rpiTransm as rpi
+import rpiTransmKid as rpi
 import time
+import collections
+
+temperatures = collections.defaultdict(lambda: collections.deque((), 5))
+
+def check_if_temperature_not_changed(t, current):
+    print(t)
+    if len(t) == t.maxlen and len(set(t)) == 1:
+        return '-1'
+    return current
 
 def exitor():
     if exit != 1:
@@ -12,17 +21,33 @@ def exitor():
         sys.exit(exit)
 
 def getData():
-    energy = transm.getEnergy()
-    if energy == "-1" or energy == "-666.00":
-        energy ='-'
-    ui.energyLcd.display(energy)
     exitor()
+    messages = {}
+    global temperatures
+    #for num in range(1, 17):
     for num in range(1, 11):
-        val = transm.getSensor(num)
+        #val = str(transm.getSensor(num))
+        messages[num] = transm.sendMsg('T {}'.format(num))
+    for num, mid in messages.items():
+        val = transm.getMsg(mid)
+        temperatures[num].append(val)
+        val = check_if_temperature_not_changed(temperatures[num], val)
+
+        print('T {} : {} C'.format(num, val))
         if val == "-1" or val == "-666.00" or val == "0.00":
-            val = '-'
+            val = '{}. -'.format(num)
+        else:
+            val = "{}. {}".format(num, val)
         eval("ui.t{}.display(val)".format(num))
+        #time.sleep(0.1)
         exitor()
+    try:
+        energy = (float(temperatures[2][-1]) - float(temperatures[1][-1])) * 11
+    except ValueError:
+        energy = 0
+    if energy > 0:
+        print('{0:.2f}'.format(energy))
+        ui.energyLcd.display('{0:.2f}'.format(energy))
     if exit == 1:
         getData()
     else:
@@ -245,6 +270,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.t1 = QtWidgets.QLCDNumber(self.s1)
         self.t1.setStyleSheet("border: 2px solid white; color: white;")
+        self.t1.setDigitCount(10)
         self.t1.setObjectName("t1")
         self.horizontalLayout.addWidget(self.t1)
         self.verticalLayout_27.addWidget(self.s1)
@@ -258,6 +284,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_20.setObjectName("verticalLayout_20")
         self.t2 = QtWidgets.QLCDNumber(self.s1_10)
         self.t2.setStyleSheet("border: 2px solid white; color: white;")
+        self.t2.setDigitCount(10)
         self.t2.setObjectName("t2")
         self.verticalLayout_20.addWidget(self.t2)
         self.verticalLayout_27.addWidget(self.s1_10)
@@ -271,6 +298,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_19.setObjectName("verticalLayout_19")
         self.t3 = QtWidgets.QLCDNumber(self.s1_9)
         self.t3.setStyleSheet("border: 2px solid white; color: white;")
+        self.t3.setDigitCount(10)
         self.t3.setObjectName("t3")
         self.verticalLayout_19.addWidget(self.t3)
         self.verticalLayout_27.addWidget(self.s1_9)
@@ -284,6 +312,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_12.setObjectName("verticalLayout_12")
         self.t4 = QtWidgets.QLCDNumber(self.s1_2)
         self.t4.setStyleSheet("border: 2px solid white; color: white;")
+        self.t4.setDigitCount(10)
         self.t4.setObjectName("t4")
         self.verticalLayout_12.addWidget(self.t4)
         self.verticalLayout_27.addWidget(self.s1_2)
@@ -297,6 +326,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_13.setObjectName("verticalLayout_13")
         self.t5 = QtWidgets.QLCDNumber(self.s1_3)
         self.t5.setStyleSheet("border: 2px solid white; color: white;")
+        self.t5.setDigitCount(10)
         self.t5.setObjectName("t5")
         self.verticalLayout_13.addWidget(self.t5)
         self.verticalLayout_27.addWidget(self.s1_3)
@@ -310,6 +340,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_18.setObjectName("verticalLayout_18")
         self.t6 = QtWidgets.QLCDNumber(self.s1_8)
         self.t6.setStyleSheet("border: 2px solid white; color: white;")
+        self.t6.setDigitCount(10)
         self.t6.setObjectName("t6")
         self.verticalLayout_18.addWidget(self.t6)
         self.verticalLayout_27.addWidget(self.s1_8)
@@ -323,6 +354,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_17.setObjectName("verticalLayout_17")
         self.t7 = QtWidgets.QLCDNumber(self.s1_7)
         self.t7.setStyleSheet("border: 2px solid white; color: white;")
+        self.t7.setDigitCount(10)
         self.t7.setObjectName("t7")
         self.verticalLayout_17.addWidget(self.t7)
         self.verticalLayout_27.addWidget(self.s1_7)
@@ -336,6 +368,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_16.setObjectName("verticalLayout_16")
         self.t8 = QtWidgets.QLCDNumber(self.s1_6)
         self.t8.setStyleSheet("border: 2px solid white; color: white;")
+        self.t8.setDigitCount(10)
         self.t8.setObjectName("t8")
         self.verticalLayout_16.addWidget(self.t8)
         self.verticalLayout_27.addWidget(self.s1_6)
@@ -349,6 +382,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_15.setObjectName("verticalLayout_15")
         self.t9 = QtWidgets.QLCDNumber(self.s1_5)
         self.t9.setStyleSheet("border: 2px solid white; color: white;")
+        self.t9.setDigitCount(10)
         self.t9.setObjectName("t9")
         self.verticalLayout_15.addWidget(self.t9)
         self.verticalLayout_27.addWidget(self.s1_5)
@@ -362,6 +396,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_14.setObjectName("verticalLayout_14")
         self.t10 = QtWidgets.QLCDNumber(self.s1_4)
         self.t10.setStyleSheet("border: 2px solid white; color: white;")
+        self.t10.setDigitCount(10)
         self.t10.setObjectName("t10")
         self.verticalLayout_14.addWidget(self.t10)
         self.verticalLayout_27.addWidget(self.s1_4)
