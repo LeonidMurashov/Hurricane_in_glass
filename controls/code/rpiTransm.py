@@ -12,7 +12,7 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 s.bind(('0.0.0.0', 11719))
-s.settimeout(1)
+s.settimeout(2)
 
 class Transmitter():
     def __init__(self):
@@ -27,7 +27,7 @@ class Transmitter():
         return msgID
 
     # Функция получения ответа на запрос по опр. msgID
-    def getMsg(self, msgID):
+    def getMsg(self, msgID, is_retry=False):
         msg = ''
         msgOld = msgID[1]
         msgID = msgID[0]
@@ -36,10 +36,16 @@ class Transmitter():
             while not msg.startswith(search):
                 msg = s.recv(128)
                 msg = msg.decode('utf-8')
-            print("MSG: "+msg)
-            return msg[8:-5]
+            if msg[6:] == '-1':
+                if is_retry:
+                    print('no success')
+                    return '-1'
+                else:
+                    print('retryin!')
+                    return self.getMsg(self.sendMsg(msgOld), True)
+            return msg[6:]
         except:
-            return self.getMsg(self.sendMsg(msgOld))
+            return self.getMsg(self.sendMsg(msgOld), True)
 
     # Функции, отправляющие запросы на опр. действия на макет:
 
@@ -74,8 +80,11 @@ class Transmitter():
         return code
 
     def getSensor(self, num):
+        t = time.time()
         mid = self.sendMsg('T {}'.format(num))
+        print(time.time() - t)
         temp = self.getMsg(mid)
+        print(time.time() - t)
         print("Температура {} : {} C".format(num, temp))
         return temp
 
@@ -93,9 +102,9 @@ class Transmitter():
 
     def setPipe(self, num, val):
         mid = self.sendMsg("P {} set {}".format(num, val*10))
-        code = self.getMsg(mid)
-        print("SET Насос {} {}%".format(num, val))
-        return code
+        #code = self.getMsg(mid)
+        print("SET Насос {} {}".format(num, val*10))
+        #return code
 
     def getPipe(self, num):
         mid = self.sendMsg("P {} get".format(num))

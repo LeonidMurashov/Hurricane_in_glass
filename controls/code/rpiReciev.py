@@ -4,17 +4,17 @@ import random
 import time
 import threading as T
 from queue import Queue
-import led
+#import led
 
 # Словари, с компонентами каждого Arduino
 ser1Components = ['T', 'E', 'D', 'H', 'L', 'W', 'brightness', 'ALARM','volume', 'alarm']
 ser2Components = ['P', 'F', 'C']
 
-BOD = 115200
+BOD = 9600
 overheating = False
 power = True
-led.init()
-led.blink(0,1,0)
+#led.init()
+#led.blink(0,1,0)
 
 # Инициализация сокетов
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -29,13 +29,13 @@ def auth():
     # Поиск нужных портов
     for i in range(9):
         try:
-            ser1 = serial.Serial('/dev/ttyUSB'+str(i), BOD, timeout=1)
+            ser1 = serial.Serial('/dev/ttyUSB'+str(i), BOD, timeout=2)
             break
         except:
             continue
     for i in range(i+1,9):
         try:
-            ser2 = serial.Serial('/dev/ttyUSB'+str(i),BOD, timeout=1)
+            ser2 = serial.Serial('/dev/ttyUSB'+str(i),BOD, timeout=2)
             break
         except:
             continue
@@ -48,10 +48,10 @@ def auth():
 
     # Поиск Arduino с набором компонентов 1
     time.sleep(2)
-    ser1.write(bytearray('Identification\r\n', 'utf-8'))
+    ser1.write(bytearray('I', 'utf-8'))
     auth1 = str(ser1.readline())
     print('auth1 {}'.format(auth1))
-    ser2.write(bytearray('Identification\r\n', 'utf-8'))
+    ser2.write(bytearray('I', 'utf-8'))
     auth2 = str(ser2.readline())
     print('auth2 {}'.format(auth2))
     if auth2[2:-5] == '1':
@@ -69,12 +69,15 @@ def simulate_overheat():
 
 def msgResponce(msg):
     global ser1,ser2
+    ser1.reset_input_buffer()
+    ser2.reset_input_buffer()
     print(msg)
     # Выделение частей запроса
     mid = msg.split(":")[0]
     device = msg.split(":")[1].split(" ")[0]
     msg = msg[4:]
     print(device)
+    print(msg)
     try:
         if device == 'alarm':
             th = T.Thread(target=simulate_overheat)
@@ -82,17 +85,21 @@ def msgResponce(msg):
             responce = ' '
 
         # Распределение запроса между Arduino
-        if device in ser1Components:
+        elif device in ser1Components:
+            t = time.time()
             print('deivce found in ser1')
             ser1.write(bytearray(msg,'utf-8'))
             responce = str(ser1.readline())[2:-5]
             print(responce)
+            print(time.time() - t)
             print()
         elif device in ser2Components:
+            t = time.time()
             print('device found in ser2')
             ser2.write(bytearray(msg,'utf-8'))
-            responce = ser2.readline()[2:-5]
+            responce = ser2.readline()
             print(responce)
+            print(time.time() - t)
             print()
         elif device == 'ping':
             responce = 'pong'
@@ -114,11 +121,11 @@ def msgResponce(msg):
         else:
             print('Unknown device: {}'.format(device))
             responce = '-1'
-        led.stop_blink()
+        #led.stop_blink()
     # Ошибка при отсутствии подключения к Arduino
     except:
         print("Cannot connect to arduino")
-        led.blink(1,1,0)
+        #led.blink(1,1,0)
         responce = '-1'
         ser = auth()
         while ser is None:
@@ -129,11 +136,13 @@ def msgResponce(msg):
         responce = '100'
 
     try:
+        t = time.time()
         s.sendto(bytes('r {}:{}'.format(mid, responce), 'utf-8'),
                 ('255.255.255.255', 11719))
+        print("Sent! "+str(time.time() - t))
     except Exception as e:
         print(e)
-        led.blink(0,0,1)
+        #led.blink(0,0,1)
 
 # Функция, обрабатывающая сообщения из очереди
 def worker(q):
@@ -156,11 +165,11 @@ if __name__ == '__main__':
         print('authorizing...')
         ser = auth()
         while ser is None:
-            led.blink(1,0,0)
+            #led.blink(1,0,0)
             print("Cannot connect Arduinos!")
             time.sleep(2)
             ser = auth()
-        led.stop_blink()
+        #led.stop_blink()
         ser1, ser2 = ser[0], ser[1]
         print('done!')
         # Создание очереди
@@ -177,5 +186,5 @@ if __name__ == '__main__':
         workerThread.start()
     except Exception as e:
         print(e)
-        led.dispose()
+        #led.dispose()
         exit()

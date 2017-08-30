@@ -4,42 +4,74 @@ import time
 import rpiTransm as rpi
 import datetime
 import time
+import collections
 
 koef = 1
+temperatures = collections.defaultdict(lambda: collections.deque((), 5))
 
 def exitor():
     if exit != 1:
         print('exiting')
         sys.exit(exit)
 
+
+def check_if_temperature_not_changed(t, current):
+    print(t)
+    if len(t) == t.maxlen and len(set(t)) == 1:
+        return '-1'
+    return current
+
+
 def getData():
-    energy = transm.getEnergy()
-    if energy != -1:
-        ui.energyLcd.display(energy)
-    time.sleep(0.1)
+    #energy = transm.getEnergy()
+    #energy = str((float(transm.getSensor(2)) - float(transm.getSensor(1))) * 100)
+    #if energy != -1:
+    #    ui.energyLcd.display(energy)
+    #time.sleep(0.1)
     exitor()
-    for num in range(1, 17):
-        val = str(transm.getSensor(num))
-        if val != "-1" and val != "-666.00" and val != "0.00":
+    messages = {}
+    global temperatures
+    #for num in range(1, 17):
+    for num in range(1, 3):
+        #val = str(transm.getSensor(num))
+        messages[num] = transm.sendMsg('T {}'.format(num))
+    for num, mid in messages.items():
+        val = transm.getMsg(mid)
+        temperatures[num].append(val)
+        val = check_if_temperature_not_changed(temperatures[num], val)
+
+        print('T {} : {} C'.format(num, val))
+        if val == "-1" or val == "-666.00" or val == "0.00":
+            val = '-'
             #val = "{}. {}".format(num, val)
-            eval("ui.t{}.display(val)".format(num))
-        time.sleep(0.1)
+        eval("ui.t{}.display(val)".format(num))
+        #time.sleep(0.1)
         exitor()
+    try:
+        energy = (float(temperatures[2][-1]) - float(temperatures[1][-1])) * 11
+    except ValueError:
+        energy = 0
+    if energy > 0:
+        print('{0:.2f}'.format(energy))
+        ui.energyLcd.display('{0:.2f}'.format(energy))
     flow = transm.getFlow(1)
-    if flow != "-1" and flow != "-666.00":
-        ui.flow1.display(flow)
-    time.sleep(0.1)
+    if flow == "-1" or flow == "-666.00":
+        flow = '-'
+    ui.flow1.display(flow)
+    #time.sleep(0.1)
     exitor()
     flow = transm.getFlow(2)
-    if flow != "-1" and flow != "-666.00":
-        ui.flow2.display(flow)
-    time.sleep(0.1)
+    if flow == "-1" or flow == "-666.00":
+        flow = '-'
+    ui.flow2.display(flow)
+    #time.sleep(0.1)
     exitor()
     for num in range(1, 7):
         nasos = transm.getPipe(num)
-        if nasos != "-1" and nasos != "-666.00":
-            eval('ui.lcd{}.display(nasos)'.format(num))
-        time.sleep(0.1)
+        if nasos == "-1" or nasos == "-666.00":
+            nasos = '-'
+        eval('ui.lcd{}.display(nasos)'.format(num))
+        #time.sleep(0.1)
         exitor()
     if exit == 1:
         getData()

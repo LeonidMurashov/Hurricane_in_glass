@@ -13,28 +13,28 @@ def exitor():
 
 def getData():
     energy = transm.getEnergy()
-    if energy != "-1" and energy != "-666.00":
-        ui.energyLcd.display(energy)
-    time.sleep(0.1)
+    if energy == "-1" or energy == "-666.00":
+        energy ='-'
+    ui.energyLcd.display(energy)
     exitor()
     for num in range(1, 11):
         val = transm.getSensor(num)
-        if val != "-1" and val != "-666.00" and val != "0.00":
-            eval("ui.t{}.display(val)".format(num))
+        if val == "-1" or val == "-666.00" or val == "0.00":
+            val = '-'
+        eval("ui.t{}.display(val)".format(num))
         exitor()
-        time.sleep(0.1)
     if exit == 1:
         getData()
     else:
         print("Exiting")
         sys.exit(exit)
 
-def updSensor():
-    while exit == 1:
-        for i in range(1, 10):
-            slidersSender(i)
-            time.sleep(0.1)
-            exitor()
+#def updSensor():
+#    while exit == 1:
+#        for i in range(1, 10):
+#            slidersSender(i)
+#            time.sleep(0.1)
+#            exitor()
 
 
 
@@ -655,15 +655,15 @@ class Ui_MainWindow(object):
         self.cslider.valueChanged.connect(lambda: sliders(9))
 
 
-#        self.n1slider.sliderReleased.connect(lambda: slidersSender(1))
-#        self.n2slider.sliderReleased.connect(lambda: slidersSender(2))
-#        self.n3slider.sliderReleased.connect(lambda: slidersSender(3))
-#        self.n4slider.sliderReleased.connect(lambda: slidersSender(4))
-#        self.n5slider.sliderReleased.connect(lambda: slidersSender(5))
-#        self.n6slider.sliderReleased.connect(lambda: slidersSender(6))
-#        self.r1slider.sliderReleased.connect(lambda: slidersSender(7))
-#        self.r2slider.sliderReleased.connect(lambda: slidersSender(8))
-#        self.cslider.sliderReleased.connect(lambda: slidersSender(9))
+        self.n1slider.sliderReleased.connect(lambda: slidersSender(1))
+        self.n2slider.sliderReleased.connect(lambda: slidersSender(2))
+        self.n3slider.sliderReleased.connect(lambda: slidersSender(3))
+        self.n4slider.sliderReleased.connect(lambda: slidersSender(4))
+        self.n5slider.sliderReleased.connect(lambda: slidersSender(5))
+        self.n6slider.sliderReleased.connect(lambda: slidersSender(6))
+        self.r1slider.sliderReleased.connect(lambda: slidersSender(7))
+        self.r2slider.sliderReleased.connect(lambda: slidersSender(8))
+        self.cslider.sliderReleased.connect(lambda: slidersSender(9))
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -729,6 +729,6 @@ if __name__ == "__main__":
 
     dataThread = Thread(target=getData, args=())
     dataThread.start()
-    sliderThread = Thread(target=updSensor, args=())
-    sliderThread.start()
+    #sliderThread = Thread(target=updSensor, args=())
+    #sliderThread.start()
     runApp()
