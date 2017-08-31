@@ -21,7 +21,7 @@ class Transmitter():
     # Функция отправки запроса
     def sendMsg(self, msg):
         msgID = getMsgID()
-        request = "t {}:{}".format(msgID, msg)
+        request = "k {}:{}".format(msgID, msg)
         s.sendto(bytes(request, 'utf-8'),('255.255.255.255', 11719))
         msgID = [msgID, msg]
         return msgID

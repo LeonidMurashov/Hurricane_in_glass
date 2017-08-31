@@ -29,13 +29,13 @@ def auth():
     # Поиск нужных портов
     for i in range(9):
         try:
-            ser1 = serial.Serial('/dev/ttyUSB'+str(i), BOD, timeout=2)
+            ser1 = serial.Serial('/dev/ttyUSB'+str(i), BOD, timeout=1)
             break
         except:
             continue
     for i in range(i+1,9):
         try:
-            ser2 = serial.Serial('/dev/ttyUSB'+str(i),BOD, timeout=2)
+            ser2 = serial.Serial('/dev/ttyUSB'+str(i),BOD, timeout=1)
             break
         except:
             continue
@@ -44,14 +44,16 @@ def auth():
 
     # Ошибка при неисправности одной из Arduino
     if ser1 is None or ser2 is None:
-        return
+        return None
 
     # Поиск Arduino с набором компонентов 1
     time.sleep(2)
-    ser1.write(bytearray('I', 'utf-8'))
+    ser1.write(bytearray('I\r\n', 'utf-8'))
+    print("Sent to A1")
     auth1 = str(ser1.readline())
     print('auth1 {}'.format(auth1))
-    ser2.write(bytearray('I', 'utf-8'))
+    ser2.write(bytearray('I\r\n', 'utf-8'))
+    print("Sent to A2")
     auth2 = str(ser2.readline())
     print('auth2 {}'.format(auth2))
     if auth2[2:-5] == '1':
@@ -69,15 +71,11 @@ def simulate_overheat():
 
 def msgResponce(msg):
     global ser1,ser2
-    ser1.reset_input_buffer()
-    ser2.reset_input_buffer()
-    #print(msg)
+    print(msg)
     # Выделение частей запроса
     mid = msg.split(":")[0]
     device = msg.split(":")[1].split(" ")[0]
     msg = msg[4:]
-    #print(device)
-    #print(msg)
     try:
         if device == 'test_alarm':
             th = T.Thread(target=simulate_overheat)
@@ -85,25 +83,31 @@ def msgResponce(msg):
             responce = ' '
 
         # Распределение запроса между Arduino
-        elif device in ser1Components:
-            t = time.time()
-            #print('deivce found in ser1')
+        if device in ser1Components:
+            msg += '\r\n'
             ser1.write(bytearray(msg,'utf-8'))
-            responce = str(ser1.readline())[2:-5]
-            #print(responce)
-            #print(time.time() - t)
-            #print()
+            responce = str(ser1.readline())
+            print(responce)
+            print()
+            if responce.endswith("\r\n'"):
+                responce = responce[2:-5]
+            elif responce.endswith("\n'"):
+                responce = responce[2:-3]
         elif device in ser2Components:
-            t = time.time()
-            #print('device found in ser2')
+            msg += '\r\n'
+            print('device found in ser2')
             ser2.write(bytearray(msg,'utf-8'))
-            responce = ser2.readline()
-            #print(responce)
-            #print(time.time() - t)
-            #print()
+            responce = str(ser2.readline())
+            print(responce)
+            print()
+            if responce.endswith("\r\n'"):
+                responce = responce[2:-5]
+            elif responce.endswith("\n'"):
+                responce = responce[2:-3]
         elif device == 'ping':
             responce = 'pong'
         elif device == 'turn':
+            msg += '\r\n'
             ser1.write(bytearray(msg, 'utf-8'))
             ser2.write(bytearray(msg, 'utf-8'))
             responce = str(ser1.readline())[2:-5]
@@ -132,39 +136,30 @@ def msgResponce(msg):
             time.sleep(0.5)
             ser = auth()
         ser1, ser2 = ser[0], ser[1]
-    if overheating == True and device == 'T':
-        responce = '100.0'
+    if overheating and device == 'T':
+        responce = '100'
 
     try:
-        t = time.time()
         s.sendto(bytes('r {}:{}'.format(mid, responce), 'utf-8'),
                 ('255.255.255.255', 11719))
-        print("Sent! "+str(time.time() - t))
     except Exception as e:
         print(e)
         #led.blink(0,0,1)
 
 # Функция, обрабатывающая сообщения из очереди
-def worker(q, qk):
+def worker(q):
     while True:
-        if not q.empty():
-            msg = q.get()
-            msgResponce(msg)
-            q.task_done()
-        if not qk.empty():
-            msg = qk.get()
-            msgResponce(msg)
-            qk.task_done()
+        msg = q.get()
+        msgResponce(msg)
+        q.task_done()
 
 # Функция постоянного получения сообщений
-def getMsg(q, qk):
+def getMsg(q):
     while 1:
         msg = s.recv(128)
         msg = msg.decode('utf-8')
         if msg.startswith("t "):
             q.put(msg[2:])
-        elif msg.startswith("k "):
-            qk.put(msg[2:])
 
 if __name__ == '__main__':
     try:
@@ -176,28 +171,22 @@ if __name__ == '__main__':
             print("Cannot connect Arduinos!")
             time.sleep(2)
             ser = auth()
-        #led.stop_blink()
+        led.stop_blink()
         ser1, ser2 = ser[0], ser[1]
         print('done!')
         # Создание очереди
         q = Queue()
-        qk = Queue()
         print('starting threads')
         # Поток, отвечающий за непрерывное получение сообщений
-        recieverThread = T.Thread(target=getMsg, args=([q, qk]))
+        recieverThread = T.Thread(target=getMsg, args=([q]))
 
         # Поток, отвечающий за выполнение запросов из очереди
-        workerThread = T.Thread(target=worker, args=([q, qk]))
-
-        # Поток, отвечвющий за выполнение запросов детей
-        #workerKidThread = T.Thread(target=worker, args=([qk]))
-
+        workerThread = T.Thread(target=worker, args=([q]))
 
         # Запуск потоков
         recieverThread.start()
         workerThread.start()
-        #workerKidThread.start()
     except Exception as e:
         print(e)
-        #led.dispose()
+        led.dispose()
         exit()

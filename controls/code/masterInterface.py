@@ -1,43 +1,81 @@
-# -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'reactor_master.ui'
-#
-# Created by: PyQt5 UI code generator 5.5.1
-#
-# WARNING! All changes made in this file will be lost!
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 from threading import Thread
 import time
 import rpiTransm as rpi
+import datetime
+import time
+import collections
+
+koef = 1
+temperatures = collections.defaultdict(lambda: collections.deque((), 5))
 
 def exitor():
     if exit != 1:
         print('exiting')
         sys.exit(exit)
 
+
+def check_if_temperature_not_changed(t, current):
+    print(t)
+    if len(t) == t.maxlen and len(set(t)) == 1:
+        return '-1'
+    return current
+
+
 def getData():
-    energy = transm.getEnergy()
-    if energy != -1:
-        ui.energyLcd.display(energy)
+    #energy = transm.getEnergy()
+    #energy = str((float(transm.getSensor(2)) - float(transm.getSensor(1))) * 100)
+    #if energy != -1:
+    #    ui.energyLcd.display(energy)
+    #time.sleep(0.1)
     exitor()
+    messages = {}
+    global temperatures
+    #for num in range(1, 17):
     for num in range(1, 17):
-        val = transm.getSensor(num)
-        if val != -1:
-            eval("ui.t{}.display(val)".format(num))
+        #val = str(transm.getSensor(num))
+        messages[num] = transm.sendMsg('T {}'.format(num))
+    for num, mid in messages.items():
+        val = transm.getMsg(mid)
+        temperatures[num].append(val)
+        val = check_if_temperature_not_changed(temperatures[num], val)
+
+        print('T {} : {} C'.format(num, val))
+        if val == "-1" or val == "-666.00" or val == "0.00":
+            val = '{}. -'.format(num)
+        else:
+            val = "{}. {}".format(num, val)
+        eval("ui.t{}.display(val)".format(num))
+        #time.sleep(0.1)
         exitor()
-    flow = transm.getFlow(1)
-    if flow != -1:
-        ui.flow1.display(flow)
+    try:
+        energy = (float(temperatures[2][-1]) - float(temperatures[1][-1])) * 11
+    except ValueError:
+        energy = 0
+    logger()
+    if energy > 0:
+        print('{0:.2f}'.format(energy))
+        ui.energyLcd.display('{0:.2f}'.format(energy))
+    flow = transm.getFlow(1)[2:-5]
+    if flow == "-1" or flow == "-666.00":
+        flow = '-'
+    ui.flow1.display(flow)
+    #time.sleep(0.1)
     exitor()
-    flow = transm.getFlow(2)
-    if flow != -1:
-        ui.flow2.display(flow)
+    flow = transm.getFlow(2)[2:-5]
+    if flow == "-1" or flow == "-666.00":
+        flow = '-'
+    ui.flow2.display(flow)
+    #time.sleep(0.1)
     exitor()
-    for num in range(1, 5):
-        nasos = transm.getPipe(num)
-        if nasos != -1:
-            eval('ui.lcd{}.display(nasos)'.format(num))
+    for num in range(1, 7):
+        nasos = transm.getPipe(num)[2:-5]
+        if nasos == "-1" or nasos == "-666.00":
+            nasos = '-'
+        else:
+            nasos = str(int(nasos)/10)
+        eval('ui.lcd{}.display(nasos)'.format(num))
+        #time.sleep(0.1)
         exitor()
     if exit == 1:
         getData()
@@ -49,7 +87,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setWindowModality(QtCore.Qt.ApplicationModal)
-        MainWindow.resize(1025, 768)
+        MainWindow.resize(1024, 768)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -143,6 +181,32 @@ class Ui_MainWindow(object):
         self.label_11.setObjectName("label_11")
         self.verticalLayout_24.addWidget(self.label_11)
         self.verticalLayout.addWidget(self.reactor1Temp_4)
+        self.reactor1Temp_5 = QtWidgets.QWidget(self.menu2)
+        font = QtGui.QFont()
+        font.setItalic(False)
+        self.reactor1Temp_5.setFont(font)
+        self.reactor1Temp_5.setStyleSheet("border: 2px solid white;")
+        self.reactor1Temp_5.setObjectName("reactor1Temp_5")
+        self.verticalLayout_31 = QtWidgets.QVBoxLayout(self.reactor1Temp_5)
+        self.verticalLayout_31.setObjectName("verticalLayout_31")
+        self.t11 = QtWidgets.QLCDNumber(self.reactor1Temp_5)
+        self.t11.setStyleSheet("border: 2px solid white; color: white;")
+        self.t11.setDigitCount(5)
+        self.t11.setObjectName("t11")
+        self.verticalLayout_31.addWidget(self.t11)
+        self.label_17 = QtWidgets.QLabel(self.reactor1Temp_5)
+        font = QtGui.QFont()
+        font.setFamily("Sans Serif")
+        font.setPointSize(18)
+        font.setItalic(False)
+        self.label_17.setFont(font)
+        self.label_17.setAutoFillBackground(False)
+        self.label_17.setStyleSheet("color: rgb(255, 255, 255); border: 0;\n"
+"background-color: rgba(255, 255, 255, 0);")
+        self.label_17.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.label_17.setObjectName("label_17")
+        self.verticalLayout_31.addWidget(self.label_17)
+        self.verticalLayout.addWidget(self.reactor1Temp_5)
         self.reactor1Temp = QtWidgets.QWidget(self.menu2)
         font = QtGui.QFont()
         font.setItalic(False)
@@ -205,38 +269,33 @@ class Ui_MainWindow(object):
         self.label_10.setObjectName("label_10")
         self.verticalLayout_23.addWidget(self.label_10)
         self.verticalLayout.addWidget(self.reactor1Temp_3)
-        self.widget_4 = QtWidgets.QWidget(self.menu2)
+        self.reactor1Temp_6 = QtWidgets.QWidget(self.menu2)
         font = QtGui.QFont()
-        font.setFamily("Gadugi")
         font.setItalic(False)
-        self.widget_4.setFont(font)
-        self.widget_4.setAutoFillBackground(False)
-        self.widget_4.setStyleSheet("border: 2px solid white;")
-        self.widget_4.setObjectName("widget_4")
-        self.verticalLayout_8 = QtWidgets.QVBoxLayout(self.widget_4)
-        self.verticalLayout_8.setObjectName("verticalLayout_8")
-        self.energyLcd = QtWidgets.QLCDNumber(self.widget_4)
-        font = QtGui.QFont()
-        font.setFamily("Gadugi")
-        font.setItalic(False)
-        self.energyLcd.setFont(font)
-        self.energyLcd.setAutoFillBackground(False)
-        self.energyLcd.setStyleSheet("color: rgb(255, 255, 255);")
-        self.energyLcd.setFrameShadow(QtWidgets.QFrame.Plain)
-        self.energyLcd.setObjectName("energyLcd")
-        self.verticalLayout_8.addWidget(self.energyLcd)
-        self.label_6 = QtWidgets.QLabel(self.widget_4)
+        self.reactor1Temp_6.setFont(font)
+        self.reactor1Temp_6.setStyleSheet("border: 2px solid white;")
+        self.reactor1Temp_6.setObjectName("reactor1Temp_6")
+        self.verticalLayout_32 = QtWidgets.QVBoxLayout(self.reactor1Temp_6)
+        self.verticalLayout_32.setObjectName("verticalLayout_32")
+        self.t12 = QtWidgets.QLCDNumber(self.reactor1Temp_6)
+        self.t12.setStyleSheet("border: 2px solid white; color: white;")
+        self.t12.setSmallDecimalPoint(False)
+        self.t12.setDigitCount(5)
+        self.t12.setObjectName("t12")
+        self.verticalLayout_32.addWidget(self.t12)
+        self.label_16 = QtWidgets.QLabel(self.reactor1Temp_6)
         font = QtGui.QFont()
         font.setFamily("Sans Serif")
         font.setPointSize(18)
         font.setItalic(False)
-        self.label_6.setFont(font)
-        self.label_6.setAutoFillBackground(False)
-        self.label_6.setStyleSheet("color: rgb(255, 255, 255); border: 0;")
-        self.label_6.setFrameShadow(QtWidgets.QFrame.Plain)
-        self.label_6.setObjectName("label_6")
-        self.verticalLayout_8.addWidget(self.label_6)
-        self.verticalLayout.addWidget(self.widget_4)
+        self.label_16.setFont(font)
+        self.label_16.setAutoFillBackground(False)
+        self.label_16.setStyleSheet("color: rgb(255, 255, 255); border: 0;\n"
+"background-color: rgba(255, 255, 255, 0);")
+        self.label_16.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.label_16.setObjectName("label_16")
+        self.verticalLayout_32.addWidget(self.label_16)
+        self.verticalLayout.addWidget(self.reactor1Temp_6)
         self.widget_3 = QtWidgets.QWidget(self.menu2)
         self.widget_3.setEnabled(True)
         font = QtGui.QFont()
@@ -351,6 +410,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_6.setObjectName("verticalLayout_6")
         self.t1 = QtWidgets.QLCDNumber(self.s1)
         self.t1.setStyleSheet("border: 2px solid white; color: white;")
+        self.t1.setDigitCount(10)
         self.t1.setObjectName("t1")
         self.verticalLayout_6.addWidget(self.t1)
         self.verticalLayout_27.addWidget(self.s1)
@@ -364,6 +424,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_20.setObjectName("verticalLayout_20")
         self.t2 = QtWidgets.QLCDNumber(self.s1_10)
         self.t2.setStyleSheet("border: 2px solid white; color: white;")
+        self.t2.setDigitCount(10)
         self.t2.setObjectName("t2")
         self.verticalLayout_20.addWidget(self.t2)
         self.verticalLayout_27.addWidget(self.s1_10)
@@ -377,6 +438,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_19.setObjectName("verticalLayout_19")
         self.t3 = QtWidgets.QLCDNumber(self.s1_9)
         self.t3.setStyleSheet("border: 2px solid white; color: white;")
+        self.t3.setDigitCount(10)
         self.t3.setObjectName("t3")
         self.verticalLayout_19.addWidget(self.t3)
         self.verticalLayout_27.addWidget(self.s1_9)
@@ -390,6 +452,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_12.setObjectName("verticalLayout_12")
         self.t4 = QtWidgets.QLCDNumber(self.s1_2)
         self.t4.setStyleSheet("border: 2px solid white; color: white;")
+        self.t4.setDigitCount(10)
         self.t4.setObjectName("t4")
         self.verticalLayout_12.addWidget(self.t4)
         self.verticalLayout_27.addWidget(self.s1_2)
@@ -403,6 +466,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_13.setObjectName("verticalLayout_13")
         self.t5 = QtWidgets.QLCDNumber(self.s1_3)
         self.t5.setStyleSheet("border: 2px solid white; color: white;")
+        self.t5.setDigitCount(10)
         self.t5.setObjectName("t5")
         self.verticalLayout_13.addWidget(self.t5)
         self.verticalLayout_27.addWidget(self.s1_3)
@@ -416,6 +480,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_18.setObjectName("verticalLayout_18")
         self.t6 = QtWidgets.QLCDNumber(self.s1_8)
         self.t6.setStyleSheet("border: 2px solid white; color: white;")
+        self.t6.setDigitCount(10)
         self.t6.setObjectName("t6")
         self.verticalLayout_18.addWidget(self.t6)
         self.verticalLayout_27.addWidget(self.s1_8)
@@ -429,6 +494,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_17.setObjectName("verticalLayout_17")
         self.t7 = QtWidgets.QLCDNumber(self.s1_7)
         self.t7.setStyleSheet("border: 2px solid white; color: white;")
+        self.t7.setDigitCount(10)
         self.t7.setObjectName("t7")
         self.verticalLayout_17.addWidget(self.t7)
         self.verticalLayout_27.addWidget(self.s1_7)
@@ -442,6 +508,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_16.setObjectName("verticalLayout_16")
         self.t8 = QtWidgets.QLCDNumber(self.s1_6)
         self.t8.setStyleSheet("border: 2px solid white; color: white;")
+        self.t8.setDigitCount(10)
         self.t8.setObjectName("t8")
         self.verticalLayout_16.addWidget(self.t8)
         self.verticalLayout_27.addWidget(self.s1_6)
@@ -455,6 +522,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_15.setObjectName("verticalLayout_15")
         self.t9 = QtWidgets.QLCDNumber(self.s1_5)
         self.t9.setStyleSheet("border: 2px solid white; color: white;")
+        self.t9.setDigitCount(10)
         self.t9.setObjectName("t9")
         self.verticalLayout_15.addWidget(self.t9)
         self.verticalLayout_27.addWidget(self.s1_5)
@@ -468,35 +536,64 @@ class Ui_MainWindow(object):
         self.verticalLayout_14.setObjectName("verticalLayout_14")
         self.t10 = QtWidgets.QLCDNumber(self.s1_4)
         self.t10.setStyleSheet("border: 2px solid white; color: white;")
+        self.t10.setDigitCount(10)
         self.t10.setObjectName("t10")
         self.verticalLayout_14.addWidget(self.t10)
         self.verticalLayout_27.addWidget(self.s1_4)
-        self.s1_12 = QtWidgets.QWidget(self.sensors)
+        self.widget_4 = QtWidgets.QWidget(self.sensors)
         font = QtGui.QFont()
+        font.setFamily("Gadugi")
         font.setItalic(False)
-        self.s1_12.setFont(font)
-        self.s1_12.setStyleSheet("border: 0;")
-        self.s1_12.setObjectName("s1_12")
-        self.verticalLayout_22 = QtWidgets.QVBoxLayout(self.s1_12)
-        self.verticalLayout_22.setObjectName("verticalLayout_22")
-        self.t11 = QtWidgets.QLCDNumber(self.s1_12)
-        self.t11.setStyleSheet("border: 2px solid white; color: white;")
-        self.t11.setObjectName("t11")
-        self.verticalLayout_22.addWidget(self.t11)
-        self.verticalLayout_27.addWidget(self.s1_12)
-        self.s1_11 = QtWidgets.QWidget(self.sensors)
+        self.widget_4.setFont(font)
+        self.widget_4.setAutoFillBackground(False)
+        self.widget_4.setStyleSheet("border: 2px solid white;")
+        self.widget_4.setObjectName("widget_4")
+        self.verticalLayout_8 = QtWidgets.QVBoxLayout(self.widget_4)
+        self.verticalLayout_8.setObjectName("verticalLayout_8")
+        self.energyLcd = QtWidgets.QLCDNumber(self.widget_4)
         font = QtGui.QFont()
+        font.setFamily("Gadugi")
         font.setItalic(False)
-        self.s1_11.setFont(font)
-        self.s1_11.setStyleSheet("border: 0;")
-        self.s1_11.setObjectName("s1_11")
-        self.verticalLayout_21 = QtWidgets.QVBoxLayout(self.s1_11)
+        self.energyLcd.setFont(font)
+        self.energyLcd.setAutoFillBackground(False)
+        self.energyLcd.setStyleSheet("color: rgb(255, 255, 255);")
+        self.energyLcd.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.energyLcd.setObjectName("energyLcd")
+        self.verticalLayout_8.addWidget(self.energyLcd)
+        self.label_6 = QtWidgets.QLabel(self.widget_4)
+        font = QtGui.QFont()
+        font.setFamily("Sans Serif")
+        font.setPointSize(18)
+        font.setItalic(False)
+        self.label_6.setFont(font)
+        self.label_6.setAutoFillBackground(False)
+        self.label_6.setStyleSheet("color: rgb(255, 255, 255); border: 0;")
+        self.label_6.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.label_6.setObjectName("label_6")
+        self.verticalLayout_8.addWidget(self.label_6)
+        self.verticalLayout_27.addWidget(self.widget_4)
+        self.label_14 = QtWidgets.QLabel(self.sensors)
+        font = QtGui.QFont()
+        font.setFamily("Sans Serif")
+        font.setPointSize(18)
+        font.setItalic(False)
+        self.label_14.setFont(font)
+        self.label_14.setStyleSheet("color: white; border: 0px;")
+        self.label_14.setObjectName("label_14")
+        self.verticalLayout_27.addWidget(self.label_14)
+        self.frame = QtWidgets.QFrame(self.sensors)
+        self.frame.setMinimumSize(QtCore.QSize(314, 44))
+        self.frame.setStyleSheet("border: 0px; ")
+        self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.frame.setObjectName("frame")
+        self.verticalLayout_21 = QtWidgets.QVBoxLayout(self.frame)
         self.verticalLayout_21.setObjectName("verticalLayout_21")
-        self.t12 = QtWidgets.QLCDNumber(self.s1_11)
-        self.t12.setStyleSheet("border: 2px solid white; color: white;")
-        self.t12.setObjectName("t12")
-        self.verticalLayout_21.addWidget(self.t12)
-        self.verticalLayout_27.addWidget(self.s1_11)
+        self.cslider = QtWidgets.QSlider(self.frame)
+        self.cslider.setOrientation(QtCore.Qt.Horizontal)
+        self.cslider.setObjectName("cslider")
+        self.verticalLayout_21.addWidget(self.cslider)
+        self.verticalLayout_27.addWidget(self.frame, 0, QtCore.Qt.AlignHCenter)
         self.horizontalLayout_4.addWidget(self.sensors)
         self.waterpipes = QtWidgets.QWidget(self.centralwidget)
         font = QtGui.QFont()
@@ -506,8 +603,76 @@ class Ui_MainWindow(object):
         self.waterpipes.setAutoFillBackground(False)
         self.waterpipes.setStyleSheet("")
         self.waterpipes.setObjectName("waterpipes")
-        self.verticalLayout_26 = QtWidgets.QVBoxLayout(self.waterpipes)
+        self.verticalLayout_30 = QtWidgets.QVBoxLayout(self.waterpipes)
+        self.verticalLayout_30.setObjectName("verticalLayout_30")
+        self.Nasos4_2 = QtWidgets.QWidget(self.waterpipes)
+        font = QtGui.QFont()
+        font.setFamily("Gadugi")
+        font.setItalic(False)
+        self.Nasos4_2.setFont(font)
+        self.Nasos4_2.setAutoFillBackground(False)
+        self.Nasos4_2.setStyleSheet("border: 2px solid white;")
+        self.Nasos4_2.setObjectName("Nasos4_2")
+        self.verticalLayout_26 = QtWidgets.QVBoxLayout(self.Nasos4_2)
         self.verticalLayout_26.setObjectName("verticalLayout_26")
+        self.lcd6 = QtWidgets.QLCDNumber(self.Nasos4_2)
+        font = QtGui.QFont()
+        font.setFamily("Gadugi")
+        font.setItalic(False)
+        self.lcd6.setFont(font)
+        self.lcd6.setAutoFillBackground(False)
+        self.lcd6.setStyleSheet("color: rgb(255, 255, 255);")
+        self.lcd6.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.lcd6.setObjectName("lcd6")
+        self.verticalLayout_26.addWidget(self.lcd6)
+        self.label_12 = QtWidgets.QLabel(self.Nasos4_2)
+        font = QtGui.QFont()
+        font.setFamily("Sans Serif")
+        font.setPointSize(18)
+        font.setItalic(False)
+        self.label_12.setFont(font)
+        self.label_12.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.label_12.setAutoFillBackground(False)
+        self.label_12.setStyleSheet("color: rgb(255, 255, 255);\n"
+"border: 0px;")
+        self.label_12.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.label_12.setObjectName("label_12")
+        self.verticalLayout_26.addWidget(self.label_12)
+        self.verticalLayout_30.addWidget(self.Nasos4_2)
+        self.Nasos4_3 = QtWidgets.QWidget(self.waterpipes)
+        font = QtGui.QFont()
+        font.setFamily("Gadugi")
+        font.setItalic(False)
+        self.Nasos4_3.setFont(font)
+        self.Nasos4_3.setAutoFillBackground(False)
+        self.Nasos4_3.setStyleSheet("border: 2px solid white;")
+        self.Nasos4_3.setObjectName("Nasos4_3")
+        self.verticalLayout_29 = QtWidgets.QVBoxLayout(self.Nasos4_3)
+        self.verticalLayout_29.setObjectName("verticalLayout_29")
+        self.lcd5 = QtWidgets.QLCDNumber(self.Nasos4_3)
+        font = QtGui.QFont()
+        font.setFamily("Gadugi")
+        font.setItalic(False)
+        self.lcd5.setFont(font)
+        self.lcd5.setAutoFillBackground(False)
+        self.lcd5.setStyleSheet("color: rgb(255, 255, 255);")
+        self.lcd5.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.lcd5.setObjectName("lcd5")
+        self.verticalLayout_29.addWidget(self.lcd5)
+        self.label_13 = QtWidgets.QLabel(self.Nasos4_3)
+        font = QtGui.QFont()
+        font.setFamily("Sans Serif")
+        font.setPointSize(18)
+        font.setItalic(False)
+        self.label_13.setFont(font)
+        self.label_13.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.label_13.setAutoFillBackground(False)
+        self.label_13.setStyleSheet("color: rgb(255, 255, 255);\n"
+"border: 0px;")
+        self.label_13.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.label_13.setObjectName("label_13")
+        self.verticalLayout_29.addWidget(self.label_13)
+        self.verticalLayout_30.addWidget(self.Nasos4_3)
         self.Nasos4 = QtWidgets.QWidget(self.waterpipes)
         font = QtGui.QFont()
         font.setFamily("Gadugi")
@@ -541,7 +706,7 @@ class Ui_MainWindow(object):
         self.label_2.setFrameShadow(QtWidgets.QFrame.Plain)
         self.label_2.setObjectName("label_2")
         self.verticalLayout_3.addWidget(self.label_2)
-        self.verticalLayout_26.addWidget(self.Nasos4)
+        self.verticalLayout_30.addWidget(self.Nasos4)
         self.Nasos3 = QtWidgets.QWidget(self.waterpipes)
         font = QtGui.QFont()
         font.setFamily("Gadugi")
@@ -575,7 +740,7 @@ class Ui_MainWindow(object):
         self.label_3.setFrameShadow(QtWidgets.QFrame.Plain)
         self.label_3.setObjectName("label_3")
         self.verticalLayout_4.addWidget(self.label_3)
-        self.verticalLayout_26.addWidget(self.Nasos3)
+        self.verticalLayout_30.addWidget(self.Nasos3)
         self.Nasos2 = QtWidgets.QWidget(self.waterpipes)
         font = QtGui.QFont()
         font.setFamily("Gadugi")
@@ -609,7 +774,7 @@ class Ui_MainWindow(object):
         self.label_4.setFrameShadow(QtWidgets.QFrame.Plain)
         self.label_4.setObjectName("label_4")
         self.verticalLayout_5.addWidget(self.label_4)
-        self.verticalLayout_26.addWidget(self.Nasos2)
+        self.verticalLayout_30.addWidget(self.Nasos2)
         self.Nasos1 = QtWidgets.QWidget(self.waterpipes)
         font = QtGui.QFont()
         font.setFamily("Gadugi")
@@ -673,7 +838,7 @@ class Ui_MainWindow(object):
         self.label_1.setFrameShadow(QtWidgets.QFrame.Plain)
         self.label_1.setObjectName("label_1")
         self.verticalLayout_2.addWidget(self.label_1)
-        self.verticalLayout_26.addWidget(self.Nasos1)
+        self.verticalLayout_30.addWidget(self.Nasos1)
         self.flow1wid = QtWidgets.QWidget(self.waterpipes)
         font = QtGui.QFont()
         font.setFamily("Gadugi")
@@ -737,7 +902,7 @@ class Ui_MainWindow(object):
         self.label_5.setFrameShadow(QtWidgets.QFrame.Plain)
         self.label_5.setObjectName("label_5")
         self.verticalLayout_11.addWidget(self.label_5)
-        self.verticalLayout_26.addWidget(self.flow1wid)
+        self.verticalLayout_30.addWidget(self.flow1wid)
         self.flow2wid = QtWidgets.QWidget(self.waterpipes)
         font = QtGui.QFont()
         font.setFamily("Gadugi")
@@ -801,7 +966,7 @@ class Ui_MainWindow(object):
         self.label_9.setFrameShadow(QtWidgets.QFrame.Plain)
         self.label_9.setObjectName("label_9")
         self.verticalLayout_25.addWidget(self.label_9)
-        self.verticalLayout_26.addWidget(self.flow2wid)
+        self.verticalLayout_30.addWidget(self.flow2wid)
         self.horizontalLayout_4.addWidget(self.waterpipes)
         MainWindow.setCentralWidget(self.centralwidget)
 
@@ -809,8 +974,10 @@ class Ui_MainWindow(object):
             widget.setWindowFlags(QtCore.Qt.FramelessWindowHint)
             widget.setAttribute(QtCore.Qt.WA_TranslucentBackground)
 
-        for i in range(1, 11):
+        for i in range(1, 15):
             eval("translucent(self.label_{})".format(i))
+
+        translucent(self.frame)
 
         self.turnOn.clicked.connect(transm.turnOn)
         self.modelOff.clicked.connect(transm.turnOff)
@@ -819,6 +986,8 @@ class Ui_MainWindow(object):
         self.modelOff.clicked.connect(transm.turnOff)
         self.dump.clicked.connect(transm.dump)
         self.cooling.clicked.connect(transm.cool)
+
+        self.cslider.sliderReleased.connect(lambda: citty())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -844,12 +1013,35 @@ class Ui_MainWindow(object):
         self.label_1.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">Насос 1, %</p></body></html>"))
         self.label_5.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">Поток 1, л/с</p></body></html>"))
         self.label_9.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">Поток 2, л/с</p></body></html>"))
+        self.label_14.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">Потребление города, %</p></body></html>"))
+        self.label_12.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">Насос 6, %</p></body></html>"))
+        self.label_13.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">Насос 5, %</p></body></html>"))
+        self.label_17.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">Реактор 2 внутр., <span style=\" vertical-align:super;\">0</span>С</p></body></html>"))
+        self.label_16.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">Реактор 1 внутр., <span style=\" vertical-align:super;\">0</span>С</p></body></html>"))
+
 
 import reactor_res_rc
+
+def citty():
+    enrg = ui.energyLcd.value() - ui.cslider.value()*koef
+    # Добавить переключение яркости
+
 
 def runApp():
     global exit
     exit = app.exec_()
+
+def logger():
+    with open("log.txt", "a+") as log:
+        enrg = ui.energyLcd.value()
+        city = ui.cslider.value()*koef
+        log.write("{} Enrg: {}, City: {} \n".format(
+            datetime.datetime.now(), enrg, city))
+    for i in range(0, 30):
+        time.sleep(1)
+        if exit != 1:
+            break
+
 
 if __name__ == "__main__":
     import sys
