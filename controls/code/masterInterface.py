@@ -7,6 +7,7 @@ import time
 import collections
 
 koef = 1
+blinkvar = 0
 temperatures = collections.defaultdict(lambda: collections.deque((), 5))
 
 def exitor():
@@ -21,8 +22,16 @@ def check_if_temperature_not_changed(t, current):
         return '-1'
     return current
 
+def blink():
+    transm.setLED(255, 255, 255)
+    time.sleep(0.5)
+    transm.setLED(0, 0, 0)
+    time.sleep(0.5)
+    if blinkvar:
+        blink()
 
 def getData():
+    global blinkvar
     #energy = transm.getEnergy()
     #energy = str((float(transm.getSensor(2)) - float(transm.getSensor(1))) * 100)
     #if energy != -1:
@@ -51,6 +60,27 @@ def getData():
     if energy > 0:
         print('{0:.2f}'.format(energy))
         ui.energyLcd.display('{0:.2f}'.format(energy))
+        if energy > 6000:
+            blinkvar = 0
+            transm.setLED(255, 0, 0)
+        elif energy > 4500:
+            blinkvar = 0
+            transm.setLED(255, 140, 0)
+        elif energy > 3000:
+            blinkvar = 0
+            transm.setLED(255, 255, 0)
+        elif energy > 1600:
+            blinkvar = 0
+            transm.setLED(0, 255, 0)
+        elif energy > 900:
+            blinkvar = 0
+            transm.setLED(0, 0, 255)
+        elif energy > 300:
+            blinkvar = 0
+            transm.setLED(0, 0, 128)
+        else:
+            blinkvar = 1
+            blinkThread = Thread(target=blink, args=())
     flow = transm.getFlow(1)[2:-5]
     if flow == "-1" or flow == "-666.00":
         flow = '-'
