@@ -25,7 +25,7 @@ def getData():
     messages = {}
     global temperatures
     #for num in range(1, 17):
-    for num in range(1, 11):
+    for num in range(1, 17):
         #val = str(transm.getSensor(num))
         messages[num] = transm.sendMsg('T {}'.format(num))
     for num, mid in messages.items():
@@ -38,7 +38,8 @@ def getData():
             val = '{}. -'.format(num)
         else:
             val = "{}. {}".format(num, val)
-        eval("ui.t{}.display(val)".format(num))
+        if num < 11:
+            eval("ui.t{}.display(val)".format(num))
         #time.sleep(0.1)
         exitor()
     try:
@@ -60,9 +61,6 @@ def getData():
 #            slidersSender(i)
 #            time.sleep(0.1)
 #            exitor()
-
-
-
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):

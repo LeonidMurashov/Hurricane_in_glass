@@ -48,11 +48,6 @@ def getData():
         eval("ui.t{}.display(val)".format(num))
         #time.sleep(0.1)
         exitor()
-    try:
-        energy = (float(temperatures[2][-1]) - float(temperatures[1][-1])) * 11
-    except ValueError:
-        energy = 0
-    logger()
     if energy > 0:
         print('{0:.2f}'.format(energy))
         ui.energyLcd.display('{0:.2f}'.format(energy))
@@ -77,6 +72,14 @@ def getData():
         eval('ui.lcd{}.display(nasos)'.format(num))
         #time.sleep(0.1)
         exitor()
+    try:
+        energy = (float(temperatures[15][-1]) - float(temperatures[16][-1])) * 82 * int(ui.flow1.value()) + (float(temperatures[13][-1]) - float(temperatures[14][-1])) * 82 * int(ui.flow2.value())
+    except ValueError:
+        energy = 0
+    if energy > 0:
+        print('{0:.2f}'.format(energy))
+        ui.energyLcd.display('{0:.2f}'.format(energy))
+    logger()
     if exit == 1:
         getData()
     else:
