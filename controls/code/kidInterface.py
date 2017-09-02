@@ -727,6 +727,10 @@ class Ui_MainWindow(object):
 import reactor_res_rc
 
 def sliders(num):
+    s = Thread(target=sliders_task, args=([num]))
+    s.start()
+    
+def sliders_task(num):
     if num == 7:
         val = ui.r1slider.value()
         ui.r1power.display(val)
@@ -741,6 +745,10 @@ def sliders(num):
         eval('ui.lcd{}.display(val)'.format(num))
 
 def slidersSender(num):
+    s = Thread(target=slidersSender_task, args=([num]))
+    s.start()    
+    
+def slidersSender_task(num):
     if num == 7:
         val = ui.r1slider.value()
         transm.setHeater(1, val)
