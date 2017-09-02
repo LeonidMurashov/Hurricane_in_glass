@@ -72,6 +72,8 @@ def getData():
         nasos = transm.getPipe(num)[2:-5]
         if nasos == "-1" or nasos == "-666.00":
             nasos = '-'
+        else:
+            nasos = str(int(nasos)/10)
         eval('ui.lcd{}.display(nasos)'.format(num))
         #time.sleep(0.1)
         exitor()

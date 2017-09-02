@@ -85,8 +85,8 @@ def msgResponce(msg):
             responce = ' '
 
         # Распределение запроса между Arduino
-        elif device in ser1Components:
-            t = time.time()
+        elif device in ser1Components or msg.startswith('P 6'):
+            #t = time.time()
             #print('deivce found in ser1')
             ser1.write(bytearray(msg,'utf-8'))
             responce = str(ser1.readline())[2:-5]
@@ -94,7 +94,7 @@ def msgResponce(msg):
             #print(time.time() - t)
             #print()
         elif device in ser2Components:
-            t = time.time()
+            #t = time.time()
             #print('device found in ser2')
             ser2.write(bytearray(msg,'utf-8'))
             responce = ser2.readline()
