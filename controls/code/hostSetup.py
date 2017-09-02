@@ -14,5 +14,5 @@ setup(
         version = "0.1",
         description = "Host for Atomic",
         options = {"build_exe" : opt},
-        executables = [Executable("rpiReciev.py", base)]
+        executables = [Executable("rpiReciev.py", base=base)]
         )

@@ -14,5 +14,5 @@ setup(
         version = "0.1",
         description = "Master interface for Atomic",
         options = {"build_exe" : opt},
-        executables = [Executable("masterInterface.py", base)]
+        executables = [Executable("masterInterface.py", base=base)]
         )

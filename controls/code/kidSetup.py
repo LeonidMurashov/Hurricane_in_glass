@@ -14,5 +14,5 @@ setup(
         version = "0.1",
         description = "Kid interface for Atomic",
         options = {"build_exe" : opt},
-        executables = [Executable("kidInterface.py", base)]
+        executables = [Executable("kidInterface.py", base=base)]
         )
