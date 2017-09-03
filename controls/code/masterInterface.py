@@ -74,7 +74,10 @@ def getData():
         if nasos == "-1" or nasos == "-666.00":
             nasos = '-'
         else:
-            nasos = str(int(nasos)/10)
+            try:
+                nasos = str(int(nasos)/10)
+            except:
+                nasos = '-'
         eval('ui.lcd{}.display(nasos)'.format(num))
         #time.sleep(0.1)
         exitor()
