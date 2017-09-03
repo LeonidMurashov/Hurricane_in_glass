@@ -107,8 +107,9 @@ def getData():
             blinkvar = 0
             transm.setLED(0, 0, 128)
         else:
-            blinkvar = 1
-            blinkThread = Thread(target=blink, args=())
+            if blinkvar == 0:
+                blinkvar = 1
+                blinkThread = Thread(target=blink, args=())
     logger()
     if exit == 1:
         getData()
