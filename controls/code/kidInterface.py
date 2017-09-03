@@ -44,15 +44,17 @@ def getData():
         messages[num] = transm.sendMsg('T {}'.format(num))
     for num, mid in messages.items():
         val = transm.getMsg(mid)
-        temperatures[num].append(val)
+        if not(val == "-1" or val == "-666.00" or val == "0.00" or val == "0"):
+            temperatures[num].append(val)
         val = check_if_temperature_not_changed(temperatures[num], val)
 
         print('T {} : {} C'.format(num, val))
-        if val == "-1" or val == "-666.00" or val == "0.00":
-            val = '{}. -'.format(num)
+        flag = True
+        if val == "-1" or val == "-666.00" or val == "0.00" or val == "0":
+            flag = False
         else:
             val = "{}. {}".format(num, val)
-        if num < 11:
+        if num < 11 and flag:
             eval("ui.t{}.display(val)".format(num))
         #time.sleep(0.1)
         exitor()
