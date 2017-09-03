@@ -48,7 +48,7 @@ def getData():
         energy = 0
     if energy > 0:
         print('{0:.2f}'.format(energy))
-        ui.energyLcd.display('{0:.2f}'.format(energy))
+        ui.energyLcd.display(energy)
     if exit == 1:
         getData()
     else:
@@ -729,7 +729,7 @@ import reactor_res_rc
 def sliders(num):
     s = Thread(target=sliders_task, args=([num]))
     s.start()
-    
+
 def sliders_task(num):
     if num == 7:
         val = ui.r1slider.value()
@@ -746,8 +746,8 @@ def sliders_task(num):
 
 def slidersSender(num):
     s = Thread(target=slidersSender_task, args=([num]))
-    s.start()    
-    
+    s.start()
+
 def slidersSender_task(num):
     if num == 7:
         val = ui.r1slider.value()

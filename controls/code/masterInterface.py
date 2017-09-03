@@ -57,30 +57,6 @@ def getData():
         eval("ui.t{}.display(val)".format(num))
         #time.sleep(0.1)
         exitor()
-    if energy > 0:
-        print('{0:.2f}'.format(energy))
-        ui.energyLcd.display('{0:.2f}'.format(energy))
-        if energy > 6000:
-            blinkvar = 0
-            transm.setLED(255, 0, 0)
-        elif energy > 4500:
-            blinkvar = 0
-            transm.setLED(255, 140, 0)
-        elif energy > 3000:
-            blinkvar = 0
-            transm.setLED(255, 255, 0)
-        elif energy > 1600:
-            blinkvar = 0
-            transm.setLED(0, 255, 0)
-        elif energy > 900:
-            blinkvar = 0
-            transm.setLED(0, 0, 255)
-        elif energy > 300:
-            blinkvar = 0
-            transm.setLED(0, 0, 128)
-        else:
-            blinkvar = 1
-            blinkThread = Thread(target=blink, args=())
     flow = transm.getFlow(1)[2:-5]
     if flow == "-1" or flow == "-666.00":
         flow = '-'
@@ -108,7 +84,28 @@ def getData():
         energy = 0
     if energy > 0:
         print('{0:.2f}'.format(energy))
-        ui.energyLcd.display('{0:.2f}'.format(energy))
+        ui.energyLcd.display(energy)
+        if energy > 6000:
+            blinkvar = 0
+            transm.setLED(255, 0, 0)
+        elif energy > 4500:
+            blinkvar = 0
+            transm.setLED(255, 140, 0)
+        elif energy > 3000:
+            blinkvar = 0
+            transm.setLED(255, 255, 0)
+        elif energy > 1600:
+            blinkvar = 0
+            transm.setLED(0, 255, 0)
+        elif energy > 900:
+            blinkvar = 0
+            transm.setLED(0, 0, 255)
+        elif energy > 300:
+            blinkvar = 0
+            transm.setLED(0, 0, 128)
+        else:
+            blinkvar = 1
+            blinkThread = Thread(target=blink, args=())
     logger()
     if exit == 1:
         getData()
@@ -1020,7 +1017,7 @@ class Ui_MainWindow(object):
         self.dump.clicked.connect(transm.dump)
         self.cooling.clicked.connect(transm.cool)
 
-        self.cslider.sliderReleased.connect(lambda: citty())
+        #self.cslider.sliderReleased.connect(lambda: citty())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -1054,10 +1051,6 @@ class Ui_MainWindow(object):
 
 
 import reactor_res_rc
-
-def citty():
-    enrg = ui.energyLcd.value() - ui.cslider.value()*koef
-    # Добавить переключение яркости
 
 
 def runApp():
