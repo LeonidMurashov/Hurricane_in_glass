@@ -3,9 +3,11 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from threading import Thread
 import time
-import rpiTransmKid as rpi
+import rpiTransm as rpi
 import time
 import collections
+
+blinkvar = 0
 
 temperatures = collections.defaultdict(lambda: collections.deque((), 5))
 
@@ -20,7 +22,18 @@ def exitor():
         print('exiting')
         sys.exit(exit)
 
+
+def blink():
+    transm.setLED(255, 255, 255)
+    time.sleep(0.5)
+    transm.setLED(0, 0, 0)
+    time.sleep(0.5)
+    if blinkvar:
+        blink()
+
+
 def getData():
+    global blinkvar
     exitor()
     messages = {}
     global temperatures
@@ -51,6 +64,28 @@ def getData():
     if energy > 0:
         print('{0:.2f}'.format(energy))
         ui.energyLcd.display(energy)
+        if energy > 6000:
+            blinkvar = 0
+            transm.setLED(255, 0, 0)
+        elif energy > 4500:
+            blinkvar = 0
+            transm.setLED(255, 140, 0)
+        elif energy > 3000:
+            blinkvar = 0
+            transm.setLED(255, 255, 0)
+        elif energy > 1600:
+            blinkvar = 0
+            transm.setLED(0, 255, 0)
+        elif energy > 900:
+            blinkvar = 0
+            transm.setLED(0, 0, 255)
+        elif energy > 300:
+            blinkvar = 0
+            transm.setLED(0, 0, 128)
+        else:
+            if blinkvar == 0:
+                blinkvar = 1
+                blinkThread = Thread(target=blink, args=())
     if exit == 1:
         getData()
     else:
