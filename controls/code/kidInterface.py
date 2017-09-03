@@ -33,36 +33,14 @@ def blink():
         blink()
 
 
-def getData():
-    global blinkvar
-    exitor()
-    messages = {}
+def countEnergy():
     global temperatures
-    #for num in range(1, 17):
-    for num in range(1, 17):
-        #val = str(transm.getSensor(num))
-        messages[num] = transm.sendMsg('T {}'.format(num))
-    for num, mid in messages.items():
-        val = transm.getMsg(mid)
-        if not(val == "-1" or val == "-666.00" or val == "0.00" or val == "0"):
-            temperatures[num].append(val)
-        val = check_if_temperature_not_changed(temperatures[num], val)
-
-        print('T {} : {} C'.format(num, val))
-        flag = True
-        if val == "-1" or val == "-666.00" or val == "0.00" or val == "0":
-            flag = False
-        else:
-            val = "{}. {}".format(num, val)
-        if num < 11 and flag:
-            eval("ui.t{}.display(val)".format(num))
-        #time.sleep(0.1)
-        exitor()
+    global blinkvar
     flow1 = 6 * int(ui.n1slider.value()) / 100
     flow2 = 6 * int(ui.n2slider.value()) / 100
     try:
         energy = (float(temperatures[15][-1]) - float(temperatures[16][-1])) * koef * int(flow1) + (float(temperatures[13][-1]) - float(temperatures[14][-1])) * koef * int(flow2)
-    except ValueError:
+    except:
         energy = -1
     if energy >=0:
         print('{0:.2f}'.format(energy))
@@ -89,6 +67,35 @@ def getData():
             if blinkvar == 0:
                 blinkvar = 1
                 blinkThread = Thread(target=blink, args=())
+
+
+
+def getData():
+    global blinkvar
+    exitor()
+    messages = {}
+    global temperatures
+    #for num in range(1, 17):
+    for num in range(1, 17):
+        #val = str(transm.getSensor(num))
+        messages[num] = transm.sendMsg('T {}'.format(num))
+    for num, mid in messages.items():
+        val = transm.getMsg(mid)
+        if not(val == "-1" or val == "-666.00" or val == "0.00" or val == "0"):
+            temperatures[num].append(val)
+        val = check_if_temperature_not_changed(temperatures[num], val)
+
+        print('T {} : {} C'.format(num, val))
+        flag = True
+        if val == "-1" or val == "-666.00" or val == "0.00" or val == "0":
+            flag = False
+        else:
+            val = "{}. {}".format(num, val)
+        if num < 11 and flag:
+            eval("ui.t{}.display(val)".format(num))
+        #time.sleep(0.1)
+        exitor()
+    countEnergy()
     if exit == 1:
         getData()
     else:
@@ -783,6 +790,7 @@ def sliders_task(num):
     else:
         val = eval('ui.n{}slider.value()'.format(num))
         eval('ui.lcd{}.display(val)'.format(num))
+    countEnergy()
 
 def slidersSender(num):
     s = Thread(target=slidersSender_task, args=([num]))
