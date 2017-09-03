@@ -8,6 +8,7 @@ import time
 import collections
 
 blinkvar = 0
+koef = 141
 
 temperatures = collections.defaultdict(lambda: collections.deque((), 5))
 
@@ -58,7 +59,7 @@ def getData():
     flow1 = 6 * int(ui.n1slider.value()) / 100
     flow2 = 6 * int(ui.n2slider.value()) / 100
     try:
-        energy = (float(temperatures[15][-1]) - float(temperatures[16][-1])) * 82 * int(flow1) + (float(temperatures[13][-1]) - float(temperatures[14][-1])) * 82 * int(flow2)
+        energy = (float(temperatures[15][-1]) - float(temperatures[16][-1])) * koef * int(flow1) + (float(temperatures[13][-1]) - float(temperatures[14][-1])) * koef * int(flow2)
     except ValueError:
         energy = -1
     if energy >=0:

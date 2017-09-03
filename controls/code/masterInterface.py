@@ -6,7 +6,7 @@ import datetime
 import time
 import collections
 
-koef = 1
+koef = 141
 blinkvar = 0
 temperatures = collections.defaultdict(lambda: collections.deque((), 5))
 
@@ -82,7 +82,7 @@ def getData():
         #time.sleep(0.1)
         exitor()
     try:
-        energy = (float(temperatures[15][-1]) - float(temperatures[16][-1])) * 82 * int(ui.flow1.value()) + (float(temperatures[13][-1]) - float(temperatures[14][-1])) * 82 * int(ui.flow2.value())
+        energy = (float(temperatures[15][-1]) - float(temperatures[16][-1])) * koef * int(ui.flow1.value()) + (float(temperatures[13][-1]) - float(temperatures[14][-1])) * koef * int(ui.flow2.value())
     except ValueError:
         energy = 0
     if energy > 0:
