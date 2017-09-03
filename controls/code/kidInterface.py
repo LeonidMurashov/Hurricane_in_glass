@@ -60,8 +60,8 @@ def getData():
     try:
         energy = (float(temperatures[15][-1]) - float(temperatures[16][-1])) * 82 * int(flow1) + (float(temperatures[13][-1]) - float(temperatures[14][-1])) * 82 * int(flow2)
     except ValueError:
-        energy = 0
-    if energy > 0:
+        energy = -1
+    if energy >=0:
         print('{0:.2f}'.format(energy))
         ui.energyLcd.display(energy)
         if energy > 6000:
