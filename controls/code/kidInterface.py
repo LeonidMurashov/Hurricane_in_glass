@@ -43,7 +43,7 @@ def getData():
         #time.sleep(0.1)
         exitor()
     try:
-        energy = (float(temperatures[2][-1]) - float(temperatures[1][-1])) * 11
+        energy = (float(temperatures[15][-1]) - float(temperatures[16][-1])) * 82 * int(ui.flow1.value()) + (float(temperatures[13][-1]) - float(temperatures[14][-1])) * 82 * int(ui.flow2.value())
     except ValueError:
         energy = 0
     if energy > 0:
