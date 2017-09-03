@@ -15,18 +15,14 @@
 CRGB leds[NUM_LEDS]; //Инициализируем массив светодиодов
 byte R = 0, G = 0, B = 0;
 
-// Инициализируем софтварные компорт и mp3 плеер
-SoftwareSerial mySoftwareSerial(7, 8); // RX, TX
-DFRobotDFPlayerMini myDFPlayer;
-
-void Alarm(unsigned long time);
+void Alarm(void);
 void Readln(char * msg);
 void shutdown(void);
 
 OneWire  oneWire(2); // Создаём объект OneWire на 2-ом пине (нужен резистор в 4.7кОм)
 DallasTemperature sensors(&oneWire);
 
-const float seciruty_temp = 95; // Температура переграва системы безопасности
+const float seciruty_temp = 90; // Температура переграва системы безопасности
 float user_temp = 1000; // Температура перегрева, которую устанавливает пользователь
 
 // Заведём класс для датчик температуры
@@ -61,7 +57,7 @@ public:
         if ((celsius >= seciruty_temp) || (celsius >= user_temp)) 
         {
             shutdown(); // и отключаем нагреватели
-            Alarm(15000); // Включаем сигнализацию на 15 секунд
+            Alarm(); // Включаем сигнализацию на 15 секунд
         }    
     }
 
@@ -160,50 +156,20 @@ void setup()
     // Подсветка
     delay(1000);
     LEDS.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
-    FastLED.setBrightness(128);
+    FastLED.setBrightness(255);
     FastLED.clear();
 
     // Устанавливаем прерывание по таймеру для подсветки
     MsTimer2::set(10, flash); // 10ms period
-
- //   mySoftwareSerial.begin(9600); // Инициализируем собственный порт для музыки 
+    
     Serial.begin(9600);
     Serial.println(1);
-/*    
-    // Если мы не видим плеер, мы перезагружаем ардуину
-    if (!myDFPlayer.begin(mySoftwareSerial)) 
-        Serial.println("Mp3 error");
-        resetFunc(); // Вызываем reset
-  
-    myDFPlayer.setTimeOut(500); //Set serial communictaion time out 500ms
-  
-    // Устанавливаем звукна полную мощность
-    myDFPlayer.volume(30);  //Set volume value (0~30).
-//    myDFPlayer.volumeUp(); //Volume Up
-//    myDFPlayer.volumeDown(); //Volume Down
-  
-    // Устанавливаем нормальные настройки эквалайзера
-    myDFPlayer.EQ(DFPLAYER_EQ_NORMAL);
-  
-    // Устанавливаем устройство с которого производится чтение -- microSD
-    myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
-
-    // Включаем наш режим проигрывания звука через внешние колонки
-    myDFPlayer.enableDAC();  
-  
-  //----Mp3 control----
-    //  myDFPlayer.sleep();     //sleep
-    //  myDFPlayer.reset();     //Reset the module
-    //  myDFPlayer.enableDAC();  //Enable On-chip DAC
-    //  myDFPlayer.disableDAC();  //Disable On-chip DAC
-    //  myDFPlayer.outputSetting(true, 15); //output setting, enable the output and set the gain to 15
-*/
 
     // Датчики температуры
     sensors.begin();
     //Serial.print("There are ");
     //sensors.setResolution(9);
-    //sensors.setWaitForConversion(1);
+    sensors.setWaitForConversion(0);
     sensors.setCheckForConversion(1);
     //prev_time_1 = millis();
 
@@ -451,7 +417,7 @@ void loop()
                     // Увеличиваем громкость
                     case '+':
                     {
-                        myDFPlayer.volumeUp();
+             //           myDFPlayer.volumeUp();
                         error = 0; // Всё хорошо
                         break;
                     }
@@ -459,7 +425,7 @@ void loop()
                     // Уменьшаем громкость
                     case '-':
                     {
-                        myDFPlayer.volumeDown();
+              //          myDFPlayer.volumeDown();
                         error = 0; // Всё хорошо
                         break;
                     }
@@ -474,7 +440,7 @@ void loop()
             //alarm - включить сирену на 15 секунд
             case 'a':
             {
-                Alarm(15000); // Включили сирену на 15 секунда
+                Alarm(); // Включили сирену на 15 секунда
                 error = 0; // Всё хорошо
                 break;
             }
@@ -495,7 +461,7 @@ void loop()
                     // Перезагружаем плеер
                     case 'm':
                     {
-                        myDFPlayer.reset();
+       //                 myDFPlayer.reset();
                         error = 0; // Всё хорошо
                         break;
                     }
@@ -519,14 +485,12 @@ void loop()
         else
             Serial.println(5);
     }
-
+    
     // Запрос на обновлениие температуры
-	if (sensors.isConversionComplete()) // Если мы не обновляли температуру больше секунды
+    if ((sensors.isConversionComplete()) && (millis() > prev_time_1 + 750)) // Если мы не обновляли температуру больше секунды
     {
         //sensors.requestTemperatures();
-        //prev_time_1 = millis(); // Обнулили последнее время получения температуры
-        for (int i = 0; i < 16; i++)
-            DS[i].getTemperature();
+        prev_time_1 = millis(); // Обнулили последнее время получения температуры
         sensors.requestTemperatures();
         /*if (sensors.isConversionComplete())
         {
@@ -534,24 +498,56 @@ void loop()
                 DS[i].getTemperature();
         }*/
     }
-  //sensors.requestTemperatures();
-  //Serial.println(DS[12].Temperature());
 
-    // Забираем посчитанные данные
-    /*if (sensors.isConversionComplete())
-    {
-    	for (int i = 0; i < 16; i++)
-            DS[i].getTemperature();
-    }*/
+    for (int i = 0; i < 16; i++)
+        DS[i].getTemperature();
+
+    
 }
 
-void Alarm(unsigned long time)
+void Alarm(void)
 {
-    myDFPlayer.play(1);
-    myDFPlayer.enableLoop(); //enable loop.
-    delay(time); // Сирена играет 15 секунд
-    myDFPlayer.disableLoop(); //disable loop.
-    myDFPlayer.pause(); // Останавливаем сирену
+    byte BR = R; // Красный
+    byte BG = G; // Зелёный
+    byte BB = B; // Голубой
+
+    //Заполняем всё красным и мигаем 
+    MsTimer2::stop();
+    FastLED.setBrightness(255); // Установили подсветку
+    MsTimer2::start();
+//    MsTimer2::start();
+
+    for (int i = 0; i < 20; i++)
+    {
+        R = 255; // Красный
+        G = 0; // Зелёный
+        B = 0; // Голубой
+        MsTimer2::stop();
+        fill_solid(leds, NUM_LEDS, CRGB(R, G, B));
+        MsTimer2::start();
+        delay(500);
+
+        R = 0; // Красный
+        G = 0; // Зелёный
+        B = 0; // Голубой
+        MsTimer2::stop();
+        fill_solid(leds, NUM_LEDS, CRGB(R, G, B));
+        MsTimer2::start();
+        delay(500);
+    }
+
+    R = 0; // Красный
+    G = 0; // Зелёный
+    B = 0; // Голубой
+
+    MsTimer2::stop();
+    fill_solid(leds, NUM_LEDS, CRGB(R, G, B));
+    MsTimer2::start();
+    
+
+ //   MsTimer2::stop(); // Запретили прерывание
+ //   MsTimer2::set(10, flash); // Поменяли период на 10миллисекунд 100фпс
+ //   MsTimer2::start(); // Разрешили прерывание
 }
 
 void Readln(char * msg)
