@@ -42,10 +42,8 @@ def getData():
             eval("ui.t{}.display(val)".format(num))
         #time.sleep(0.1)
         exitor()
-    flow1 = transm.getFlow(1)
-    exitor()
-    flow2 = transm.getFlow(2)
-    exitor()
+    flow1 = 6 * int(ui.n3slider.value()) / 100
+    flow2 = 6 * int(ui.n4slider.value()) / 100
     try:
         energy = (float(temperatures[15][-1]) - float(temperatures[16][-1])) * 82 * int(flow1) + (float(temperatures[13][-1]) - float(temperatures[14][-1])) * 82 * int(flow2)
     except ValueError:
