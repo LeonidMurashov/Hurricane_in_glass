@@ -13,8 +13,8 @@ temperatures = collections.defaultdict(lambda: collections.deque((), 5))
 
 def check_if_temperature_not_changed(t, current):
     print(t)
-    if len(t) == t.maxlen and len(set(t)) == 1:
-        return '-1'
+    #if len(t) == t.maxlen and len(set(t)) == 1:
+    #    return '-1'
     return current
 
 def exitor():
